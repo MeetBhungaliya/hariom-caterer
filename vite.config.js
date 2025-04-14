@@ -1,6 +1,7 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react-swc'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import { defineConfig, loadEnv } from 'vite'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -12,12 +13,12 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), tailwindcss()],
     base: env.VITE_BASE_PATH,
     server: {
-      host: true
+      host: true,
     },
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
-      }
-    }
+        '@': path.resolve(__dirname, './src'),
+      },
+    },
   }
 })
