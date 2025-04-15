@@ -11,15 +11,28 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as IndexImport } from './routes/index'
+import { Route as ProtectedImport } from './routes/_protected'
+import { Route as ProtectedIndexImport } from './routes/_protected/index'
+import { Route as ProtectedDashboardImport } from './routes/_protected/dashboard'
 import { Route as authLoginImport } from './routes/(auth)/login'
 
 // Create/Update Routes
 
-const IndexRoute = IndexImport.update({
+const ProtectedRoute = ProtectedImport.update({
+  id: '/_protected',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProtectedIndexRoute = ProtectedIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedDashboardRoute = ProtectedDashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => ProtectedRoute,
 } as any)
 
 const authLoginRoute = authLoginImport.update({
@@ -32,11 +45,11 @@ const authLoginRoute = authLoginImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof ProtectedImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/login': {
@@ -46,43 +59,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginImport
       parentRoute: typeof rootRoute
     }
+    '/_protected/dashboard': {
+      id: '/_protected/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof ProtectedDashboardImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/': {
+      id: '/_protected/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedIndexImport
+      parentRoute: typeof ProtectedImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface ProtectedRouteChildren {
+  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedIndexRoute: typeof ProtectedIndexRoute
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedIndexRoute: ProtectedIndexRoute,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '': typeof ProtectedRouteWithChildren
   '/login': typeof authLoginRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/': typeof ProtectedIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof authLoginRoute
+  '/dashboard': typeof ProtectedDashboardRoute
+  '/': typeof ProtectedIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
+  '/_protected': typeof ProtectedRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
+  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/': typeof ProtectedIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths: '' | '/login' | '/dashboard' | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login'
-  id: '__root__' | '/' | '/(auth)/login'
+  to: '/login' | '/dashboard' | '/'
+  id:
+    | '__root__'
+    | '/_protected'
+    | '/(auth)/login'
+    | '/_protected/dashboard'
+    | '/_protected/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  ProtectedRoute: typeof ProtectedRouteWithChildren
   authLoginRoute: typeof authLoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  ProtectedRoute: ProtectedRouteWithChildren,
   authLoginRoute: authLoginRoute,
 }
 
@@ -96,15 +147,27 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.jsx",
       "children": [
-        "/",
+        "/_protected",
         "/(auth)/login"
       ]
     },
-    "/": {
-      "filePath": "index.jsx"
+    "/_protected": {
+      "filePath": "_protected.jsx",
+      "children": [
+        "/_protected/dashboard",
+        "/_protected/"
+      ]
     },
     "/(auth)/login": {
       "filePath": "(auth)/login.jsx"
+    },
+    "/_protected/dashboard": {
+      "filePath": "_protected/dashboard.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/": {
+      "filePath": "_protected/index.jsx",
+      "parent": "/_protected"
     }
   }
 }
