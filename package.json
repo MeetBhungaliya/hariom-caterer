@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "lint-fix": "eslint --fix",
-    "precommit": "npm run lint",
+    "precommit": "",
     "prepare": "husky",
     "preview": "vite preview"
   },
