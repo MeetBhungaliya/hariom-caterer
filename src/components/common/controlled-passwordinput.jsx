@@ -58,7 +58,7 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
         {...longPressEvent}
         type="button"
         className={cn(
-          'h-[calc(100%-2px)] absolute right-[1px] top-[1px]',
+          'h-[calc(100%-2px)] absolute right-[1px] top-[1px] border-none',
           'aspect-square flex items-center justify-center',
           'rounded-r-lg rounded-l-none bg-transparent hover:bg-sky-100/80 backdrop-blur-sm',
           'text-sky-600 dark:text-sky-400',

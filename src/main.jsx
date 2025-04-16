@@ -1,20 +1,17 @@
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import App from "./app";
-import { AuthProvider } from "./hooks/use-auth";
+import { StrictMode } from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './app'
+import { Toaster } from './components/ui/sonner'
 
-import "./css/global.css";
-import { Toaster } from "./components/ui/sonner";
+import './css/global.css'
 
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById('root')
 if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
+  const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <AuthProvider>
-        <App />
-        <Toaster />
-      </AuthProvider>
-    </StrictMode>
-  );
+      <App />
+      <Toaster richColors position="top-right" />
+    </StrictMode>,
+  )
 }

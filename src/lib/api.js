@@ -1,37 +1,39 @@
-import axios from "axios";
+import { useAuthStore } from '@/hooks/use-auth'
+import axios from 'axios'
 
-const onRequest = (config) => {
-  const state = "store.getState()";
-  // const token = `Bearer ${state.auth.user?.data?.token}`;
-  const token = null;
+function onRequest(config) {
+  const user = useAuthStore.getState(state => state.user)
 
-  if (token && config.headers) {
-    config.headers.Authorization = token;
+  const accessToken = `Bearer ${user?.accesstoken}`
+
+  if (user?.accesstoken) {
+    config.headers.Authorization = accessToken
   }
 
-  return config;
-};
+  return config
+}
 
-const onRequestError = (error) => {
-  console.error(`[request error] [${JSON?.stringify?.(error)}]`);
-  return Promise.reject(error);
-};
+function onRequestError(error) {
+  console.error(`[request error] [${JSON?.stringify?.(error)}]`)
+  return Promise.reject(error)
+}
 
-const onResponse = (response) => {
+function onResponse(response) {
   // console.info(`[response] [${JSON?.stringify?.(response)}]`);
-  if (response.data) return response.data;
-  return response.data;
-};
+  if (response.data)
+    return response.data
+  return response.data
+}
 
-const onResponseError = (error) => {
-  console.error(`[response error] [${JSON?.stringify?.(error)}]`);
-  return Promise.reject(error);
-};
+function onResponseError(error) {
+  console.error(`[response error] [${JSON?.stringify?.(error)}]`)
+  return Promise.reject(error)
+}
 
 function setupInterceptorsTo(axiosInstance) {
-  axiosInstance.interceptors.request.use(onRequest, onRequestError);
-  axiosInstance.interceptors.response.use(onResponse, onResponseError);
-  return axiosInstance;
+  axiosInstance.interceptors.request.use(onRequest, onRequestError)
+  axiosInstance.interceptors.response.use(onResponse, onResponseError)
+  return axiosInstance
 }
 
 export const fetchApi = setupInterceptorsTo(
@@ -40,5 +42,5 @@ export const fetchApi = setupInterceptorsTo(
     headers: {
       key: import.meta.env.VITE_API_KEY,
     },
-  })
-);
+  }),
+)

@@ -1,62 +1,57 @@
-import { ControlledInput } from "@/components/common/controlled-input";
-import { ControlledPasswordInput } from "@/components/common/controlled-passwordinput";
-import { Button } from "@/components/ui/button";
-import { METHODS } from "@/constants/common";
-import { LOGIN } from "@/constants/endpoints";
-import { useAuthStore } from "@/hooks/use-auth-1";
-import { fetchApi } from "@/lib/api";
-import { loginSchema } from "@/lib/schema";
-import { responseToaster, tryCatch } from "@/lib/utils";
-import { useForm } from "@tanstack/react-form";
-import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { Mail } from "lucide-react";
-import { z } from "zod";
-import { Route as IndexRoute } from "../_protected/index";
+import { ControlledInput } from '@/components/common/controlled-input'
+import { ControlledPasswordInput } from '@/components/common/controlled-passwordinput'
+import { Button } from '@/components/ui/button'
+import { METHODS } from '@/constants/common'
+import { LOGIN } from '@/constants/endpoints'
+import { useAuthStore } from '@/hooks/use-auth'
+import { fetchApi } from '@/lib/api'
+import { loginSchema } from '@/lib/schema'
+import { asyncResponseToaster } from '@/lib/toasts'
+import { useForm } from '@tanstack/react-form'
+import { useMutation } from '@tanstack/react-query'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import { Mail } from 'lucide-react'
+import md5 from 'md5'
+import { z } from 'zod'
+import { Route as IndexRoute } from '../_protected/index'
 
-export const Route = createFileRoute("/(auth)/login")({
+export const Route = createFileRoute('/(auth)/login')({
   validateSearch: z.object({
-    redirect: z.string().optional().catch(""),
+    redirect: z.string().optional().catch(''),
   }),
   beforeLoad: ({ context, search }) => {
-    if (context.auth.isAuthenticated) {
-      throw redirect({ to: search.redirect || IndexRoute.path });
+    if (context.isAuthenticated) {
+      throw redirect({ to: search.redirect || IndexRoute.path })
     }
   },
   component: RouteComponent,
-});
+})
 
 function RouteComponent() {
-  // const auth = useAuth();
-  const addUser = useAuthStore((state) => state.adduser);
-  const navigate = Route.useNavigate();
-  const search = Route.useSearch();
+  const adduser = useAuthStore(state => state.adduser)
+  const navigate = Route.useNavigate()
+  const search = Route.useSearch()
+
+  const loginMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: LOGIN, method: METHODS.POST, data }),
+  })
 
   const onSubmit = async ({ value }) => {
-    const loginResult = await tryCatch(() => loginMutation.mutateAsync(value));
+    const result = await asyncResponseToaster(() => loginMutation.mutateAsync({ ...value, password: md5(value.password) }))
 
-    responseToaster(loginResult.value);
-
-    console.log(loginResult);
-    return;
-
-    addUser(loginResult.value.data.result);
-
-    await navigate(
-      { to: search.redirect || IndexRoute.path },
-      { replace: true }
-    );
-  };
+    if (result.success && result.value && result.value.ResponseCode === 1) {
+      adduser(result.value.result)
+      await navigate(
+        { to: search.redirect || IndexRoute.path },
+        { replace: true },
+      )
+    }
+  }
 
   const { Field, handleSubmit, Subscribe } = useForm({
     onSubmit,
     validators: { onSubmit: loginSchema },
-  });
-
-  const loginMutation = useMutation({
-    mutationFn: async (data) =>
-      await fetchApi({ url: LOGIN, method: METHODS.POST, data }),
-  });
+  })
 
   return (
     <div className="h-dvh p-6 flex bg-[url('/loginbg.png')] bg-cover">
@@ -72,14 +67,14 @@ function RouteComponent() {
           <form
             className="w-full max-w-lg space-y-6"
             onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleSubmit();
+              e.preventDefault()
+              e.stopPropagation()
+              handleSubmit()
             }}
           >
             <Field
               name="email"
-              children={(field) => (
+              children={field => (
                 <ControlledInput
                   id="email"
                   label="Email"
@@ -90,7 +85,7 @@ function RouteComponent() {
             />
             <Field
               name="password"
-              children={(field) => (
+              children={field => (
                 <ControlledPasswordInput
                   id="password"
                   label="Password"
@@ -100,12 +95,12 @@ function RouteComponent() {
             />
             <div className="mt-20">
               <Subscribe
-                selector={(state) => state.isDirty}
-                children={(isDirty) => (
+                selector={state => state.isDirty}
+                children={isDirty => (
                   <Button
                     type="submit"
                     className="w-full rounded-xl font-semibold tracking-wide"
-                    disabled={!isDirty}
+                    disabled={!isDirty || loginMutation.isPending}
                   >
                     Login
                   </Button>
@@ -116,5 +111,5 @@ function RouteComponent() {
         </div>
       </div>
     </div>
-  );
+  )
 }

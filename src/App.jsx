@@ -1,30 +1,30 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { useAuthStore } from './hooks/use-auth'
 
-import "./css/global.css";
-import { useAuthStore } from "./hooks/use-auth-1";
+import { routeTree } from './routeTree.gen'
+import './css/global.css'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 const router = createRouter({
   routeTree,
   context: {
     queryClient,
   },
-  defaultPreload: "intent",
+  defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
   scrollRestoration: true,
-});
+})
 
 function App() {
-  const auth = useAuthStore();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated)
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} context={{ auth }} />
+      <RouterProvider router={router} context={{ isAuthenticated }} />
     </QueryClientProvider>
-  );
+  )
 }
 
-export default App;
+export default App
