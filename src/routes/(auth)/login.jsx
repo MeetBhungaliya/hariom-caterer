@@ -21,7 +21,7 @@ export const Route = createFileRoute('/(auth)/login')({
   }),
   beforeLoad: ({ context, search }) => {
     if (context.isAuthenticated) {
-      throw redirect({ to: search.redirect || IndexRoute.path })
+      throw redirect({ to: search.redirect || IndexRoute.fullPath })
     }
   },
   component: RouteComponent,
@@ -42,7 +42,7 @@ function RouteComponent() {
     if (result.success && result.value && result.value.ResponseCode === 1) {
       adduser(result.value.result)
       await navigate(
-        { to: search.redirect || IndexRoute.path },
+        { to: search.redirect || IndexRoute.fullPath },
         { replace: true },
       )
     }

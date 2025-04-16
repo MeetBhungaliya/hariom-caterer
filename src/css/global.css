@@ -40,11 +40,6 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
-:root {
-  --sidebar-width: 16rem;
-  --sidebar-width-icon: 4rem;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -70,6 +70,9 @@
   --color-sidebar-border: var(--sidebar-border);
 
   --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-text-1: var(--color-text-1);
+  --color-bg-1: var(--color-bg-1);
 }
 
 :root {
@@ -136,6 +139,9 @@
   --sidebar-border: oklch(0.928 0.006 264.531);
 
   --sidebar-ring: oklch(0.707 0.022 261.325);
+
+  --color-text-1: #282c3f;
+  --color-bg-1: #f8f9fa;
 }
 
 .dark {

@@ -43,6 +43,7 @@
     "@types/node": "^22.14.1",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "eslint-plugin-format": "^1.0.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.1",

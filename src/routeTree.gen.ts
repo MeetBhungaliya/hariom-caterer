@@ -13,7 +13,11 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProtectedImport } from './routes/_protected'
 import { Route as ProtectedIndexImport } from './routes/_protected/index'
-import { Route as ProtectedDashboardImport } from './routes/_protected/dashboard'
+import { Route as ProtectedPartyImport } from './routes/_protected/party'
+import { Route as ProtectedPackageImport } from './routes/_protected/package'
+import { Route as ProtectedItemImport } from './routes/_protected/item'
+import { Route as ProtectedCrockeryImport } from './routes/_protected/crockery'
+import { Route as ProtectedCoastingImport } from './routes/_protected/coasting'
 import { Route as authLoginImport } from './routes/(auth)/login'
 
 // Create/Update Routes
@@ -29,9 +33,33 @@ const ProtectedIndexRoute = ProtectedIndexImport.update({
   getParentRoute: () => ProtectedRoute,
 } as any)
 
-const ProtectedDashboardRoute = ProtectedDashboardImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const ProtectedPartyRoute = ProtectedPartyImport.update({
+  id: '/party',
+  path: '/party',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedPackageRoute = ProtectedPackageImport.update({
+  id: '/package',
+  path: '/package',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedItemRoute = ProtectedItemImport.update({
+  id: '/item',
+  path: '/item',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedCrockeryRoute = ProtectedCrockeryImport.update({
+  id: '/crockery',
+  path: '/crockery',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedCoastingRoute = ProtectedCoastingImport.update({
+  id: '/coasting',
+  path: '/coasting',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
@@ -59,11 +87,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginImport
       parentRoute: typeof rootRoute
     }
-    '/_protected/dashboard': {
-      id: '/_protected/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof ProtectedDashboardImport
+    '/_protected/coasting': {
+      id: '/_protected/coasting'
+      path: '/coasting'
+      fullPath: '/coasting'
+      preLoaderRoute: typeof ProtectedCoastingImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/crockery': {
+      id: '/_protected/crockery'
+      path: '/crockery'
+      fullPath: '/crockery'
+      preLoaderRoute: typeof ProtectedCrockeryImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/item': {
+      id: '/_protected/item'
+      path: '/item'
+      fullPath: '/item'
+      preLoaderRoute: typeof ProtectedItemImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/package': {
+      id: '/_protected/package'
+      path: '/package'
+      fullPath: '/package'
+      preLoaderRoute: typeof ProtectedPackageImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/party': {
+      id: '/_protected/party'
+      path: '/party'
+      fullPath: '/party'
+      preLoaderRoute: typeof ProtectedPartyImport
       parentRoute: typeof ProtectedImport
     }
     '/_protected/': {
@@ -79,12 +135,20 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface ProtectedRouteChildren {
-  ProtectedDashboardRoute: typeof ProtectedDashboardRoute
+  ProtectedCoastingRoute: typeof ProtectedCoastingRoute
+  ProtectedCrockeryRoute: typeof ProtectedCrockeryRoute
+  ProtectedItemRoute: typeof ProtectedItemRoute
+  ProtectedPackageRoute: typeof ProtectedPackageRoute
+  ProtectedPartyRoute: typeof ProtectedPartyRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
-  ProtectedDashboardRoute: ProtectedDashboardRoute,
+  ProtectedCoastingRoute: ProtectedCoastingRoute,
+  ProtectedCrockeryRoute: ProtectedCrockeryRoute,
+  ProtectedItemRoute: ProtectedItemRoute,
+  ProtectedPackageRoute: ProtectedPackageRoute,
+  ProtectedPartyRoute: ProtectedPartyRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
 }
 
@@ -95,13 +159,21 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 export interface FileRoutesByFullPath {
   '': typeof ProtectedRouteWithChildren
   '/login': typeof authLoginRoute
-  '/dashboard': typeof ProtectedDashboardRoute
+  '/coasting': typeof ProtectedCoastingRoute
+  '/crockery': typeof ProtectedCrockeryRoute
+  '/item': typeof ProtectedItemRoute
+  '/package': typeof ProtectedPackageRoute
+  '/party': typeof ProtectedPartyRoute
   '/': typeof ProtectedIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
-  '/dashboard': typeof ProtectedDashboardRoute
+  '/coasting': typeof ProtectedCoastingRoute
+  '/crockery': typeof ProtectedCrockeryRoute
+  '/item': typeof ProtectedItemRoute
+  '/package': typeof ProtectedPackageRoute
+  '/party': typeof ProtectedPartyRoute
   '/': typeof ProtectedIndexRoute
 }
 
@@ -109,20 +181,43 @@ export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_protected': typeof ProtectedRouteWithChildren
   '/(auth)/login': typeof authLoginRoute
-  '/_protected/dashboard': typeof ProtectedDashboardRoute
+  '/_protected/coasting': typeof ProtectedCoastingRoute
+  '/_protected/crockery': typeof ProtectedCrockeryRoute
+  '/_protected/item': typeof ProtectedItemRoute
+  '/_protected/package': typeof ProtectedPackageRoute
+  '/_protected/party': typeof ProtectedPartyRoute
   '/_protected/': typeof ProtectedIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '' | '/login' | '/dashboard' | '/'
+  fullPaths:
+    | ''
+    | '/login'
+    | '/coasting'
+    | '/crockery'
+    | '/item'
+    | '/package'
+    | '/party'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/dashboard' | '/'
+  to:
+    | '/login'
+    | '/coasting'
+    | '/crockery'
+    | '/item'
+    | '/package'
+    | '/party'
+    | '/'
   id:
     | '__root__'
     | '/_protected'
     | '/(auth)/login'
-    | '/_protected/dashboard'
+    | '/_protected/coasting'
+    | '/_protected/crockery'
+    | '/_protected/item'
+    | '/_protected/package'
+    | '/_protected/party'
     | '/_protected/'
   fileRoutesById: FileRoutesById
 }
@@ -154,15 +249,35 @@ export const routeTree = rootRoute
     "/_protected": {
       "filePath": "_protected.jsx",
       "children": [
-        "/_protected/dashboard",
+        "/_protected/coasting",
+        "/_protected/crockery",
+        "/_protected/item",
+        "/_protected/package",
+        "/_protected/party",
         "/_protected/"
       ]
     },
     "/(auth)/login": {
       "filePath": "(auth)/login.jsx"
     },
-    "/_protected/dashboard": {
-      "filePath": "_protected/dashboard.jsx",
+    "/_protected/coasting": {
+      "filePath": "_protected/coasting.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/crockery": {
+      "filePath": "_protected/crockery.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/item": {
+      "filePath": "_protected/item.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/package": {
+      "filePath": "_protected/package.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/party": {
+      "filePath": "_protected/party.jsx",
       "parent": "/_protected"
     },
     "/_protected/": {
