@@ -1,9 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { useAuthStore } from './hooks/use-auth'
-
 import { routeTree } from './routeTree.gen'
-import './css/global.css'
 
 const queryClient = new QueryClient()
 

@@ -23,7 +23,7 @@ function RouteComponent() {
       <Sidebar />
       <SidebarInset className="bg-sidebar">
         <Header />
-        <div className="m-2 h-full w-full overflow-hidden">
+        <div className="p-4 h-full flex flex-col overflow-hidden">
           <Outlet />
         </div>
       </SidebarInset>

@@ -10,17 +10,11 @@ import {
 } from '@/components/ui/sheet'
 
 import { Skeleton } from '@/components/ui/skeleton'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
-import { PanelLeftIcon } from 'lucide-react'
+import { ArrowLeftFromLine } from 'lucide-react'
 import * as React from 'react'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
@@ -108,25 +102,23 @@ function SidebarProvider({
   return (
     (
       <SidebarContext value={contextValue}>
-        <TooltipProvider delayDuration={0}>
-          <div
-            data-slot="sidebar-wrapper"
-            style={
-              {
-                '--sidebar-width': SIDEBAR_WIDTH,
-                '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
-                ...style,
-              }
+        <div
+          data-slot="sidebar-wrapper"
+          style={
+            {
+              '--sidebar-width': SIDEBAR_WIDTH,
+              '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
+              ...style,
             }
-            className={cn(
-              'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full',
-              className,
-            )}
-            {...props}
-          >
-            {children}
-          </div>
-        </TooltipProvider>
+          }
+          className={cn(
+            'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full',
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </div>
       </SidebarContext>
     )
   )
@@ -257,7 +249,7 @@ function SidebarTrigger({
         }}
         {...props}
       >
-        <PanelLeftIcon />
+        <ArrowLeftFromLine className="stroke-text-1" />
         <span className="sr-only">Toggle Sidebar</span>
       </Button>
     )
@@ -304,7 +296,7 @@ function SidebarInset({
         data-slot="sidebar-inset"
         className={cn(
           'bg-background relative flex w-full flex-1 flex-col',
-          'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2',
+          'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm peer-data-[state=collapsed]:ml-6 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2',
           className,
         )}
         {...props}
@@ -540,7 +532,6 @@ function SidebarMenuButton({
   ...props
 }) {
   const Comp = asChild ? Slot : 'button'
-  const { isMobile, state } = useSidebar()
 
   const button = (
     <Comp
@@ -553,29 +544,7 @@ function SidebarMenuButton({
     />
   )
 
-  if (!tooltip) {
-    return button
-  }
-
-  if (typeof tooltip === 'string') {
-    tooltip = {
-      children: tooltip,
-    }
-  }
-
-  return (
-    (
-      <Tooltip>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="center"
-          hidden={state !== 'collapsed' || isMobile}
-          {...tooltip}
-        />
-      </Tooltip>
-    )
-  )
+  return button
 }
 
 function SidebarMenuAction({

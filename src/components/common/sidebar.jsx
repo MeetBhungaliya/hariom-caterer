@@ -8,57 +8,44 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar'
-import { Route as CoastingRoute } from '@/routes/_protected/coasting'
-import { Route as CrockeryRoute } from '@/routes/_protected/crockery'
-import { Route as DashboardRoute } from '@/routes/_protected/index'
-import { Route as ItemRoute } from '@/routes/_protected/item'
-import { Route as PackageRoute } from '@/routes/_protected/package'
-import { Route as PartyRoute } from '@/routes/_protected/party'
-import { Link } from '@tanstack/react-router'
-import { Boxes, ClipboardList, HandCoins, LayoutDashboard, UserRound, UtensilsCrossed } from 'lucide-react'
+import { navLinks } from '@/constants/common'
+import { SIDEBAR_INDICATOR } from '@/constants/image'
+import { Link, useLocation } from '@tanstack/react-router'
+import { useCallback, useMemo } from 'react'
 
 function Sidebar({ props }) {
-  const navLinks = [
-    {
-      title: 'Dashboard',
-      url: DashboardRoute.fullPath,
-      icon: <LayoutDashboard />,
-    },
-    {
-      title: 'Costing',
-      url: CoastingRoute.fullPath,
-      icon: <HandCoins />,
-    },
-    {
-      title: 'Item',
-      url: ItemRoute.fullPath,
-      icon: <ClipboardList />,
-    },
-    {
-      title: 'Crockery',
-      url: CrockeryRoute.fullPath,
-      icon: <UtensilsCrossed />,
-    },
-    {
-      title: 'Package',
-      url: PackageRoute.fullPath,
-      icon: <Boxes />,
-    },
-    {
-      title: 'Party',
-      url: PartyRoute.fullPath,
-      icon: <UserRound />,
-    },
-  ]
+  const sidebarState = useSidebar()
+  const { pathname } = useLocation()
+
+  const activeIndex = useMemo(() => navLinks.findIndex(item => pathname === item.url), [pathname])
+
+  const ITEM_HEIGHT = sidebarState.open ? 52 : 40
+  const ITEM_GAP = 12
+
+  const getTopPosition = useCallback(() => {
+    const addition = activeIndex ? ITEM_GAP + ITEM_HEIGHT : 0
+
+    return (sidebarState.open ? 15 : 16) + addition * activeIndex
+  }, [activeIndex, sidebarState.open])
 
   return (
-    <SidebarComponent {...props} collapsible="icon" style={{ '--sidebar-width-icon': '3.5rem' }}>
+    <SidebarComponent {...props} collapsible="icon" style={{ '--sidebar-width-icon': '4.5rem' }} className="font-roboto">
       <SidebarHeader className="h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
-        <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">Hari Om Catering</h2>
+        <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+          {sidebarState.open ? 'RAHUL' : 'R'}
+        </h2>
+
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
+        <div
+          style={{ top: `${64 + getTopPosition()}px`, height: `${ITEM_HEIGHT}px` }}
+          className="w-[1px] absolute right-[-1px] transition-all ease-linear duration-150 bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-400 z-50"
+          src={SIDEBAR_INDICATOR}
+          alt="indicator"
+        />
+        <SidebarGroup className="p-4">
           <SidebarGroupContent>
             <SidebarMenu className="gap-3">
               {navLinks.map((item) => {
@@ -76,9 +63,9 @@ function Sidebar({ props }) {
                         className="h-max py-3.5 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 transition-colors"
                       >
                         <div className="min-w-6 min-h-6 text-current">
-                          {item.icon}
+                          <item.icon />
                         </div>
-                        <span className="text-base text-current font-semibold">{item.title}</span>
+                        <span className="text-base text-current font-semibold tracking-wide">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -88,7 +75,7 @@ function Sidebar({ props }) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarRail />
+      <SidebarRail className="after:w-0" />
     </SidebarComponent>
   )
 }

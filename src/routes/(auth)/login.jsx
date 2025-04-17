@@ -54,7 +54,7 @@ function RouteComponent() {
   })
 
   return (
-    <div className="h-dvh p-6 flex bg-[url('/loginbg.png')] bg-cover">
+    <div className="h-dvh p-6 flex bg-[url('/assets/images/loginbg.png')] bg-cover">
       <div className="flex-1" />
       <div className="flex-1 flex justify-center items-center">
         <div className="h-max w-full max-w-xl p-10 flex flex-col items-center justify-center bg-white rounded-3xl shadow-[16px_16px_32px_#acacac,_-16px_-16px_32px_#ffffff]">

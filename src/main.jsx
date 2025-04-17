@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client'
 import App from './app'
 import { Toaster } from './components/ui/sonner'
 
-import './css/global.css'
-
 const rootElement = document.getElementById('root')
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
