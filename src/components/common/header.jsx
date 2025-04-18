@@ -13,7 +13,7 @@ function Header() {
   const sidebarState = useSidebar()
   const { pathname } = useLocation()
 
-  const items = navLinks.find(item => item.url === pathname)
+  const items = navLinks().find(item => item.url === pathname)
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-x-4 border-b px-4 bg-white shadow">

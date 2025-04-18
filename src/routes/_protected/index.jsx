@@ -104,24 +104,42 @@ function Index() {
     resizeGrid(tableRef.current?.api)
   }, [sidebarState.open])
 
+  const newRow = {
+    id: `temp-69`, // temp ID
+    make: 'New',
+    model: 'Pending...',
+    price: 0,
+    electric: false,
+    optimistic: true,
+  }
+  const addOptimisticRow = () => {
+    setRowData(prev => [newRow, ...prev])
+  }
+
+  const saveRow = async () => {
+    await sleep(5000)
+
+    setRowData(prev =>
+      prev.map(row =>
+        row?.id === 'temp-69' ? { ...newRow, model: 'Pending puru', optimistic: false } : row,
+      ),
+    )
+  }
+
   return (
-    <div className="h-full transition-all duration-300">
+    <div className="w-full h-full transition-all duration-300">
       <AgGridReact
         ref={tableRef}
         rowData={rowData}
         columnDefs={colDefs}
-        // onGridReady={params => resizeGrid(params.api)}
+
         initialState={{
           pagination: {
             page: 2,
             pageSize: 5,
           },
         }}
-        gridOptions={{
-          suppressCellFocus: true,
-          onFirstDataRendered: params => params.api.sizeColumnsToFit(),
-          onGridSizeChanged: params => params.api.sizeColumnsToFit(),
-        }}
+
         defaultColDef={{
           cellRenderer: (params) => {
             console.log(params)
@@ -130,15 +148,29 @@ function Index() {
           resizable: false,
           suppressSizeToFit: false,
         }}
-        loadThemeGoogleFonts={true}
-        suppressMovableColumns={true}
-        suppressHeaderFocus={true}
-        suppressRowDrag={true}
+
+        loadThemeGoogleFonts
+        suppressMovableColumns
+        suppressHeaderFocus
+        suppressRowDrag
         pagination
         paginationPageSize={5}
         paginationPageSizeSelector={[5, 10, 15, 20, 25]}
-
+        gridOptions={{
+          suppressCellFocus: true,
+          onFirstDataRendered: params => params.api.sizeColumnsToFit(),
+          onGridSizeChanged: params => params.api.sizeColumnsToFit(),
+        }}
+        onPaginationChanged={params => params.api.sizeColumnsToFit()}
+        onGridReady={params => resizeGrid(params.api)}
       />
+      <button onClick={() => {
+        addOptimisticRow()
+        saveRow()
+      }}
+      >
+        ADD ROW
+      </button>
     </div>
   )
 }

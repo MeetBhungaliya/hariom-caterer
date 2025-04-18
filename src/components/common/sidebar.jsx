@@ -19,7 +19,7 @@ function Sidebar({ props }) {
   const sidebarState = useSidebar()
   const { pathname } = useLocation()
 
-  const activeIndex = useMemo(() => navLinks.findIndex(item => pathname === item.url), [pathname])
+  const activeIndex = useMemo(() => navLinks().findIndex(item => pathname === item.url), [pathname])
 
   const ITEM_HEIGHT = 52
   const ITEM_GAP = 12
@@ -46,16 +46,13 @@ function Sidebar({ props }) {
         <SidebarGroup className="p-4">
           <SidebarGroupContent>
             <SidebarMenu className="gap-3">
-              {navLinks.map((item) => {
+              {navLinks().map((item) => {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
                       <Link
                         to={item.url}
                         search={item.search}
-                        activeOptions={{
-                          includeSearch: true,
-                        }}
                         activeProps={{
                           className: 'bg-sky-600 text-white bg-sky-600 text-white hover:bg-sky-600 hover:text-white',
                         }}
