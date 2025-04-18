@@ -1,5 +1,20 @@
 import { z } from 'zod'
 
+export const paginationSchema = z.object({
+  page: z
+    .string()
+    .transform(val => Number.parseInt(val, 10))
+    .refine(val => !Number.isNaN(val) && val > 0)
+    .transform(val => val || 1)
+    .catch(1),
+  limit: z
+    .string()
+    .transform(val => Number.parseInt(val, 10))
+    .refine(val => !Number.isNaN(val) && val > 0)
+    .transform(val => val || 10)
+    .catch(10),
+})
+
 export const emailSchema = z
   .string({ required_error: 'Email is required' })
   .trim()

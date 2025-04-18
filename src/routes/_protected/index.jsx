@@ -1,4 +1,5 @@
 import { useSidebar } from '@/components/ui/sidebar'
+import { paginationSchema } from '@/lib/schema/common'
 import { sleep } from '@/lib/utils'
 import { createFileRoute } from '@tanstack/react-router'
 import { ClientSideRowModelModule, ColumnAutoSizeModule, GridStateModule, ModuleRegistry, PaginationModule, ValidationModule } from 'ag-grid-community'
@@ -9,6 +10,7 @@ ModuleRegistry.registerModules([ClientSideRowModelModule, ValidationModule, Colu
 
 export const Route = createFileRoute('/_protected/')({
   component: Index,
+  validateSearch: search => paginationSchema.parse(search),
 })
 
 const d = [
@@ -84,11 +86,10 @@ function Index() {
     {
       field: 'electric',
       cellRenderer: (params) => {
-        console.log('first')
         if (!('value' in params) || params.value === undefined) {
           return <div className="w-full h-full animate-pulse bg-gray-300 rounded-xl" />
         }
-        return params.value
+        return 'params.value'
       },
     },
   ])
@@ -104,28 +105,35 @@ function Index() {
   }, [sidebarState.open])
 
   return (
-    <div className="w-full h-full transition-all duration-300">
+    <div className="h-full transition-all duration-300">
       <AgGridReact
         ref={tableRef}
         rowData={rowData}
         columnDefs={colDefs}
-        onGridReady={params => resizeGrid(params.api)}
-        gridOptions={{
-          suppressCellFocus: true,
-          onFirstDataRendered: params => params.api.sizeColumnsToFit(),
-          onGridSizeChanged: params => params.api.sizeColumnsToFit(),
-        }}
-        defaultColDef={{
-          resizable: false,
-          suppressSizeToFit: false,
-        }}
-        loadThemeGoogleFonts={true}
+        // onGridReady={params => resizeGrid(params.api)}
         initialState={{
           pagination: {
             page: 2,
             pageSize: 5,
           },
         }}
+        gridOptions={{
+          suppressCellFocus: true,
+          onFirstDataRendered: params => params.api.sizeColumnsToFit(),
+          onGridSizeChanged: params => params.api.sizeColumnsToFit(),
+        }}
+        defaultColDef={{
+          cellRenderer: (params) => {
+            console.log(params)
+            return 'Rahul'
+          },
+          resizable: false,
+          suppressSizeToFit: false,
+        }}
+        loadThemeGoogleFonts={true}
+        suppressMovableColumns={true}
+        suppressHeaderFocus={true}
+        suppressRowDrag={true}
         pagination
         paginationPageSize={5}
         paginationPageSizeSelector={[5, 10, 15, 20, 25]}

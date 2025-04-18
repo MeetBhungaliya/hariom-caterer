@@ -21,22 +21,20 @@ function Sidebar({ props }) {
 
   const activeIndex = useMemo(() => navLinks.findIndex(item => pathname === item.url), [pathname])
 
-  const ITEM_HEIGHT = sidebarState.open ? 52 : 40
+  const ITEM_HEIGHT = 52
   const ITEM_GAP = 12
 
   const getTopPosition = useCallback(() => {
     const addition = activeIndex ? ITEM_GAP + ITEM_HEIGHT : 0
-
-    return (sidebarState.open ? 15 : 16) + addition * activeIndex
+    return 16 + addition * activeIndex
   }, [activeIndex, sidebarState.open])
 
   return (
-    <SidebarComponent {...props} collapsible="icon" style={{ '--sidebar-width-icon': '4.5rem' }} className="font-roboto">
+    <SidebarComponent {...props} collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
         <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-400 inline-block text-transparent bg-clip-text">
-          {sidebarState.open ? 'RAHUL' : 'R'}
+          {sidebarState.open ? 'Rahul' : 'R'}
         </h2>
-
       </SidebarHeader>
       <SidebarContent>
         <div
@@ -54,18 +52,19 @@ function Sidebar({ props }) {
                     <SidebarMenuButton asChild>
                       <Link
                         to={item.url}
+                        search={item.search}
                         activeOptions={{
-                          includeSearch: false,
+                          includeSearch: true,
                         }}
                         activeProps={{
                           className: 'bg-sky-600 text-white bg-sky-600 text-white hover:bg-sky-600 hover:text-white',
                         }}
-                        className="h-max py-3.5 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 transition-colors"
+                        className="h-max py-3 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 transition-colors"
                       >
                         <div className="min-w-6 min-h-6 text-current">
                           <item.icon />
                         </div>
-                        <span className="text-base text-current font-semibold tracking-wide">{item.title}</span>
+                        <span className="text-lg text-current font-medium">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

@@ -16,7 +16,7 @@ function Header() {
   const items = navLinks.find(item => item.url === pathname)
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-x-4 border-b px-4 bg-white shadow font-roboto">
+    <header className="flex h-16 shrink-0 items-center gap-x-4 border-b px-4 bg-white shadow">
       <SidebarTrigger className={cn('h-auto w-auto p-2 border hover:bg-sky-50 [&_svg]:duration-500 [&_svg]:transition-all', sidebarState.open ? '[&_svg]:rotate-0' : '[&_svg]:rotate-180')} />
       <Breadcrumb>
         <BreadcrumbList>
@@ -27,7 +27,7 @@ function Header() {
           </BreadcrumbItem>
           <BreadcrumbSeparator className="hidden md:block" /> */}
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-xl font-medium tracking-wide text-text-1">{items?.title}</BreadcrumbPage>
+            <BreadcrumbPage className="text-xl font-medium text-text-1">{items?.title}</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

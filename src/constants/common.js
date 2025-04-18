@@ -13,35 +13,46 @@ export const METHODS = {
   DELETE: 'DELETE',
 }
 
+export const pagination = {
+  page: 1,
+  limit: 10,
+}
+
 export const navLinks = [
   {
     title: 'Dashboard',
     url: DashboardRoute.fullPath,
     icon: LayoutDashboard,
+    search: pagination,
   },
   {
     title: 'Costing',
     url: CoastingRoute.fullPath,
     icon: HandCoins,
+    search: pagination,
   },
   {
     title: 'Item',
     url: ItemRoute.fullPath,
     icon: ClipboardList,
+    search: pagination,
   },
   {
     title: 'Crockery',
     url: CrockeryRoute.fullPath,
     icon: UtensilsCrossed,
+    search: pagination,
   },
   {
     title: 'Package',
     url: PackageRoute.fullPath,
     icon: Boxes,
+    search: pagination,
   },
   {
     title: 'Party',
     url: PartyRoute.fullPath,
     icon: UserRound,
+    search: pagination,
   },
 ]

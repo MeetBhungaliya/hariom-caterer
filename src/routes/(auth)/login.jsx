@@ -1,7 +1,7 @@
 import { ControlledInput } from '@/components/common/controlled-input'
 import { ControlledPasswordInput } from '@/components/common/controlled-passwordinput'
 import { Button } from '@/components/ui/button'
-import { METHODS } from '@/constants/common'
+import { METHODS, pagination } from '@/constants/common'
 import { LOGIN } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
@@ -21,7 +21,7 @@ export const Route = createFileRoute('/(auth)/login')({
   }),
   beforeLoad: ({ context, search }) => {
     if (context.isAuthenticated) {
-      throw redirect({ to: search.redirect || IndexRoute.fullPath })
+      throw redirect({ to: search.redirect || IndexRoute.fullPath, search: search.redirect ? undefined : pagination })
     }
   },
   component: RouteComponent,
@@ -41,10 +41,10 @@ function RouteComponent() {
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       adduser(result.value.result)
-      await navigate(
-        { to: search.redirect || IndexRoute.fullPath },
-        { replace: true },
-      )
+      await navigate({
+        to: search.redirect || IndexRoute.fullPath,
+        search: search.redirect ? undefined : pagination,
+      }, { replace: true })
     }
   }
 

@@ -1,16 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Varela+Round&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap");
 
-@import './colors.css';
+@import "./colors.css";
 
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@import 'tw-animate-css';
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-varela: 'Varela Round', sans-serif;
-  --font-roboto: 'Roboto', sans-serif;
+  --font-ibm: "IBM Plex Sans", sans-serif;
 }
 
 @layer base {
@@ -19,7 +18,7 @@
   }
 
   body {
-    @apply font-varela;
+    @apply font-ibm;
   }
 }
 
@@ -37,7 +36,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type='number'] {
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
