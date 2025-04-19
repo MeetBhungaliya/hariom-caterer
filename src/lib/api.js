@@ -2,11 +2,14 @@ import { useAuthStore } from '@/hooks/use-auth'
 import axios from 'axios'
 
 function onRequest(config) {
-  const user = useAuthStore.getState(state => state.user)
+  if (config.headers.Authorization)
+    return config
 
-  const accessToken = `Bearer ${user?.accesstoken}`
+  const { user } = useAuthStore.getState()
 
-  if (user?.accesstoken) {
+  const accessToken = `Bearer ${user?.accessToken}`
+
+  if (user?.accessToken) {
     config.headers.Authorization = accessToken
   }
 
@@ -14,7 +17,7 @@ function onRequest(config) {
 }
 
 function onRequestError(error) {
-  console.error(`[request error] [${JSON?.stringify?.(error)}]`)
+  // console.error(`[request error] [${JSON?.stringify?.(error)}]`)
   return Promise.reject(error)
 }
 
@@ -26,7 +29,7 @@ function onResponse(response) {
 }
 
 function onResponseError(error) {
-  console.error(`[response error] [${JSON?.stringify?.(error)}]`)
+  // console.error(`[response error] [${JSON?.stringify?.(error)}]`)
   return Promise.reject(error)
 }
 

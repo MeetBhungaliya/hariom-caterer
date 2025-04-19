@@ -20,9 +20,9 @@ export const Route = createFileRoute('/_protected')({
 
 function RouteComponent() {
   return (
-    <SidebarProvider style={{ '--sidebar-width-icon': '5.5rem' }}>
+    <SidebarProvider style={{ '--sidebar-width-icon': '5.5rem' }} className="h-dvh overflow-hidden">
       <Sidebar />
-      <SidebarInset className="bg-sidebar">
+      <SidebarInset className="h-full bg-sidebar outline-hidden">
         <Header />
         <div className="p-4 h-full flex flex-col overflow-hidden">
           <Outlet />

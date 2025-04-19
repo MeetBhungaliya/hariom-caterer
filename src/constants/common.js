@@ -13,9 +13,12 @@ export const METHODS = {
   DELETE: 'DELETE',
 }
 
+export const DEFAULT_PAGE = 1
+export const DEFAULT_LIMIT = 10
+
 export const pagination = {
-  page: 1,
-  limit: 10,
+  page: DEFAULT_PAGE,
+  limit: DEFAULT_LIMIT,
 }
 
 export function navLinks() {

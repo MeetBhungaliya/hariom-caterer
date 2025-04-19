@@ -8,6 +8,7 @@ export default {
     unexpected_response_code: 'Unexpected responsecode',
     unexpected_response: 'Unexpected response',
     response_msg_not_found: 'ResponseMessage not found in response',
+    session_expired: 'Session expired',
   },
   toasts: {
     login_loading: 'Logging in...',

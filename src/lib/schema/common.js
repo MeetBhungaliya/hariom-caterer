@@ -5,14 +5,14 @@ export const paginationSchema = z.object({
     .string()
     .transform(val => Number.parseInt(val, 10))
     .refine(val => !Number.isNaN(val) && val > 0)
-    .transform(val => val || 1)
-    .catch(1),
+    .or(z.number()),
+
   limit: z
     .string()
     .transform(val => Number.parseInt(val, 10))
     .refine(val => !Number.isNaN(val) && val > 0)
-    .transform(val => val || 10)
-    .catch(10),
+    .or(z.number())
+
 })
 
 export const emailSchema = z

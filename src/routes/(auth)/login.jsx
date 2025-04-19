@@ -51,6 +51,10 @@ function RouteComponent() {
   const { Field, handleSubmit, Subscribe } = useForm({
     onSubmit,
     validators: { onSubmit: loginSchema },
+    defaultValues: {
+      email: 'fenil@gmail.com',
+      password: 'Fenil@1811',
+    },
   })
 
   return (

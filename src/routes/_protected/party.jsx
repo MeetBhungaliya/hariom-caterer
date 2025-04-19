@@ -1,77 +1,52 @@
-import { Pagination } from '@/components/common/table/pagination'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { getPartiesList } from '@/api/query-option'
+import { Table } from '@/components/common/table'
+import { paginationSchema } from '@/lib/schema/common'
+import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from '@tanstack/react-table'
+import moment from 'moment'
 import { useMemo } from 'react'
 
 export const Route = createFileRoute('/_protected/party')({
   component: RouteComponent,
+  validateSearch: search => paginationSchema.parse(search),
 })
 
 function RouteComponent() {
-  const data = useMemo(() => [
-    { name: 'Jane Doe', age: 28, occupation: 'Software Engineer' },
-    { name: 'John Smith', age: 34, occupation: 'Product Manager' },
-    { name: 'Alice Johnson', age: 30, occupation: 'Designer' },
-  ], [])
+  const partyLists = useQuery(getPartiesList)
 
   const columns = useMemo(() => [
     {
-      Header: 'Name',
+      header: 'Client Id',
+      accessorKey: 'client_id',
+      size: 200,
+    },
+    {
+      header: 'Name',
       accessorKey: 'name',
+      size: 200,
     },
     {
-      Header: 'Age',
-      accessorKey: 'age',
+      header: 'Phone Number',
+      accessorKey: 'phone',
+      size: 200,
     },
     {
-      Header: 'Occupation',
-      accessorKey: 'occupation',
+      header: 'Created At',
+      accessorKey: 'created_at',
+      cell: props => moment(props.getValue()).format('LLL'),
+      size: 200,
     },
   ], [])
 
-  const table = useReactTable({
-    columns,
-    data,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  })
 
-  return (
-    <div className="flex flex-col">
-      <div className="p-5 bg-white">
-        <Table className="border-spacing-0 border-separate border rounded-xl overflow-hidden">
-          <TableHeader>
-            {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <TableHead key={header.id} colSpan={header.colSpan} className="border-b not-last:border-r">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map(row => (
-              <TableRow key={row.id} className="not-last:[&_td]:border-b">
-                {row.getVisibleCells().map(cell => (
-                  <TableCell key={cell.id} className="not-last:border-r">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="mt-3 h-2 bg-bg-1" />
-      <Pagination />
-    </div>
-  )
+
+  if (partyLists.isError)
+    return null
+
+  return <Table
+    columns={columns}
+    data={partyLists.data.result.list}
+    isLoading={!partyLists.data.result.list.length || partyLists.fetchStatus === "fetching"}
+    totalRecords={partyLists.data.result.totalRecords}
+  />
 }
