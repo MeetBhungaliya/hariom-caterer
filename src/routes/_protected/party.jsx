@@ -6,7 +6,7 @@ import { paginationSchema } from '@/lib/schema/common'
 import { AddEditParty } from '@/modals/party'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { Edit, PlusCircle } from 'lucide-react'
+import { Edit, UserRound } from 'lucide-react'
 import moment from 'moment'
 import { useMemo, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
@@ -72,7 +72,7 @@ function RouteComponent() {
       <div className="h-full flex flex-col gap-y-2">
 
         <div className="bg-white p-4 rounded-xl flex justify-end">
-          <IconButton icon={<PlusCircle className="size-5" />} label="Add Client" onClick={partyModal.setTrue} />
+          <IconButton icon={<UserRound className="size-5" />} label="Add Client" onClick={partyModal.setTrue} />
         </div>
 
         <Table

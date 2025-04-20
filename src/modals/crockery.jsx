@@ -1,46 +1,46 @@
-import { getPartiesList } from '@/api/query-option'
+import { getCrockeryList } from '@/api/query-option'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { METHODS } from '@/constants/common'
-import { ADD_PARTY, UPDATE_PARTY } from '@/constants/endpoints'
+import { ADD_CROCKERY, UPDATE_CROCKERY } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
-import { addEditPartySchema } from '@/lib/schema'
+import { addEditCrockerSchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { PhoneCall, UserPen } from 'lucide-react'
+import { Calculator, UserPen, UsersRound } from 'lucide-react'
 
-function AddEditParty({ modalState, data, setData }) {
+function AddEditCrockery({ modalState, data, setData }) {
   const queryClient = useQueryClient()
 
-  const addPartyMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_PARTY, method: METHODS.POST, data }),
+  const addCrockeryMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: ADD_CROCKERY, method: METHODS.POST, data }),
   })
 
-  const updatePartyMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: UPDATE_PARTY, method: METHODS.PUT, data }),
+  const updateCrockeryMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: UPDATE_CROCKERY, method: METHODS.PUT, data }),
   })
 
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
-    validators: { onSubmit: addEditPartySchema },
+    validators: { onSubmit: addEditCrockerSchema },
     defaultValues: data,
   })
 
   async function onSubmit({ value }) {
     let result = null
 
-    if ('client_id' in value) {
-      result = await asyncResponseToaster(() => updatePartyMutation.mutateAsync(value))
+    if ('crockery_id' in value) {
+      result = await asyncResponseToaster(() => updateCrockeryMutation.mutateAsync(value))
     }
     else {
-      result = await asyncResponseToaster(() => addPartyMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => addCrockeryMutation.mutateAsync(value))
     }
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
-      queryClient.refetchQueries(getPartiesList)
+      queryClient.refetchQueries(getCrockeryList)
       onClose()
     }
   }
@@ -48,7 +48,7 @@ function AddEditParty({ modalState, data, setData }) {
   function onClose() {
     setTimeout(() => {
       modalState.setFalse()
-      reset({ name: undefined, phone: undefined })
+      reset({ name: undefined, name_hi: undefined, person: undefined, quantity: undefined })
       setData(undefined)
     }, 150)
   }
@@ -67,10 +67,10 @@ function AddEditParty({ modalState, data, setData }) {
           <DialogTitle className="text-center text-xl font-bold">
             {data ? 'Update' : 'Add'}
             &nbsp;
-            Party
+            Crockery
           </DialogTitle>
           <VisuallyHidden.Root>
-            <DialogDescription>add or update party information</DialogDescription>
+            <DialogDescription>add or update crockery information</DialogDescription>
           </VisuallyHidden.Root>
         </DialogHeader>
         <form
@@ -86,21 +86,44 @@ function AddEditParty({ modalState, data, setData }) {
               children={field => (
                 <ControlledInput
                   id="name"
-                  label="Party name"
+                  label="Crockery name"
                   field={field}
                   prefix={<UserPen className="size-5" />}
                 />
               )}
             />
             <Field
-              name="phone"
+              name="name_hi"
               children={field => (
                 <ControlledInput
-                  id="phone"
-                  label="Phone number"
+                  id="name_hi"
+                  label="Crockery name hindi"
+                  field={field}
+                  prefix={<UserPen className="size-5" />}
+                />
+              )}
+            />
+            <Field
+              name="person"
+              children={field => (
+                <ControlledInput
+                  id="person"
+                  label="Person"
                   type="number"
                   field={field}
-                  prefix={<PhoneCall className="size-5" />}
+                  prefix={<UsersRound className="size-5" />}
+                />
+              )}
+            />
+            <Field
+              name="quantity"
+              children={field => (
+                <ControlledInput
+                  id="quantity"
+                  label="Quantity"
+                  type="number"
+                  field={field}
+                  prefix={<Calculator className="size-5" />}
                 />
               )}
             />
@@ -118,7 +141,7 @@ function AddEditParty({ modalState, data, setData }) {
                 <Button
                   type="submit"
                   className="py-2 text-base"
-                  disabled={!isDirty || addPartyMutation.isPending || updatePartyMutation.isPending}
+                  disabled={!isDirty || addCrockeryMutation.isPending || updateCrockeryMutation.isPending}
                 >
                   {data ? 'Update' : 'Save'}
                 </Button>
@@ -128,8 +151,7 @@ function AddEditParty({ modalState, data, setData }) {
         </form>
       </DialogContent>
     </Dialog>
-
   )
 }
 
-export { AddEditParty }
+export default AddEditCrockery

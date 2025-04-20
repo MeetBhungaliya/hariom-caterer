@@ -17,8 +17,8 @@ function IconButton({ label, icon, ...props }) {
           group-hover:translate-x-0
         "
       />
-      <div className="relative z-10 flex gap-x-2 items-center font-semibold">
-        <div className="p-3 bg-sky-300 grid place-items-center text-white">
+      <div className="relative z-10 h-full flex gap-x-2 items-center font-semibold">
+        <div className="h-full p-3 bg-sky-300 grid place-items-center text-white">
           {icon}
         </div>
         <span
