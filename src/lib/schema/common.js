@@ -5,14 +5,14 @@ export const paginationSchema = z.object({
     .string()
     .transform(val => Number.parseInt(val, 10))
     .refine(val => !Number.isNaN(val) && val > 0)
-    .or(z.number()),
-
+    .or(z.number())
+    .catch(1),
   limit: z
     .string()
     .transform(val => Number.parseInt(val, 10))
     .refine(val => !Number.isNaN(val) && val > 0)
     .or(z.number())
-
+    .catch(10),
 })
 
 export const emailSchema = z
@@ -23,7 +23,9 @@ export const emailSchema = z
 export const passwordSchema = z
   .string({ required_error: 'Password is required' })
   .min(8, { message: 'Password must be at least 8 characters' })
-// .regex(/[A-Z]/, {
-//   message: 'Password must contain at least one uppercase letter',
-// })
-// .regex(/\d/, { message: 'Password must contain at least one number' })
+
+export const phoneSchema = z
+  .number({ required_error: 'Phone number is required' })
+  .refine(val => val.toString().length === 10, {
+    message: 'Phone number must be exactly 10 digits',
+  })

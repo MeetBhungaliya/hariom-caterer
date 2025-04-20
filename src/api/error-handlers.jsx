@@ -87,7 +87,7 @@ async function refreshTokenAndRetry(query, mutation, variables) {
 
     if (!isRedirecting) {
       isRedirecting = true
-      throw redirect({
+      return redirect({
         to: LoginRoute.fullPath,
         search: {
           redirect: window.location.href,

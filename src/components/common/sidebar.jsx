@@ -53,6 +53,7 @@ function Sidebar({ props }) {
                       <Link
                         to={item.url}
                         search={item.search}
+                        activeOptions={{ includeSearch: false }}
                         activeProps={{
                           className: 'bg-sky-600 text-white bg-sky-600 text-white hover:bg-sky-600 hover:text-white',
                         }}

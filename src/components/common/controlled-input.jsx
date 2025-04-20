@@ -2,7 +2,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
-function ControlledInput({ id, label, className, prefix, field, ...props }) {
+function ControlledInput({ id, label, className, prefix, field, type = 'text', ...props }) {
   const errorMsg = field.state.meta.errors?.[0]?.message
 
   return (
@@ -20,8 +20,9 @@ function ControlledInput({ id, label, className, prefix, field, ...props }) {
         </div>
       )}
       <Input
-        value={field.state.value ?? ''}
-        onChange={e => field.handleChange(e.target.value)}
+        type={type}
+        value={(field.state.value ?? undefined) ?? (type === 'number' ? '' : '')}
+        onChange={e => field.handleChange(type === 'number' ? e.target.valueAsNumber : e.target.value)}
         onBlur={field.handleBlur}
         data-invalid={Boolean(errorMsg)}
         autoComplete="on"

@@ -8,14 +8,13 @@ import { routeTree } from './routeTree.gen'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // staleTime: 1000 * 60,
-      staleTime: 1000,
+      staleTime: 1000 * 60,
       retry: false,
       refetchOnWindowFocus: false,
       refetchOnMount: true,
     },
     mutations: {
-      retry: 3,
+      retry: false,
     },
   },
   queryCache: new QueryCache({

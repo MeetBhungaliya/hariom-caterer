@@ -15,6 +15,7 @@ export const METHODS = {
 
 export const DEFAULT_PAGE = 1
 export const DEFAULT_LIMIT = 10
+export const DEFAULT_LIMITS = [5, 10, 15, 20, 50]
 
 export const pagination = {
   page: DEFAULT_PAGE,
