@@ -2,6 +2,7 @@ import { getPartiesList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/hooks/use-auth'
 import { paginationSchema } from '@/lib/schema/common'
 import { AddEditParty } from '@/modals/party'
 import { useQuery } from '@tanstack/react-query'
@@ -19,9 +20,10 @@ export const Route = createFileRoute('/_protected/party')({
 function RouteComponent() {
   const [updateParty, setUpdateParty] = useState()
 
-  const { page, limit } = Route.useSearch()
-  const partyLists = useQuery(getPartiesList({ page, limit }))
   const partyModal = useBoolean(false)
+  const { page, limit } = Route.useSearch()
+  const isLoading = useAuthStore(state => state.isLoading)
+  const partyLists = useQuery(getPartiesList({ page, limit }))
 
   const columns = useMemo(() => [
     {
@@ -70,15 +72,13 @@ function RouteComponent() {
   return (
     <>
       <div className="h-full flex flex-col gap-y-2">
-
         <div className="bg-white p-4 rounded-xl flex justify-end">
           <IconButton icon={<UserRound className="size-5" />} label="Add Client" onClick={partyModal.setTrue} />
         </div>
-
         <Table
           columns={columns}
           data={partyLists.data.result.list}
-          isLoading={!partyLists.data.result.list.length || partyLists.fetchStatus === 'fetching'}
+          isLoading={isLoading || partyLists.fetchStatus === 'fetching'}
           totalRecords={partyLists.data.result.totalRecords}
         />
       </div>

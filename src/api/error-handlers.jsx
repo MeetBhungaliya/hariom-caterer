@@ -5,7 +5,6 @@ import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { tryCatch } from '@/lib/utils'
 import { Route as LoginRoute } from '@/routes/(auth)/login'
-import { redirect } from '@tanstack/react-router'
 import { toast } from 'sonner'
 
 let isRedirecting = false
@@ -22,6 +21,7 @@ export function mutationErrorHandler(error, variables, context, mutation) {
 
 async function errorHandler(error, query, mutation, variables) {
   const { status, data } = error.response
+  const { setloading } = useAuthStore.getState()
 
   if (status === 401) {
     if (mutation) {
@@ -30,6 +30,7 @@ async function errorHandler(error, query, mutation, variables) {
     else {
       await refreshTokenAndRetry(query)
     }
+    setloading(false)
   }
   else {
     console.error(data?.message)
@@ -87,12 +88,13 @@ async function refreshTokenAndRetry(query, mutation, variables) {
 
     if (!isRedirecting) {
       isRedirecting = true
-      return redirect({
-        to: LoginRoute.fullPath,
-        search: {
-          redirect: window.location.href,
-        },
-      })
+      window.location = LoginRoute.fullPath
+      // return redirect({
+      //   to: LoginRoute.fullPath,
+      //   search: {
+      //     redirect: window.location.href,
+      //   },
+      // })
     }
   }
 }

@@ -3,6 +3,7 @@ import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
+import { useAuthStore } from '@/hooks/use-auth'
 import AddEditCrockery from '@/modals/crockery'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
@@ -21,6 +22,7 @@ function RouteComponent() {
   const { page, limit } = Route.useSearch()
   const crockeryModal = useBoolean(false)
 
+  const isLoading = useAuthStore(state => state.isLoading)
   const searchForm = useForm()
   const search = useStore(searchForm.store, state => state.values.search)
 
@@ -79,7 +81,6 @@ function RouteComponent() {
   return (
     <>
       <div className="h-full flex flex-col gap-y-2">
-
         <div className="bg-white p-4 rounded-xl flex justify-end">
           <searchForm.Field
             name="search"
@@ -95,11 +96,10 @@ function RouteComponent() {
           />
           <IconButton icon={<UtensilsCrossed className="size-5" />} label="Add Crockery" onClick={crockeryModal.setTrue} />
         </div>
-
         <Table
           columns={columns}
           data={crockeryLists.data.result.list}
-          isLoading={!crockeryLists.data.result.list.length || crockeryLists.fetchStatus === 'fetching'}
+          isLoading={isLoading || crockeryLists.fetchStatus === 'fetching'}
           totalRecords={crockeryLists.data.result.totalRecords}
         />
       </div>

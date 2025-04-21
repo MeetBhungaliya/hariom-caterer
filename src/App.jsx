@@ -9,12 +9,20 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60,
-      retry: false,
+      retry: () => {
+        const { setloading } = useAuthStore.getState()
+        setloading(true)
+        return false
+      },
       refetchOnWindowFocus: false,
       refetchOnMount: true,
     },
     mutations: {
-      retry: false,
+      retry: () => {
+        const { setloading } = useAuthStore.getState()
+        setloading(true)
+        return false
+      },
     },
   },
   queryCache: new QueryCache({

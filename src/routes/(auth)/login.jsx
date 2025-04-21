@@ -37,7 +37,7 @@ function RouteComponent() {
   })
 
   const onSubmit = async ({ value }) => {
-    const result = await asyncResponseToaster(() => loginMutation.mutateAsync({ ...value, password: md5(value.password) }))
+    const result = await asyncResponseToaster(() => loginMutation.mutateAsync({ email: value.email.toLowerCase(), password: md5(value.password) }))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       adduser(result.value.result)
