@@ -1,7 +1,7 @@
 import { Route as CoastingRoute } from '@/routes/_protected/coasting'
 import { Route as CrockeryRoute } from '@/routes/_protected/crockery'
 import { Route as DashboardRoute } from '@/routes/_protected/index'
-import { Route as ItemRoute } from '@/routes/_protected/item'
+import { Route as ItemRoute } from '@/routes/_protected/item/index'
 import { Route as PackageRoute } from '@/routes/_protected/package'
 import { Route as PartyRoute } from '@/routes/_protected/party'
 import { Boxes, ClipboardList, HandCoins, LayoutDashboard, UserRound, UtensilsCrossed } from 'lucide-react'
@@ -41,6 +41,7 @@ export function navLinks() {
       url: ItemRoute.fullPath,
       icon: ClipboardList,
       search: pagination,
+      active: ItemRoute.parentRoute.fullPath,
     },
     {
       title: 'Crockery',

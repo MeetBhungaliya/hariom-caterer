@@ -1,9 +1,0 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/_protected/item')({
-  component: RouteComponent,
-})
-
-function RouteComponent() {
-  return <div>Hello "/_protected/item"!</div>
-}

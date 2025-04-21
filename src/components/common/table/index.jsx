@@ -16,7 +16,7 @@ function Table({ data, columns, isLoading, totalRecords }) {
     <div className="h-full flex flex-col overflow-hidden">
       <div className="h-full flex flex-col overflow-hidden">
         <div className="h-full p-5 pr-3 pt-2 bg-white rounded-xl flex flex-col overflow-hidden">
-          <ScrollArea className="h-full pb-2 pr-2" viewPortClassName="[&_div]:!flex [&_div]:!flex-col">
+          <ScrollArea className="h-full pb-2 pr-2" type="always">
             <TableComponent>
               <TableHeader className="sticky top-0 shadow bg-white z-50">
                 {table.getHeaderGroups().map(headerGroup => (

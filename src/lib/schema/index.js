@@ -21,3 +21,7 @@ export const addEditCrockerSchema = z.object({
     .number({ required_error: 'Quantity is required' })
     .min(1, { message: 'Minimum 1 quantity is allowed' }),
 })
+
+export const addEditCategorySchema = z.object({
+  name: z.string({ required_error: 'Name is required' }).trim(),
+})

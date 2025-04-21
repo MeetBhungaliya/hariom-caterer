@@ -3,6 +3,8 @@ import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 import {
+  ChevronLeft,
+  ChevronRight,
   MoreHorizontalIcon,
 } from 'lucide-react'
 
@@ -68,10 +70,11 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn('gap-1 px-2.5 sm:pl-2.5', className)}
+      className={className}
       {...props}
     >
       <span className="hidden sm:block">Previous</span>
+      <ChevronLeft className="sm:hidden block" />
     </PaginationLink>
   )
 }
@@ -84,10 +87,11 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn('gap-1 px-2.5 sm:pr-2.5', className)}
+      className={className}
       {...props}
     >
       <span className="hidden sm:block">Next</span>
+      <ChevronRight className="sm:hidden block" />
     </PaginationLink>
   )
 }

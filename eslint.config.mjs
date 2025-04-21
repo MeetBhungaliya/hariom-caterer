@@ -9,6 +9,7 @@ export default antfu(
       indent: 2,
       semi: false,
       quotes: 'single',
+      jsx: true,
     },
     ignores: ['./src/routeTree.gen.ts'],
   },

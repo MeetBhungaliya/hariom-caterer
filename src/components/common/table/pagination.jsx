@@ -66,7 +66,7 @@ function Pagination({ totalRecords }) {
       <PaginationComponent>
         <PaginationContent className="gap-2">
           <PaginationItem>
-            <PaginationPrevious className="min-h-10 py-0 !px-4 size-auto" to="." search={{ page: page - 1, limit }} disabled={!helpers.canGoToPrevStep} />
+            <PaginationPrevious className="min-h-10 py-0 has-[>svg]:px-[7px] md:has-[>svg]:px-4 size-auto" to="." search={{ page: page - 1, limit }} disabled={!helpers.canGoToPrevStep} />
           </PaginationItem>
           {!helpers.canGoToNextStep && helpers.canGoToPrevStep && Boolean(page - 2) && page - 2 <= totalPages && (
             <PaginationItem>
@@ -94,7 +94,7 @@ function Pagination({ totalRecords }) {
             </PaginationItem>
           )}
           <PaginationItem>
-            <PaginationNext className="min-h-10 py-0 !px-4 size-auto" to="." search={{ page: page + 1, limit }} disabled={!helpers.canGoToNextStep} />
+            <PaginationNext className="min-h-10 py-0 has-[>svg]:px-2 md:has-[>svg]:px-4 size-auto" to="." search={{ page: page + 1, limit }} disabled={!helpers.canGoToNextStep} />
           </PaginationItem>
         </PaginationContent>
       </PaginationComponent>

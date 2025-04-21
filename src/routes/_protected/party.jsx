@@ -23,7 +23,7 @@ function RouteComponent() {
   const partyModal = useBoolean(false)
   const { page, limit } = Route.useSearch()
   const isLoading = useAuthStore(state => state.isLoading)
-  const partyLists = useQuery(getPartiesList({ page, limit }))
+  const partyList = useQuery(getPartiesList({ page, limit }))
 
   const columns = useMemo(() => [
     {
@@ -59,27 +59,27 @@ function RouteComponent() {
           partyModal.setTrue()
         }}
         >
-          <Edit />
+          <Edit className="size-5" />
         </Button>
       ),
-      size: 68,
+      size: 62,
     },
   ], [])
 
-  if (partyLists.isError)
+  if (partyList.isError)
     return null
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-2">
+      <div className="h-full flex flex-col gap-y-5">
         <div className="bg-white p-4 rounded-xl flex justify-end">
-          <IconButton icon={<UserRound className="size-5" />} label="Add Client" onClick={partyModal.setTrue} />
+          <IconButton icon={<UserRound className="size-5" />} label="Add Party" onClick={partyModal.setTrue} />
         </div>
         <Table
           columns={columns}
-          data={partyLists.data.result.list}
-          isLoading={isLoading || partyLists.fetchStatus === 'fetching'}
-          totalRecords={partyLists.data.result.totalRecords}
+          data={partyList.data.result.list}
+          isLoading={isLoading || partyList.fetchStatus === 'fetching'}
+          totalRecords={partyList.data.result.totalRecords}
         />
       </div>
 

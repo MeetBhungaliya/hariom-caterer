@@ -4,16 +4,18 @@ import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
+import { paginationSchema } from '@/lib/schema/common'
 import AddEditCrockery from '@/modals/crockery'
-import { useForm, useStore } from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Edit, Search, UtensilsCrossed } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useBoolean } from 'usehooks-ts'
+import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
 export const Route = createFileRoute('/_protected/crockery')({
   component: RouteComponent,
+  validateSearch: search => paginationSchema.parse(search),
 })
 
 function RouteComponent() {
@@ -24,9 +26,9 @@ function RouteComponent() {
 
   const isLoading = useAuthStore(state => state.isLoading)
   const searchForm = useForm()
-  const search = useStore(searchForm.store, state => state.values.search)
+  const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500)
 
-  const crockeryLists = useQuery(getCrockeryList({ page, limit, search }))
+  const crockeryList = useQuery(getCrockeryList({ page, limit, search: debouncedSearchedValue }))
 
   const columns = useMemo(() => [
     {
@@ -68,22 +70,23 @@ function RouteComponent() {
           crockeryModal.setTrue()
         }}
         >
-          <Edit />
+          <Edit className="size-5" />
         </Button>
       ),
-      size: 68,
+      size: 62,
     },
   ], [])
 
-  if (crockeryLists.isError)
+  if (crockeryList.isError)
     return null
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-2">
+      <div className="h-full flex flex-col gap-y-5">
         <div className="bg-white p-4 rounded-xl flex justify-end">
           <searchForm.Field
             name="search"
+            listeners={{ onChange: ({ value }) => setValue(value) }}
             children={field => (
               <ControlledInput
                 id="search"
@@ -98,9 +101,9 @@ function RouteComponent() {
         </div>
         <Table
           columns={columns}
-          data={crockeryLists.data.result.list}
-          isLoading={isLoading || crockeryLists.fetchStatus === 'fetching'}
-          totalRecords={crockeryLists.data.result.totalRecords}
+          data={crockeryList.data.result.list}
+          isLoading={isLoading || crockeryList.fetchStatus === 'fetching'}
+          totalRecords={crockeryList.data.result.totalRecords}
         />
       </div>
 

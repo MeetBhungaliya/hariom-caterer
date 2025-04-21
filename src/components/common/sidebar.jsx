@@ -55,9 +55,9 @@ function Sidebar({ props }) {
                         search={item.search}
                         activeOptions={{ includeSearch: false }}
                         activeProps={{
-                          className: 'bg-sky-600 text-white bg-sky-600 text-white hover:bg-sky-600 hover:text-white',
+                          className: 'bg-sky-600 text-white bg-sky-600 text-white hover:bg-sky-600 hover:text-white active:bg-sky-600 active:text-white',
                         }}
-                        className="h-max py-3 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 transition-colors"
+                        className="h-max py-3 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 active:bg-bg-1 transition-colors"
                       >
                         <div className="min-w-6 min-h-6 text-current">
                           <item.icon />
