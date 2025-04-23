@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_CROCKERIES, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
+import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_DETAILS, GET_ITEMS, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
 import { queryOptions } from '@tanstack/react-query'
 
@@ -31,5 +31,21 @@ export function getSubCategoryList({ page, limit, search, category_id }) {
     queryKey: [GET_SUBCATEGORIES, page, limit, search, category_id],
     queryFn: async () => fetchApi({ url: `${GET_SUBCATEGORIES}?page=${page}&limit=${limit}${category_id ? `&category_id=${category_id}` : ''}${search ? `&search=${search}` : ''}`.trim() }),
     placeholderData: { result: { list: [], totalRecords: null } },
+  })
+}
+
+export function getItemList({ page, limit, search, category_id }) {
+  return queryOptions({
+    queryKey: [GET_ITEMS, page, limit, search, category_id],
+    queryFn: async () => fetchApi({ url: `${GET_ITEMS}?page=${page}&limit=${limit}` }),
+    placeholderData: { result: { list: [], totalRecords: null } },
+  })
+}
+
+export function getItemDetails({ item_id }) {
+  return queryOptions({
+    queryKey: [GET_ITEM_DETAILS, item_id],
+    queryFn: async () => fetchApi({ url: `${GET_ITEM_DETAILS}?item_id=${item_id}` }),
+    placeholderData: { result: { crockery: [] } },
   })
 }

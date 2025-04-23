@@ -16,3 +16,6 @@ export const UPDATE_CATEGORY = 'updateCategory'
 export const GET_SUBCATEGORIES = 'getSubCategory'
 export const ADD_SUBCATEGORY = 'addSubCategory'
 export const UPDATE_SUBCATEGORY = 'updateSubCategory'
+
+export const GET_ITEMS = 'getItemList'
+export const GET_ITEM_DETAILS = 'getItemDetails'

@@ -3,20 +3,28 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TableBody, TableCell, Table as TableComponent, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { DEFAULT_LIMIT } from '@/constants/common'
-import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { cn } from '@/lib/utils'
+import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import { Fragment } from 'react'
 
-function Table({ data, columns, isLoading, totalRecords }) {
+function Table({ data, columns, isLoading, totalRecords, pagination = true, expandableRows = false, SubComponent, isSubTable = false }) {
   const table = useReactTable({
     columns,
     data,
     getCoreRowModel: getCoreRowModel(),
+    getRowCanExpand: () => expandableRows,
+    ...expandableRows
+      ? { getExpandedRowModel: getExpandedRowModel() }
+      : {},
   })
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="h-full flex flex-col overflow-hidden">
-        <div className="h-full p-5 pr-3 pt-2 bg-white rounded-xl flex flex-col overflow-hidden">
-          <ScrollArea className="h-full pb-2 pr-2" type="always">
+        <div className={cn('h-full bg-white flex flex-col overflow-hidden', isSubTable ? 'border rounded-lg' : 'p-5 pr-3 pt-2 rounded-xl',
+        )}
+        >
+          <ScrollArea className={isSubTable ? 'h-[200px]' : 'h-full pb-2 pr-2'} type="always">
             <TableComponent>
               <TableHeader className="sticky top-0 shadow bg-white z-50">
                 {table.getHeaderGroups().map(headerGroup => (
@@ -38,7 +46,7 @@ function Table({ data, columns, isLoading, totalRecords }) {
               </TableHeader>
               <TableBody>
                 {isLoading
-                  ? [...Array.from({ length: DEFAULT_LIMIT * 2 })].map((_, index) => (
+                  ? [...Array.from({ length: isSubTable ? 3 : DEFAULT_LIMIT * 2 })].map((_, index) => (
                       <TableRow key={index} className="not-last:[&_td]:border-b">
                         {columns.map((col, colIndex) => {
                           const randomWidth = `${Math.floor(Math.random() * 50) + 50}%`
@@ -54,26 +62,42 @@ function Table({ data, columns, isLoading, totalRecords }) {
                         })}
                       </TableRow>
                     ))
-                  : table.getRowModel().rows.map(row => (
-                      <TableRow key={row.id} className="not-last:[&_td]:border-b">
-                        {row.getVisibleCells().map(cell => (
-                          <TableCell
-                            key={cell.id}
-                            className="px-3"
-                            style={cell.column.getSize() === 150 ? { width: '100%' } : { minWidth: `${cell.column.getSize()}px` }}
-                          >
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
+                  : table.getRowModel().rows.map((row) => {
+                      return (
+                        <Fragment key={row.id}>
+                          <TableRow className={cn('not-last:[&_td]:border-b', isSubTable && 'hover:bg-transparent')}>
+                            {row.getVisibleCells().map(cell => (
+                              <TableCell
+                                key={cell.id}
+                                className="px-3"
+                                style={cell.column.getSize() === 150 ? { width: '100%' } : { minWidth: `${cell.column.getSize()}px` }}
+                              >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                          {row.getIsExpanded() && (
+                            <TableRow>
+                              <TableCell colSpan={row.getVisibleCells().length} className="bg-bg-1">
+                                <SubComponent row={row} />
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </Fragment>
+                      )
+                    })}
               </TableBody>
             </TableComponent>
-            <ScrollBar orientation="horizontal" />
+            {isSubTable ? null : <ScrollBar orientation="horizontal" />}
           </ScrollArea>
         </div>
-        <div className="mt-3 h-2 bg-bg-1" />
-        <Pagination totalRecords={totalRecords} />
+        {pagination
+          && (
+            <>
+              <div className="mt-3 h-2 bg-bg-1" />
+              <Pagination totalRecords={totalRecords} />
+            </>
+          )}
       </div>
     </div>
   )

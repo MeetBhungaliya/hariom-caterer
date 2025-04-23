@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/breadcrumb'
 import { navLinks } from '@/constants/common'
 import { cn } from '@/lib/utils'
-import { Route as SubCategoryRoute } from '@/routes/_protected/item/$category-id'
+import { Route as SubCategoryRoute } from '@/routes/_protected/foods/$category-id'
 import { useLocation, useMatch } from '@tanstack/react-router'
 import { SidebarTrigger, useSidebar } from '../ui/sidebar'
 
@@ -37,7 +37,7 @@ function Header() {
                 <>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink to={subCategoryRoute.fullPath.split('/').slice(0, -1).join('/')} className="text-xl font-medium hover:underline">
-                      Building Your Application
+                      Item
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block [&>svg]:size-5" />

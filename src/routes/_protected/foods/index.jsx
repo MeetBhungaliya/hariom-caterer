@@ -11,11 +11,11 @@ import { AddEditCategoryModal } from '@/modals/category'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { ClipboardPenLine, Edit, Eye, Search } from 'lucide-react'
+import { Apple, Edit, Eye, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
-export const Route = createFileRoute('/_protected/item/')({
+export const Route = createFileRoute('/_protected/foods/')({
   component: RouteComponent,
   validateSearch: search => paginationSchema.parse(search),
 })
@@ -83,7 +83,7 @@ function RouteComponent() {
               />
             )}
           />
-          <IconButton icon={<ClipboardPenLine className="size-5" />} label="Add Category" onClick={categoryModal.setTrue} />
+          <IconButton icon={<Apple className="size-5" />} label="Add Category" onClick={categoryModal.setTrue} />
         </div>
         <Table
           columns={columns}

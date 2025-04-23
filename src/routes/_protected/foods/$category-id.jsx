@@ -12,7 +12,7 @@ import { ClipboardList, Edit, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
-export const Route = createFileRoute('/_protected/item/$category-id')({
+export const Route = createFileRoute('/_protected/foods/$category-id')({
   component: RouteComponent,
 })
 
