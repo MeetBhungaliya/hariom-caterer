@@ -13,7 +13,7 @@ export function getPartiesList({ page, limit }) {
 export function getCrockeryList({ page, limit, search }) {
   return queryOptions({
     queryKey: [GET_PARTIES, page, limit, search],
-    queryFn: async () => fetchApi({ url: `${GET_CROCKERIES}?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}`.trim() }),
+    queryFn: async () => fetchApi({ url: `${GET_CROCKERIES}?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}` }),
     placeholderData: { result: { list: [], totalRecords: null } },
   })
 }
@@ -21,7 +21,7 @@ export function getCrockeryList({ page, limit, search }) {
 export function getCategoryList({ page, limit, search }) {
   return queryOptions({
     queryKey: [GET_CATEGORIES, page, limit, search],
-    queryFn: async () => fetchApi({ url: `${GET_CATEGORIES}?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}`.trim() }),
+    queryFn: async () => fetchApi({ url: `${GET_CATEGORIES}?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}` }),
     placeholderData: { result: { list: [], totalRecords: null } },
   })
 }
@@ -29,7 +29,7 @@ export function getCategoryList({ page, limit, search }) {
 export function getSubCategoryList({ page, limit, search, category_id }) {
   return queryOptions({
     queryKey: [GET_SUBCATEGORIES, page, limit, search, category_id],
-    queryFn: async () => fetchApi({ url: `${GET_SUBCATEGORIES}?page=${page}&limit=${limit}${category_id ? `&category_id=${category_id}` : ''}${search ? `&search=${search}` : ''}`.trim() }),
+    queryFn: async () => fetchApi({ url: `${GET_SUBCATEGORIES}?page=${page}&limit=${limit}${category_id ? `&category_id=${category_id}` : ''}${search ? `&search=${search}` : ''}` }),
     placeholderData: { result: { list: [], totalRecords: null } },
   })
 }
@@ -37,7 +37,7 @@ export function getSubCategoryList({ page, limit, search, category_id }) {
 export function getItemList({ page, limit, search, category_id }) {
   return queryOptions({
     queryKey: [GET_ITEMS, page, limit, search, category_id],
-    queryFn: async () => fetchApi({ url: `${GET_ITEMS}?page=${page}&limit=${limit}` }),
+    queryFn: async () => fetchApi({ url: `${GET_ITEMS}?page=${page}&limit=${limit}${search ? `&search=${search}` : ''}` }),
     placeholderData: { result: { list: [], totalRecords: null } },
   })
 }

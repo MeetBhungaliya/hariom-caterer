@@ -66,6 +66,9 @@ function RouteComponent() {
     },
   ], [])
 
+  if (categoryList.isError)
+    return null
+
   return (
     <>
       <div className="h-full flex flex-col gap-y-5">

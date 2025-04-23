@@ -1,18 +1,19 @@
-import { getItemDetails, getItemList } from '@/api/query-option'
+import { getItemList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
+import { SubComponent } from '@/components/sub-component'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useAuthStore } from '@/hooks/use-auth'
 import { paginationSchema } from '@/lib/schema/common'
 import { cn } from '@/lib/utils'
+import { AddEditItemModal } from '@/modals/item'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { ClipboardPenLine, CornerUpRight, Edit, Search } from 'lucide-react'
-import { useMemo } from 'react'
-import { useDebounceValue } from 'usehooks-ts'
+import { useMemo, useState } from 'react'
+import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
 export const Route = createFileRoute('/_protected/items')({
   component: RouteComponent,
@@ -20,7 +21,10 @@ export const Route = createFileRoute('/_protected/items')({
 })
 
 function RouteComponent() {
+  const [updateItem, setUpdateItem] = useState()
+
   const { page, limit } = Route.useSearch()
+  const itemModal = useBoolean(false)
 
   const isLoading = useAuthStore(state => state.isLoading)
   const searchForm = useForm()
@@ -33,22 +37,13 @@ function RouteComponent() {
       id: 'view-crockeries',
       cell: ({ row }) => {
         return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className={cn('text-base bg-transparent shadow-none', row.getIsExpanded() ? 'border-[#24b4fb] bg-[#0071e2] text-white [&_svg]:-scale-y-[1]' : 'text-text-1 hover:text-white',
-                  )}
-                  onClick={row.getToggleExpandedHandler()}
-                >
-                  <CornerUpRight className="size-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Show Crockeries</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Button
+            className={cn('text-base bg-transparent shadow-none', row.getIsExpanded() ? 'border-[#24b4fb] bg-[#0071e2] text-white [&_svg]:-scale-y-[1]' : 'text-text-1 hover:text-white',
+            )}
+            onClick={row.getToggleExpandedHandler()}
+          >
+            <CornerUpRight className="size-5" />
+          </Button>
         )
       },
       size: 60,
@@ -87,12 +82,11 @@ function RouteComponent() {
       id: 'actions',
       cell: () => (
         <div className="flex gap-x-4 justify-end">
-          <Button onClick={() => {
-            // setUpdateCategory({
-            //   name: props.row.original.name,
-            //   category_id: props.row.original.category_id,
-            // })
-            // categoryModal.setTrue()
+          <Button onClick={(props) => {
+            setUpdateItem({
+              item_id: props.row.original.item_id,
+            })
+            itemModal.setTrue()
           }}
           >
             <Edit className="size-5" />
@@ -102,6 +96,9 @@ function RouteComponent() {
       size: 160,
     },
   ], [])
+
+  if (itemList.isError)
+    return null
 
   return (
     <>
@@ -120,7 +117,7 @@ function RouteComponent() {
               />
             )}
           />
-          <IconButton icon={<ClipboardPenLine className="size-5" />} label="Add Item" />
+          <IconButton icon={<ClipboardPenLine className="size-5" />} label="Add Item" onClick={itemModal.setTrue} />
         </div>
         <Table
           columns={columns}
@@ -131,52 +128,8 @@ function RouteComponent() {
           SubComponent={SubComponent}
         />
       </div>
+
+      <AddEditItemModal modalState={itemModal} data={updateItem} setData={setUpdateItem} />
     </>
-  )
-}
-
-function SubComponent({ row }) {
-  const itemDetails = useQuery(getItemDetails({ item_id: row.original.item_id }))
-
-  const isLoading = useAuthStore(state => state.isLoading)
-
-  const columns = useMemo(() => [
-    {
-      header: 'Crockery Id',
-      accessorKey: 'crockery_id',
-      size: 200,
-    },
-    {
-      header: 'Name',
-      accessorKey: 'crockery.name',
-      size: 200,
-    },
-    {
-      header: 'Name Hindi',
-      accessorKey: 'crockery.name_hi',
-      size: 200,
-    },
-    {
-      header: 'Person',
-      accessorKey: 'crockery.person',
-      size: 200,
-    },
-    {
-      header: 'Quantity',
-      accessorKey: 'crockery.quantity',
-      size: 200,
-    },
-  ], [])
-
-  return (
-    <Table
-      columns={columns}
-      data={itemDetails.data.result.crockery}
-      isLoading={isLoading || itemDetails.fetchStatus === 'fetching'}
-      pagination={false}
-      expandableRows={true}
-      SubComponent={SubComponent}
-      isSubTable={true}
-    />
   )
 }
