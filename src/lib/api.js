@@ -2,6 +2,9 @@ import { useAuthStore } from '@/hooks/use-auth'
 import axios from 'axios'
 
 function onRequest(config) {
+  const { setloading, isLoading } = useAuthStore.getState()
+
+
   if (config.headers.Authorization)
     return config
 
@@ -12,6 +15,9 @@ function onRequest(config) {
   if (user?.accessToken) {
     config.headers.Authorization = accessToken
   }
+
+  if (isLoading)
+    setloading(false)
 
   return config
 }

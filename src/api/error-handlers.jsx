@@ -23,17 +23,26 @@ async function errorHandler(error, query, mutation, variables) {
   const { status, data } = error.response
   const { setloading } = useAuthStore.getState()
 
-  if (status === 401) {
-    if (mutation) {
-      await refreshTokenAndRetry(undefined, mutation, variables)
+  try {
+    setloading(true)
+
+    if (status === 401) {
+      if (mutation) {
+        await refreshTokenAndRetry(undefined, mutation, variables)
+      }
+      else {
+        await refreshTokenAndRetry(query)
+      }
     }
     else {
-      await refreshTokenAndRetry(query)
+      console.error(data?.message)
     }
-    setloading(false)
   }
-  else {
-    console.error(data?.message)
+  catch (error) {
+    console.log(error)
+  }
+  finally {
+    setloading(false)
   }
 }
 
@@ -81,20 +90,16 @@ async function refreshTokenAndRetry(query, mutation, variables) {
   catch (error) {
     console.error(error, 'logout reason')
 
-    if (typeof error === 'string')
-      toast.error(error)
-
     removeuser()
 
     if (!isRedirecting) {
       isRedirecting = true
       window.location = LoginRoute.fullPath
-      // return redirect({
-      //   to: LoginRoute.fullPath,
-      //   search: {
-      //     redirect: window.location.href,
-      //   },
-      // })
     }
+
+    if (typeof error === 'string')
+      toast.error(error)
+    else
+      toast.error(messages.default.session_expired)
   }
 }

@@ -10,10 +10,11 @@ import { asyncResponseToaster } from '@/lib/toasts'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useSearch } from '@tanstack/react-router'
+import { useParams, useSearch } from '@tanstack/react-router'
 import { UserPen } from 'lucide-react'
 
 function AddEditSubcategoryModal({ modalState, data, setData }) {
+  const params = useParams({ strict: false })
   const queryClient = useQueryClient()
   const { name } = useSearch({ strict: false })
 
@@ -35,10 +36,10 @@ function AddEditSubcategoryModal({ modalState, data, setData }) {
     let result = null
 
     if ('scm_id' in value) {
-      result = await asyncResponseToaster(() => updateSubCategoryMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => updateSubCategoryMutation.mutateAsync({ ...value, category_id: params['category-id'] }))
     }
     else {
-      result = await asyncResponseToaster(() => addSubCategoryMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => addSubCategoryMutation.mutateAsync({ ...value, category_id: params['category-id'] }))
     }
 
     if (result.success && result.value && result.value.ResponseCode === 1) {

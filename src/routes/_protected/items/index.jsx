@@ -14,8 +14,9 @@ import { createFileRoute } from '@tanstack/react-router'
 import { ClipboardPenLine, CornerUpRight, Edit, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
+import { Route as AddItemRoute } from './add'
 
-export const Route = createFileRoute('/_protected/items')({
+export const Route = createFileRoute('/_protected/items/')({
   component: RouteComponent,
   validateSearch: search => paginationSchema.parse(search),
 })
@@ -24,6 +25,7 @@ function RouteComponent() {
   const [updateItem, setUpdateItem] = useState()
 
   const { page, limit } = Route.useSearch()
+  const navigate = Route.useNavigate()
   const itemModal = useBoolean(false)
 
   const isLoading = useAuthStore(state => state.isLoading)
@@ -117,7 +119,7 @@ function RouteComponent() {
               />
             )}
           />
-          <IconButton icon={<ClipboardPenLine className="size-5" />} label="Add Item" onClick={itemModal.setTrue} />
+          <IconButton icon={<ClipboardPenLine className="size-5" />} label="Add Item" onClick={() => navigate({ to: AddItemRoute.fullPath })} />
         </div>
         <Table
           columns={columns}

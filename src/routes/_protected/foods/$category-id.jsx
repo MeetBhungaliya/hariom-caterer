@@ -17,10 +17,10 @@ export const Route = createFileRoute('/_protected/foods/$category-id')({
 })
 
 function RouteComponent() {
+  const params = Route.useParams()
   const [updateSubCategory, setUpdateSubCategory] = useState()
 
   const { name, page, limit } = Route.useSearch()
-  const params = Route.useParams()
   const subCategoryModal = useBoolean(false)
 
   const isLoading = useAuthStore(state => state.isLoading)

@@ -1,15 +1,18 @@
 import { getCategoryList } from '@/api/query-option'
+import { getCategoriesOption, getSubCategoriesOption } from '@/api/select-options'
+import { ControlledInput } from '@/components/common/controlled-input'
+import { ControlledMultipleSelector } from '@/components/common/controlled-multiselector'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
+import { ControlledTagInput } from '@/components/common/controlled-taginput'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { METHODS } from '@/constants/common'
 import { ADD_CATEGORY, UPDATE_CATEGORY } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
-import { addEditCategorySchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
-import { useForm } from '@tanstack/react-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm, useStore } from '@tanstack/react-form'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { UserPen } from 'lucide-react'
 
 function AddEditItemModal({ modalState, data, setData }) {
@@ -23,11 +26,16 @@ function AddEditItemModal({ modalState, data, setData }) {
     mutationFn: async data => fetchApi({ url: UPDATE_CATEGORY, method: METHODS.PUT, data }),
   })
 
-  const { Field, handleSubmit, Subscribe, reset } = useForm({
+  const { Field, handleSubmit, Subscribe, reset, store, resetField } = useForm({
     onSubmit,
-    validators: { onSubmit: addEditCategorySchema },
     defaultValues: data,
   })
+
+  const category_id = useStore(store, state => state.values.category_id)
+
+  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
+
+  const subCategoriesOption = category_id ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
 
   async function onSubmit({ value }) {
     let result = null
@@ -62,12 +70,12 @@ function AddEditItemModal({ modalState, data, setData }) {
         modalState.setValue(e)
       }}
     >
-      <DialogContent className="sm:max-w-md p-0 gap-0">
+      <DialogContent className="sm:max-w-2xl p-0 gap-0">
         <DialogHeader className="px-6 py-4 bg-bg-1 rounded-t-xl shadow">
           <DialogTitle className="text-center text-xl font-bold">
             {data ? 'Update' : 'Add'}
             &nbsp;
-            Category
+            Item
           </DialogTitle>
           <VisuallyHidden.Root>
             <DialogDescription>add or update category information</DialogDescription>
@@ -80,16 +88,76 @@ function AddEditItemModal({ modalState, data, setData }) {
             handleSubmit()
           }}
         >
-          <div className="p-6">
+          <div className="p-6 grid grid-cols-2 gap-x-4 gap-y-6">
+            <Field
+              name="category_id"
+              listeners={{
+                onChange: () => resetField('scm_id'),
+              }}
+              children={field => (
+                <ControlledSearchableSelect
+                  label="Select category"
+                  field={field}
+                  prefix={<UserPen className="size-5" />}
+                  options={categoriesOption}
+                  searchPlaceholder="Seach category"
+                  prepareOption={data => data.map(data => ({ value: data.category_id, label: data.name }))}
+                  updateTriggerer={field.state.value}
+                />
+              )}
+            />
+            <Field
+              name="scm_id"
+              children={field => (
+                <Subscribe
+                  selector={state => state.values.category_id}
+                  children={(category_id) => {
+                    return (
+                      <ControlledSearchableSelect
+                        label="Select subcategory"
+                        field={field}
+                        prefix={<UserPen className="size-5" />}
+                        options={subCategoriesOption}
+                        searchPlaceholder="Seach subcategory"
+                        disabled={!category_id}
+                        prepareOption={data => data.map(data => ({ value: data.scm_id, label: data.name }))}
+                        updateTriggerer={category_id}
+                      />
+                    )
+                  }}
+                />
+              )}
+            />
             <Field
               name="name"
               children={field => (
-                <ControlledSearchableSelect
+                <ControlledInput
                   id="name"
-                  label="Category name"
+                  label="Item name"
                   field={field}
                   prefix={<UserPen className="size-5" />}
-                  options={[]}
+                />
+              )}
+            />
+            <Field
+              name="name_hi"
+              children={field => (
+                <ControlledInput
+                  id="name_hi"
+                  label="Item name hindi"
+                  field={field}
+                  prefix={<UserPen className="size-5" />}
+                />
+              )}
+            />
+            <Field
+              name="ingredient"
+              children={field => (
+                <ControlledTagInput
+                  id="ingredient"
+                  label="Add a ingredient"
+                  field={field}
+                  prefix={<UserPen className="size-5" />}
                 />
               )}
             />
