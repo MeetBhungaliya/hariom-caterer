@@ -28,7 +28,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-full p-3 border justify-start rounded-lg relative hover:bg-transparent',
+            'w-full p-3 border !border-input justify-start rounded-lg relative hover:bg-transparent',
             optionsState.value ? 'border-sky-600' : 'border-border',
           )}
           disabled={disabled}
@@ -36,7 +36,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
           {prefix && (
             <div
               className={cn(
-                'h-[calc(100%-2px)] absolute left-0 top-[1px]',
+                'h-full absolute left-0 top-0',
                 'aspect-square flex items-center justify-center',
                 'rounded-l-lg bg-sky-100/80 backdrop-blur-sm',
                 'text-sky-600 dark:text-sky-400',

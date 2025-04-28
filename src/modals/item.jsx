@@ -33,7 +33,7 @@ function AddEditItemModal({ modalState, data, setData }) {
 
   const category_id = useStore(store, state => state.values.category_id)
 
-  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
+  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
 
   const subCategoriesOption = category_id ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
 
