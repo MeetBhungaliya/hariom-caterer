@@ -2,26 +2,38 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { Textarea } from '../ui/textarea'
+import { useEventListener } from 'usehooks-ts'
+import { useRef } from 'react'
 
 function ControlledInput({ id, label, className, prefix, field, type = 'text', textarea, ...props }) {
   const errorMsg = field.state.meta.errors?.[0]?.message
+
+  const inputRef = useRef()
+
+  useEventListener(
+    'wheel',
+    (e) => {
+      if (type === 'number') return e.preventDefault()
+    },
+    inputRef
+  )
 
   if (textarea) {
     return (
       <div className="relative w-full">
         <Textarea
           id={id}
+          data-invalid={Boolean(errorMsg)}
           placeholder=" "
           className={cn(
             'min-h-[100px] max-h-[200px] peer w-full py-3 px-4 rounded-lg',
             'text-sm md:text-base font-medium',
-            'border-gray-300 hover:border-sky-300',
-            'focus-visible:border-sky-500 focus-visible:ring-1 focus-visible:ring-sky-200',
-            'dark:border-gray-600 dark:hover:border-sky-500',
-            'dark:focus:border-sky-400 dark:focus:ring-sky-800',
+            'border-gray-300 hover:border-sky-600',
+            'focus-visible:border-sky-600 focus-visible:ring-1 focus-visible:ring-sky-600',
+            'dark:border-gray-600 dark:hover:border-sky-600',
+            'dark:focus:border-sky-600 dark:focus:ring-sky-800',
             'data-[invalid=true]:text-red-500 data-[invalid=true]:border-red-400 data-[invalid=true]:ring-red-200',
             'transition-colors duration-200',
-            prefix && 'pl-[3.5rem]',
             className,
           )}
           value={field.state.value ?? undefined}
@@ -54,16 +66,23 @@ function ControlledInput({ id, label, className, prefix, field, type = 'text', t
       {prefix && (
         <div
           className={cn(
-            'h-[calc(100%-2px)] absolute left-[1px] top-[1px]',
+            'h-full absolute left-0 top-0',
             'aspect-square flex items-center justify-center',
-            'rounded-l-lg bg-sky-100/80 backdrop-blur-sm',
-            'text-sky-600 dark:text-sky-400',
+            'rounded-l-[10px] bg-sky-600 backdrop-blur-sm',
+            'text-white dark:text-white',
           )}
         >
           {prefix}
         </div>
       )}
       <Input
+        ref={inputRef}
+        onKeyPress={(e) => {
+          if (type !== 'number') return
+          if (!/[0-9]/.test(e.key)) {
+            e.preventDefault()
+          }
+        }}
         type={type}
         value={(field.state.value ?? undefined) ?? (type === 'number' ? '' : '')}
         onChange={e => field.handleChange(type === 'number' ? e.target.valueAsNumber : e.target.value)}
@@ -74,10 +93,10 @@ function ControlledInput({ id, label, className, prefix, field, type = 'text', t
         className={cn(
           'peer w-full py-3 px-4 rounded-lg',
           'text-sm md:text-base font-medium',
-          'border-gray-300 hover:border-sky-300',
-          'focus:border-sky-500 focus:ring-1 focus:ring-sky-200',
-          'dark:border-gray-600 dark:hover:border-sky-500',
-          'dark:focus:border-sky-400 dark:focus:ring-sky-800',
+          'border-gray-300 hover:border-sky-600',
+          'focus:border-sky-600 focus:ring-1 focus:ring-sky-600',
+          'dark:border-gray-600 dark:hover:border-sky-600',
+          'dark:focus:border-sky-600 dark:focus:ring-sky-800',
           'data-[invalid=true]:text-red-500 data-[invalid=true]:border-red-400 data-[invalid=true]:ring-red-200',
           'transition-colors duration-200',
           prefix && 'pl-[3.5rem]',

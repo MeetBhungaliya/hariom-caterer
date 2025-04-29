@@ -8,28 +8,36 @@ import { ControlledTagInput } from '@/components/common/controlled-taginput'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
 import { METHODS } from '@/constants/common'
 import { ADD_CATEGORY, UPDATE_CATEGORY } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
+import { addEditItemSchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
+import AddEditItemCrockery from '@/modals/item-crockery'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { toFormData } from 'axios'
 import { ReceiptIndianRupee, UserPen, UtensilsCrossed } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useBoolean } from 'usehooks-ts'
 
 export const Route = createFileRoute('/_protected/items/add')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const queryClient = useQueryClient()
+  const inputContainerRef = useRef()
   const isLoading = useAuthStore(state => state.isLoading)
+
+  const itemCrockeryModal = useBoolean(false)
+  const [updateItemCrockery, setUpdateItemCrockery] = useState([])
+
   const [isCrockeryLoading, setIsCrockeryLoading] = useState(false)
   const [crockeryData, setCrockeryData] = useState([])
   const [itemCrockeryData, setItemCrockeryData] = useState([])
-  const queryClient = useQueryClient()
 
   const addCategoryMutation = useMutation({
     mutationFn: async data => fetchApi({ url: ADD_CATEGORY, method: METHODS.POST, data }),
@@ -39,12 +47,14 @@ function RouteComponent() {
     mutationFn: async data => fetchApi({ url: UPDATE_CATEGORY, method: METHODS.PUT, data }),
   })
 
-  const { Field, handleSubmit, Subscribe, reset, store, resetField } = useForm({ onSubmit })
+  const { Field, handleSubmit, Subscribe, reset, store, validateField, setFieldValue } = useForm({
+    onSubmit,
+    validators: { onSubmit: addEditItemSchema }
+  })
 
   const category_id = useStore(store, state => state.values.category_id)
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
-  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption({ paginate: false }))
 
   const subCategoriesOption = typeof category_id === "number" ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
   const itemCrockeryOption = typeof category_id === "number" ? queryClient.ensureQueryData(getItemCrockeryOption({ category_id })) : []
@@ -56,6 +66,7 @@ function RouteComponent() {
       .then(res => {
         setIsCrockeryLoading(true)
         if (res.ResponseCode !== 1) return
+        setUpdateItemCrockery(prev => [...prev, ...res.result.list.map(data => ({ crockery_id: data.crockery_id, add_to_category: true }))])
         setCrockeryData(res.result.list)
       })
       .finally(() => {
@@ -75,6 +86,10 @@ function RouteComponent() {
   async function onSubmit({ value }) {
     let result = null
 
+    const formData = toFormData(value)
+
+
+    return
     if ('category_id' in value) {
       result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync(value))
     }
@@ -124,9 +139,26 @@ function RouteComponent() {
     },
   ], [JSON.stringify(itemCrockeryData)])
 
+
   return (
     <>
       <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
+        <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+          <Subscribe
+            selector={state => state.isDirty}
+            children={isDirty => (
+              <Button
+                type="button"
+                className="w-full max-w-[160px] py-2 text-base bg-sky-600 text-white"
+                disabled={!isDirty || addCategoryMutation.isPending || updateCategoryMutation.isPending}
+                onClick={handleSubmit}
+              >
+                Save
+              </Button>
+            )}
+          />
+          <IconButton icon={<UtensilsCrossed className="size-5" />} label="Add Crockery" onClick={itemCrockeryModal.setTrue} />
+        </div>
         <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
           <div className='h-full px-1 bg-white rounded-xl overflow-hidden'>
             <ScrollArea className='h-full py-6 px-5 flex flex-col overflow-hidden'>
@@ -142,7 +174,10 @@ function RouteComponent() {
                   <Field
                     name="category_id"
                     listeners={{
-                      onChange: () => resetField('scm_id'),
+                      onChange: () => {
+                        setFieldValue('scm_id', undefined)
+                        validateField('scm_id', 'submit')
+                      },
                     }}
                     children={field => (
                       <ControlledSearchableSelect
@@ -150,7 +185,7 @@ function RouteComponent() {
                         field={field}
                         prefix={<UserPen className="size-5" />}
                         options={categoriesOption}
-                        searchPlaceholder="Seach category"
+                        searchPlaceholder="Search category"
                         prepareOption={data => data.map(data => ({ value: data.category_id, label: data.name }))}
                         updateTriggerer={field.state.value}
                       />
@@ -168,7 +203,7 @@ function RouteComponent() {
                               field={field}
                               prefix={<UserPen className="size-5" />}
                               options={subCategoriesOption}
-                              searchPlaceholder="Seach subcategory"
+                              searchPlaceholder="Search subcategory"
                               disabled={!category_id}
                               prepareOption={data => data.map(data => ({ value: data.scm_id, label: data.name }))}
                               updateTriggerer={category_id}
@@ -202,7 +237,7 @@ function RouteComponent() {
                   />
                 </div>
                 <div className='grid grid-cols-2 gap-x-4'>
-                  <div className='flex flex-col gap-y-6'>
+                  <div ref={inputContainerRef} className='h-max flex flex-col gap-y-6'>
                     <Field
                       name="price"
                       children={field => (
@@ -241,47 +276,26 @@ function RouteComponent() {
                     children={field => (
                       <ControlledImageuploader
                         id="image"
+                        baseHeightElement={inputContainerRef}
                         field={field}
                       />
 
                     )}
                   />
-
                 </div>
               </form>
             </ScrollArea>
           </div>
           <Table
             columns={columns}
-            data={crockeryData}
+            data={[...crockeryData, ...updateItemCrockery]}
             pagination={false}
             isLoading={isLoading || isCrockeryLoading}
           />
         </div>
-        <div>
-          <Separator />
-          <div className='pt-4 flex justify-between gap-x-4'>
-          <IconButton icon={<UtensilsCrossed className="size-5" />} label="Add Crockery" />
-          <div className="space-x-4">
-            <Button type="button" variant="secondary" className="py-2 text-base border border-transparent hover:border">
-              Cancel
-            </Button>
-            <Subscribe
-              selector={state => state.isDirty}
-              children={isDirty => (
-                <Button
-                  type="submit"
-                  className="py-2 text-base"
-                  disabled={!isDirty || addCategoryMutation.isPending || updateCategoryMutation.isPending}
-                >
-                  Save
-                </Button>
-              )}
-            />
-          </div>
-          </div>
-        </div>
       </div>
+
+      <AddEditItemCrockery modalState={itemCrockeryModal} data={updateItemCrockery} setData={setUpdateItemCrockery} />
     </>
   )
 }

@@ -140,7 +140,7 @@ function AddEditCrockery({ modalState, data, setData }) {
               children={isDirty => (
                 <Button
                   type="submit"
-                  className="py-2 text-base"
+                  className="py-2 text-base bg-sky-600 text-white"
                   disabled={!isDirty || addCrockeryMutation.isPending || updateCrockeryMutation.isPending}
                 >
                   {data ? 'Update' : 'Save'}

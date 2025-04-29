@@ -23,10 +23,10 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
     <div className="relative w-full">
       <div
         className={cn(
-          'h-[calc(100%-2px)] absolute left-[1px] top-[1px]',
+          'h-full absolute left-0 top-0',
           'aspect-square flex items-center justify-center',
-          'rounded-l-lg bg-sky-100/80 backdrop-blur-sm',
-          'text-sky-600 dark:text-sky-400',
+          'rounded-l-[10px] bg-sky-100/80 backdrop-blur-sm',
+          'text-sky-600 dark:text-sky-600',
         )}
       >
         <LockKeyhole />
@@ -40,12 +40,12 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
         type={isShowPassword ? 'text' : 'password'}
         autoComplete="current-password"
         className={cn(
-          'peer w-full py-3 px-4 rounded-lg',
+          'peer w-full py-3 px-4 rounded-[10px]',
           'text-sm md:text-base font-medium',
-          'border-gray-300 hover:border-sky-300',
-          'focus:border-sky-500 focus:ring-1 focus:ring-sky-200',
-          'dark:border-gray-600 dark:hover:border-sky-500',
-          'dark:focus:border-sky-400 dark:focus:ring-sky-800',
+          'border-gray-300 hover:border-sky-600',
+          'focus:border-sky-600 focus:ring-1 focus:ring-sky-600',
+          'dark:border-gray-600 dark:hover:border-sky-600',
+          'dark:focus:border-sky-600 dark:focus:ring-sky-800',
           'data-[invalid=true]:text-red-500 data-[invalid=true]:border-red-400 data-[invalid=true]:ring-red-200',
           'transition-colors duration-200',
           'pl-[3.5rem] pr-[3.5rem]',
@@ -58,19 +58,19 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
         {...longPressEvent}
         type="button"
         className={cn(
-          'h-[calc(100%-2px)] absolute right-[1px] top-[1px] border-none',
+          'h-full absolute right-0 top-0 border-none',
           'aspect-square flex items-center justify-center',
-          'rounded-r-lg rounded-l-none bg-transparent hover:bg-sky-100/80 backdrop-blur-sm',
-          'text-sky-600 dark:text-sky-400',
+          'rounded-r-[10px] rounded-l-none bg-transparent hover:bg-sky-100/80 backdrop-blur-sm',
+          'text-sky-600 dark:text-sky-600',
         )}
       >
         {isShowPassword
           ? (
-              <EyeOff className="size-5" />
-            )
+            <EyeOff className="size-5" />
+          )
           : (
-              <Eye className="size-5" />
-            )}
+            <Eye className="size-5" />
+          )}
       </Button>
       <Label
         htmlFor={id}

@@ -53,7 +53,7 @@ function RouteComponent() {
             subCategoryModal.setTrue()
           }}
           >
-            <Edit className="size-5" />
+            <Edit className="size-4" />
           </Button>
         </div>
       ),

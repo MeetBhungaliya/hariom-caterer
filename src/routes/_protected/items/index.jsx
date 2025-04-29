@@ -40,11 +40,11 @@ function RouteComponent() {
       cell: ({ row }) => {
         return (
           <Button
-            className={cn('text-base bg-transparent shadow-none', row.getIsExpanded() ? 'border-[#24b4fb] bg-[#0071e2] text-white [&_svg]:-scale-y-[1]' : 'text-text-1 hover:text-white',
+            className={cn('text-base bg-transparent shadow-none border', row.getIsExpanded() ? 'border-sky-600 hover:border-sky-600 bg-sky-600 text-white [&_svg]:-scale-y-[1]' : 'text-sky-600 hover:text-white',
             )}
             onClick={row.getToggleExpandedHandler()}
           >
-            <CornerUpRight className="size-5" />
+            <CornerUpRight className="size-4" />
           </Button>
         )
       },
@@ -91,7 +91,7 @@ function RouteComponent() {
             itemModal.setTrue()
           }}
           >
-            <Edit className="size-5" />
+            <Edit className="size-4" />
           </Button>
         </div>
       ),

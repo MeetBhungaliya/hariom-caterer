@@ -21,8 +21,8 @@ function Sidebar({ props }) {
 
   const activeIndex = useMemo(() => navLinks().findIndex(item => pathname === ((item.url !== "/" && item.url.endsWith("/")) ? item.url.split('/').slice(0, -1).join('/') : item.url)), [pathname])
 
-  const ITEM_HEIGHT = 52
-  const ITEM_GAP = 12
+  const ITEM_HEIGHT = 48.28
+  const ITEM_GAP = 8
 
   const getTopPosition = useCallback(() => {
     const addition = activeIndex ? ITEM_GAP + ITEM_HEIGHT : 0
@@ -32,20 +32,20 @@ function Sidebar({ props }) {
   return (
     <SidebarComponent {...props} collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
-        <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+        <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-400 inline-block text-transparent bg-clip-text">
           {sidebarState.open ? 'Rahul' : 'R'}
         </h2>
       </SidebarHeader>
       <SidebarContent>
         <div
           style={{ top: `${64 + getTopPosition()}px`, height: `${ITEM_HEIGHT}px` }}
-          className="w-[1px] absolute right-[-1px] transition-all ease-linear duration-150 bg-gradient-to-r from-blue-600 via-sky-500 to-indigo-400 z-50"
+          className="w-[1px] absolute right-[-1px] transition-all ease-linear duration-150 bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-400 z-50"
           src={SIDEBAR_INDICATOR}
           alt="indicator"
         />
         <SidebarGroup className="p-4">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-3">
+            <SidebarMenu className="gap-2">
               {navLinks().map((item) => {
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -59,10 +59,10 @@ function Sidebar({ props }) {
                         }}
                         className="h-max py-3 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 active:bg-bg-1 transition-colors"
                       >
-                        <div className="min-w-6 min-h-6 text-current">
+                        <div className="min-w-6 min-h-6 text-current [&>svg]:stroke-[1.40px]">
                           <item.icon />
                         </div>
-                        <span className="text-lg text-current font-medium">{item.title}</span>
+                        <span className="text-[17px] text-current">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

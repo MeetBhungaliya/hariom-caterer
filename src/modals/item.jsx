@@ -100,7 +100,7 @@ function AddEditItemModal({ modalState, data, setData }) {
                   field={field}
                   prefix={<UserPen className="size-5" />}
                   options={categoriesOption}
-                  searchPlaceholder="Seach category"
+                  searchPlaceholder="Search category"
                   prepareOption={data => data.map(data => ({ value: data.category_id, label: data.name }))}
                   updateTriggerer={field.state.value}
                 />
@@ -118,7 +118,7 @@ function AddEditItemModal({ modalState, data, setData }) {
                         field={field}
                         prefix={<UserPen className="size-5" />}
                         options={subCategoriesOption}
-                        searchPlaceholder="Seach subcategory"
+                        searchPlaceholder="Search subcategory"
                         disabled={!category_id}
                         prepareOption={data => data.map(data => ({ value: data.scm_id, label: data.name }))}
                         updateTriggerer={category_id}
@@ -174,7 +174,7 @@ function AddEditItemModal({ modalState, data, setData }) {
               children={isDirty => (
                 <Button
                   type="submit"
-                  className="py-2 text-base"
+                  className="py-2 text-base bg-sky-600 text-white"
                   disabled={!isDirty || addCategoryMutation.isPending || updateCategoryMutation.isPending}
                 >
                   {data ? 'Update' : 'Save'}

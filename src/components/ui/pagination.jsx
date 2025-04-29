@@ -56,7 +56,7 @@ function PaginationLink({
       className={cn(buttonVariants({
         variant: isActive ? 'outline' : 'ghost',
         size,
-      }), 'size-10 text-[15px] text-text-1 font-medium border border-border hover:bg-sky-300 hover:text-white shadow-none', 'data-[active=true]:bg-sky-300 data-[active=true]:text-white data-[active=true]:border-sky-400', className)}
+      }), 'size-10 text-[15px] text-text-1 font-medium border border-border hover:bg-sky-600 hover:text-white shadow-none', 'data-[active=true]:bg-sky-600 data-[active=true]:text-white data-[active=true]:border-sky-600', className)}
       {...props}
     />
   )

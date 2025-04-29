@@ -4,7 +4,7 @@ function Toaster({ ...props }) {
   return (
     (
       <Sonner
-        className="toaster group [&>[data-sonner-toast][data-type='loading']]:!border-sky-200 [&>[data-sonner-toast][data-type='loading']]:!bg-sky-50 [&>[data-sonner-toast][data-type='loading']]:!text-sky-500 [&_.sonner-loading-bar]:!bg-sky-500"
+        className="toaster group [&>[data-sonner-toast][data-type='loading']]:!border-sky-600 [&>[data-sonner-toast][data-type='loading']]:!bg-sky-50 [&>[data-sonner-toast][data-type='loading']]:!text-sky-600 [&_.sonner-loading-bar]:!bg-sky-600"
         style={
           {
             '--normal-bg': 'var(--popover)',

@@ -249,7 +249,7 @@ function SidebarTrigger({
         }}
         {...props}
       >
-        <ArrowLeftFromLine className="stroke-text-1" />
+        <ArrowLeftFromLine className="size-5 stroke-text-1" />
         <span className="sr-only">Toggle Sidebar</span>
       </Button>
     )

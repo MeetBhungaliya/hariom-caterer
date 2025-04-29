@@ -59,7 +59,7 @@ function RouteComponent() {
           partyModal.setTrue()
         }}
         >
-          <Edit className="size-5" />
+          <Edit className="size-4" />
         </Button>
       ),
       size: 62,

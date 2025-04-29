@@ -32,7 +32,7 @@ function Header() {
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-x-4 border-b px-4 bg-white shadow">
-      <SidebarTrigger className={cn('h-auto w-auto p-2 border hover:bg-sky-50 [&_svg]:duration-500 [&_svg]:transition-all', sidebarState.open ? '[&_svg]:rotate-0' : '[&_svg]:rotate-180')} />
+      <SidebarTrigger className={cn('h-auto w-auto p-2 border hover:bg-sky-600 hover:[&_svg]:stroke-white [&_svg]:transition-all', sidebarState.open ? '[&_svg]:rotate-0' : '[&_svg]:rotate-180')} />
       <Breadcrumb>
         <BreadcrumbList>
           {subCategoryRoute?.fullPath?.split('/')?.length > 2

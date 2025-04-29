@@ -9,16 +9,7 @@ import { Skeleton } from '../ui/skeleton'
 
 function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholder, disabled, options }) {
   const optionsState = useBoolean()
-  // const errorMsg = field.state.meta.errors?.[0]?.message
-
-  // let options = []
-
-  // if (props.options.then && typeof props.options.then === 'function') {
-  //   const result = use(props.options)
-  //   if (Array.isArray(result.result.list)) {
-  //     options = result.result.list.map(data => ({ value: data.category_id, label: data.name }))
-  //   }
-  // }
+  const errorMsg = field.state.meta.errors?.[0]?.message
 
   return (
     <Popover open={optionsState.value} onOpenChange={optionsState.setValue}>
@@ -27,9 +18,11 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          data-invalid={Boolean(errorMsg)}
           className={cn(
-            'w-full p-3 border !border-input justify-start rounded-lg relative hover:bg-transparent',
+            'w-full p-3 border !border-gray-300 justify-start rounded-lg relative hover:bg-transparent',
             optionsState.value ? 'border-sky-600' : 'border-border',
+            'data-[invalid=true]:!text-red-500 data-[invalid=true]:!border-red-400 data-[invalid=true]:!ring-red-200',
           )}
           disabled={disabled}
         >
@@ -38,15 +31,17 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
               className={cn(
                 'h-full absolute left-0 top-0',
                 'aspect-square flex items-center justify-center',
-                'rounded-l-lg bg-sky-100/80 backdrop-blur-sm',
-                'text-sky-600 dark:text-sky-400',
+                'rounded-l-lg bg-sky-600 backdrop-blur-sm',
+                'text-white dark:text-white',
               )}
             >
               {prefix}
             </div>
           )}
 
-          <span className="ml-[3rem] text-sm md:text-base text-gray-500 dark:text-gray-400">
+          <span className={cn("ml-[3rem] text-sm md:text-base",
+            field.state.value ? "text-text-1" : "text-gray-500 dark:text-gray-400",
+          )}>
             {field.state.value
               ? options.find(option => option.value === field.state.value)?.label
               : label}
@@ -79,7 +74,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
                     field.handleChange(option.value === field.state.value ? '' : option.value)
                     optionsState.setFalse()
                   }}
-                  className={cn(field.state.value === option.value ? 'bg-sky-200 data-[selected=true]:bg-sky-200' : 'bg-transparent')}
+                  className={cn(field.state.value === option.value ? '!text-white bg-sky-600 data-[selected=true]:bg-sky-600' : 'bg-transparent')}
                 >
                   <Check
                     className={cn(

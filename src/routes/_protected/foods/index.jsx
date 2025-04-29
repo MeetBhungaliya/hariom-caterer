@@ -55,10 +55,10 @@ function RouteComponent() {
             categoryModal.setTrue()
           }}
           >
-            <Edit className="size-5" />
+            <Edit className="size-4" />
           </Button>
           <Link className={cn(buttonVariants())} to={props.row.original.category_id} search={{ ...pagination, name: props.row.original.name }}>
-            <Eye className="size-5" />
+            <Eye className="size-4" />
           </Link>
         </div>
       ),

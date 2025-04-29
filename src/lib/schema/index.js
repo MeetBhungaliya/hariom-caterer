@@ -25,3 +25,18 @@ export const addEditCrockerSchema = z.object({
 export const addEditCategorySchema = z.object({
   name: z.string({ required_error: 'Name is required' }).trim(),
 })
+
+export const addEditItemSchema = z.object({
+  category_id: z.string({ required_error: 'Category is required' }).trim().regex(/^\d+$/, 'Invalid category id').or(z.number()),
+  scm_id: z.string({ required_error: 'Subcategory is required' }).trim().regex(/^\d+$/, 'Invalid subcategory id').or(z.number()),
+  name: z.string({ required_error: 'Name is required' }).trim(),
+  name_hi: z.string({ required_error: 'Hindi name name is required' }).trim(),
+  price: z.string({ required_error: 'Price is required' }).trim().regex(/^\d+$/, 'Price must be a number').or(z.number()),
+  ingredient: z.string({ required_error: 'Ingredient is required' }).min(1, { message: 'Ingredient is required' }).trim(),
+  recipe: z.string({ required_error: 'Recipe is required' }).trim(),
+  image: z.any().nullable()
+})
+
+export const addEditItemCrockerySchema = z.object({
+  crockery_id: z.string({ required_error: 'Crockery is required' }).trim().regex(/^\d+$/, 'Invalid crockery id').or(z.number()),
+})

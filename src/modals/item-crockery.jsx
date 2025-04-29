@@ -1,55 +1,41 @@
-import { getCategoryList } from '@/api/query-option'
-import { ControlledInput } from '@/components/common/controlled-input'
+import { getAllCrockeryOption } from '@/api/select-options'
+import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { METHODS } from '@/constants/common'
-import { ADD_CATEGORY, UPDATE_CATEGORY } from '@/constants/endpoints'
-import { fetchApi } from '@/lib/api'
-import { addEditCategorySchema } from '@/lib/schema'
-import { asyncResponseToaster } from '@/lib/toasts'
+import { addEditItemCrockerySchema } from '@/lib/schema'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { useForm } from '@tanstack/react-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { UserPen } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { UtensilsCrossed } from 'lucide-react'
 
-function AddEditCategoryModal({ modalState, data, setData }) {
+const AddEditItemCrockery = ({ modalState, data, setData }) => {
   const queryClient = useQueryClient()
 
-  const addCategoryMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_CATEGORY, method: METHODS.POST, data }),
-  })
-
-  const updateCategoryMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: UPDATE_CATEGORY, method: METHODS.PUT, data }),
-  })
+  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption({ paginate: false }))
 
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
-    validators: { onSubmit: addEditCategorySchema },
+    validators: { onSubmit: addEditItemCrockerySchema },
     defaultValues: data,
   })
 
   async function onSubmit({ value }) {
-    let result = null
 
-    if ('category_id' in value) {
-      result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync(value))
-    }
-    else {
-      result = await asyncResponseToaster(() => addCategoryMutation.mutateAsync(value))
-    }
+    const result = await crockeriesOption
 
-    if (result.success && result.value && result.value.ResponseCode === 1) {
-      queryClient.refetchQueries(getCategoryList)
-      onClose()
-    }
+    if (!result || result.ResponseCode !== 1 || !result?.result?.list) return
+
+    const crockeryDetail = result.result.list.find(data => data.crockery_id === value.crockery_id)
+
+    setData(prev => [...prev, crockeryDetail])
+
+    onClose()
   }
 
   function onClose() {
     setTimeout(() => {
       modalState.setFalse()
-      reset({ name: undefined })
-      setData(undefined)
+      reset({ crockery_id: undefined })
     }, 150)
   }
 
@@ -65,12 +51,10 @@ function AddEditCategoryModal({ modalState, data, setData }) {
       <DialogContent className="sm:max-w-md p-0 gap-0">
         <DialogHeader className="px-6 py-4 bg-bg-1 rounded-t-xl shadow">
           <DialogTitle className="text-center text-xl font-bold">
-            {data ? 'Update' : 'Add'}
-            &nbsp;
-            Category
+            Add Crockery
           </DialogTitle>
           <VisuallyHidden.Root>
-            <DialogDescription>add or update category information</DialogDescription>
+            <DialogDescription>select crockery</DialogDescription>
           </VisuallyHidden.Root>
         </DialogHeader>
         <form
@@ -80,15 +64,19 @@ function AddEditCategoryModal({ modalState, data, setData }) {
             handleSubmit()
           }}
         >
-          <div className="p-6">
+          <div className="p-6 space-y-6">
             <Field
-              name="name"
+              name="crockery_id"
               children={field => (
-                <ControlledInput
-                  id="name"
-                  label="Category name"
+                <ControlledSearchableSelect
+                  id="crockery_id"
+                  label="Select crockery"
                   field={field}
-                  prefix={<UserPen className="size-5" />}
+                  prefix={<UtensilsCrossed className="size-5" />}
+                  options={crockeriesOption}
+                  searchPlaceholder="Search crockery"
+                  prepareOption={data => data.map(data => ({ value: data.crockery_id, label: data.name }))}
+                  updateTriggerer={field.state.value}
                 />
               )}
             />
@@ -106,9 +94,9 @@ function AddEditCategoryModal({ modalState, data, setData }) {
                 <Button
                   type="submit"
                   className="py-2 text-base bg-sky-600 text-white"
-                  disabled={!isDirty || addCategoryMutation.isPending || updateCategoryMutation.isPending}
+                  disabled={!isDirty}
                 >
-                  {data ? 'Update' : 'Save'}
+                  Save
                 </Button>
               )}
             />
@@ -119,4 +107,4 @@ function AddEditCategoryModal({ modalState, data, setData }) {
   )
 }
 
-export { AddEditCategoryModal }
+export default AddEditItemCrockery
