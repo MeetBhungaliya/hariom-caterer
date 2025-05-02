@@ -1,5 +1,5 @@
-import { getCategoryList, getItemList } from '@/api/query-option'
-import { getAllCrockeryOption, getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
+import { getItemList } from '@/api/query-option'
+import { getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledImageuploader } from '@/components/common/controlled-imageuploader'
 import { ControlledInput } from '@/components/common/controlled-input'
@@ -9,7 +9,7 @@ import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { METHODS, pagination } from '@/constants/common'
-import { ADD_CATEGORY, ADD_ITEM, UPDATE_CATEGORY, UPDATE_ITEM } from '@/constants/endpoints'
+import { ADD_ITEM, UPDATE_ITEM } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditItemSchema } from '@/lib/schema'
@@ -17,18 +17,20 @@ import { asyncResponseToaster } from '@/lib/toasts'
 import AddEditItemCrockery from '@/modals/item-crockery'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, useCanGoBack, useRouter } from '@tanstack/react-router'
+import { createFileRoute, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import { toFormData } from 'axios'
 import { ReceiptIndianRupee, UserPen, UtensilsCrossed } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
 import { Route as ItemsRoute } from './index'
 
-export const Route = createFileRoute('/_protected/items/add')({
+export const Route = createFileRoute('/_protected/items/$item_id')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const { location } = useRouterState()
+
 
   const router = useRouter()
   const canGoBack = useCanGoBack()
@@ -54,6 +56,7 @@ function RouteComponent() {
 
   const { Field, handleSubmit, Subscribe, reset, store, setFieldValue } = useForm({
     onSubmit,
+    defaultValues: location.state,
     validators: { onSubmit: addEditItemSchema }
   })
 

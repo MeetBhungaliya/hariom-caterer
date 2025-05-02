@@ -105,7 +105,11 @@ function ControlledSearchableSelect(props) {
           const result = await tryCatch(() => props.options)
           if (result.success && result.value) {
             if (Array.isArray(result.value.result.list)) {
-              setOptions(props.prepareOption(result.value.result.list))
+              if (props.filterFn) {
+                setOptions(props.filterFn(props.prepareOption(result.value.result.list)))
+              }else{
+                setOptions(props.prepareOption(result.value.result.list))
+              }
             }
           }
         }

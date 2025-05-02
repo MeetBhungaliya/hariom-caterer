@@ -20,3 +20,5 @@ export const UPDATE_SUBCATEGORY = 'updateSubCategory'
 
 export const GET_ITEMS = 'getItemList'
 export const GET_ITEM_DETAILS = 'getItemDetails'
+export const ADD_ITEM = 'addItem'
+export const UPDATE_ITEM = 'updateItem'

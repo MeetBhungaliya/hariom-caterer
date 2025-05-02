@@ -12,12 +12,14 @@ import { Route as SubCategoryRoute } from '@/routes/_protected/foods/$category-i
 import { useLocation, useMatch } from '@tanstack/react-router'
 import { SidebarTrigger, useSidebar } from '../ui/sidebar'
 import { Route as AddItemRoute } from '@/routes/_protected/items/add'
+import { Route as UpdateItemRoute } from '@/routes/_protected/items/$item_id'
 
 function Header() {
   const sidebarState = useSidebar()
   const { pathname } = useLocation()
   const subCategoryRoute = useMatch({ from: SubCategoryRoute.id, shouldThrow: false })
   const addItemRoute = useMatch({ from: AddItemRoute.id, shouldThrow: false })
+  const updateItemRoute = useMatch({ from: UpdateItemRoute.id, shouldThrow: false })
 
   const items = navLinks().find((item) => {
     let url = item.url
@@ -28,7 +30,6 @@ function Header() {
 
     return url === pathname
   })
-
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-x-4 border-b px-4 bg-white shadow">
@@ -60,11 +61,11 @@ function Header() {
               </BreadcrumbItem>
             )}
 
-          {addItemRoute?.fullPath?.split('/')?.length > 2
+          {(addItemRoute || updateItemRoute)?.fullPath?.split('/')?.length > 2
             ? (
               <>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink to={addItemRoute.fullPath.split('/').slice(0, -1).join('/')} className="text-xl font-medium hover:underline">
+                  <BreadcrumbLink to={(addItemRoute || updateItemRoute).fullPath.split('/').slice(0, -1).join('/')} className="text-xl font-medium hover:underline">
                     Items
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -77,6 +78,14 @@ function Header() {
             && (
               <BreadcrumbItem>
                 <BreadcrumbPage className="text-xl font-medium text-text-1">Add Item</BreadcrumbPage>
+              </BreadcrumbItem>
+            )
+          }
+
+          {updateItemRoute
+            && (
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-xl font-medium text-text-1">Update Item</BreadcrumbPage>
               </BreadcrumbItem>
             )
           }

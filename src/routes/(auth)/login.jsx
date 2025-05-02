@@ -99,7 +99,7 @@ function RouteComponent() {
                 children={isDirty => (
                   <Button
                     type="submit"
-                    className="w-full rounded-xl font-semibold tracking-wide"
+                    className="w-full rounded-xl font-semibold tracking-wide bg-sky-600 text-white"
                     disabled={!isDirty || loginMutation.isPending}
                   >
                     Login

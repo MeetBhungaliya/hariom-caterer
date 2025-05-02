@@ -7,8 +7,9 @@ import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { UtensilsCrossed } from 'lucide-react'
+import { useCallback } from 'react'
 
-const AddEditItemCrockery = ({ modalState, data, setData }) => {
+const AddEditItemCrockery = ({ modalState, data, setData, filterCrockeryData }) => {
   const queryClient = useQueryClient()
 
   const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption({ paginate: false }))
@@ -32,12 +33,31 @@ const AddEditItemCrockery = ({ modalState, data, setData }) => {
     onClose()
   }
 
+  const filterOptions = useCallback(
+    options => {
+      if (!modalState.value) return []
+
+      const filteredOptions = []
+
+      options.forEach(option => {
+        const isOptionInFilter = filterCrockeryData.some(data => data.crockery_id === option.value)
+        if (!isOptionInFilter) {
+          filteredOptions.push(option)
+        }
+      })
+
+      return filteredOptions
+    },
+    [modalState.value])
+
+
   function onClose() {
     setTimeout(() => {
       modalState.setFalse()
       reset({ crockery_id: undefined })
     }, 150)
   }
+
 
   return (
     <Dialog
@@ -77,6 +97,7 @@ const AddEditItemCrockery = ({ modalState, data, setData }) => {
                   searchPlaceholder="Search crockery"
                   prepareOption={data => data.map(data => ({ value: data.crockery_id, label: data.name }))}
                   updateTriggerer={field.state.value}
+                  filterFn={filterOptions}
                 />
               )}
             />

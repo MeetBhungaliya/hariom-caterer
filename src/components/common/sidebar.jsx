@@ -19,7 +19,7 @@ function Sidebar({ props }) {
   const sidebarState = useSidebar()
   const { pathname } = useLocation()
 
-  const activeIndex = useMemo(() => navLinks().findIndex(item => pathname === ((item.url !== "/" && item.url.endsWith("/")) ? item.url.split('/').slice(0, -1).join('/') : item.url)), [pathname])
+  const activeIndex = useMemo(() => navLinks().findIndex(item => (pathname.split("/").length > 2 ? pathname.split("/").slice(0, -1).join('/') : pathname) === ((item.url !== "/" && item.url.endsWith("/")) ? item.url.split('/').slice(0, -1).join('/') : item.url)), [pathname])
 
   const ITEM_HEIGHT = 48.28
   const ITEM_GAP = 8

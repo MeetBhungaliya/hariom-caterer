@@ -26,7 +26,7 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
           'h-full absolute left-0 top-0',
           'aspect-square flex items-center justify-center',
           'rounded-l-[10px] bg-sky-100/80 backdrop-blur-sm',
-          'text-sky-600 dark:text-sky-600',
+          'bg-sky-600 dark:bg-sky-600 text-white',
         )}
       >
         <LockKeyhole />
@@ -61,7 +61,7 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
           'h-full absolute right-0 top-0 border-none',
           'aspect-square flex items-center justify-center',
           'rounded-r-[10px] rounded-l-none bg-transparent hover:bg-sky-100/80 backdrop-blur-sm',
-          'text-sky-600 dark:text-sky-600',
+          'bg-sky-600 dark:bg-sky-600 text-white',
         )}
       >
         {isShowPassword

@@ -15,6 +15,9 @@ import { ClipboardPenLine, CornerUpRight, Edit, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 import { Route as AddItemRoute } from './add'
+import { Route as UpdateItemRoute } from './$item_id'
+import Img from '@/components/img'
+import ImageViewer_Motion from '@/components/commerce-ui/image-viewer-motion'
 
 export const Route = createFileRoute('/_protected/items/')({
   component: RouteComponent,
@@ -51,6 +54,18 @@ function RouteComponent() {
       size: 60,
     },
     {
+      id: 'image-align-center',
+      header: '',
+      accessorKey: 'image',
+      size: 200,
+      cell: ({ row }) => (
+        <ImageViewer_Motion
+          thumbnailComponent={<Img containerClassName="mx-auto size-10" imgProps={{ src: row.getValue("image-align-center") }} />}
+          imageUrl={row.getValue("image-align-center")}
+          className="max-w-[300px]"
+        />)
+    },
+    {
       header: 'Item Id',
       accessorKey: 'item_id',
       size: 200,
@@ -82,13 +97,15 @@ function RouteComponent() {
     },
     {
       id: 'actions',
-      cell: () => (
+      cell: (props) => (
         <div className="flex gap-x-4 justify-end">
-          <Button onClick={(props) => {
-            setUpdateItem({
-              item_id: props.row.original.item_id,
+          <Button onClick={() => {
+            setUpdateItem(props.row.original)
+            navigate({
+              to: UpdateItemRoute.fullPath,
+              params: { item_id: props.row.original.item_id },
+              state: props.row.original
             })
-            itemModal.setTrue()
           }}
           >
             <Edit className="size-4" />

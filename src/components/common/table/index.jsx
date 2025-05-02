@@ -29,63 +29,71 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
               <TableHeader className="sticky top-0 shadow bg-white z-50">
                 {table.getHeaderGroups().map(headerGroup => (
                   <TableRow key={headerGroup.id} className="border-none hover:bg-white top-0">
-                    {headerGroup.headers.map(header => (
-                      <TableHead
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="h-auto p-3 font-semibold text-base"
-                        style={header.getSize() === 150 ? { width: '100%' } : { minWidth: `${header.getSize()}px` }}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableHead>
-                    ))}
+                    {headerGroup.headers.map(header => {
+                      return (
+                        <TableHead
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className={cn("h-auto p-3 font-semibold text-base",
+                            header.id.endsWith("align-center") ? "text-center" : ""
+                          )}
+                          style={header.getSize() === 150 ? { width: '100%' } : { minWidth: `${header.getSize()}px` }}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </TableHead>
+                      )
+                    })}
                   </TableRow>
                 ))}
               </TableHeader>
               <TableBody>
                 {isLoading
                   ? [...Array.from({ length: isSubTable ? 3 : DEFAULT_LIMIT * 2 })].map((_, index) => (
-                      <TableRow key={index} className="not-last:[&_td]:border-b">
-                        {columns.map((col, colIndex) => {
-                          const randomWidth = `${Math.floor(Math.random() * 50) + 50}%`
-                          return (
-                            <TableCell
-                              key={colIndex}
-                              className="px-3"
-                              style={col.size ? { minWidth: `${col.size}px` } : { width: '100%' }}
-                            >
-                              <Skeleton style={{ width: randomWidth }} className="h-[30px]" />
-                            </TableCell>
-                          )
-                        })}
-                      </TableRow>
-                    ))
+                    <TableRow key={index} className="not-last:[&_td]:border-b">
+                      {columns.map((col, colIndex) => {
+                        const randomWidth = `${Math.floor(Math.random() * 50) + 50}%`
+                        return (
+                          <TableCell
+                            key={colIndex}
+                            className="px-3"
+                            style={col.size ? { minWidth: `${col.size}px` } : { width: '100%' }}
+                          >
+                            <Skeleton style={{ width: randomWidth }} className="h-[30px]" />
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  ))
                   : table.getRowModel().rows.map((row) => {
-                      return (
-                        <Fragment key={row.id}>
-                          <TableRow className={cn('not-last:[&_td]:border-b', isSubTable && 'hover:bg-transparent')}>
-                            {row.getVisibleCells().map(cell => (
+                    return (
+                      <Fragment key={row.id}>
+                        <TableRow className={cn('not-last:[&_td]:border-b', isSubTable && 'hover:bg-transparent')}>
+                          {row.getVisibleCells().map(cell => {
+                            return (
                               <TableCell
                                 key={cell.id}
-                                className="px-3"
+                                className={cn("px-3",
+                                  cell.id.endsWith("align-center") ? "text-center" : ""
+                                )}
                                 style={cell.column.getSize() === 150 ? { width: '100%' } : { minWidth: `${cell.column.getSize()}px` }}
                               >
                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                               </TableCell>
-                            ))}
+                            )
+                          })}
+                        </TableRow>
+                        {row.getIsExpanded() && (
+                          <TableRow>
+                            <TableCell colSpan={row.getVisibleCells().length} className="bg-bg-1">
+                              <SubComponent row={row} />
+                            </TableCell>
                           </TableRow>
-                          {row.getIsExpanded() && (
-                            <TableRow>
-                              <TableCell colSpan={row.getVisibleCells().length} className="bg-bg-1">
-                                <SubComponent row={row} />
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </Fragment>
-                      )
-                    })}
+                        )}
+                      </Fragment>
+                    )
+                  })}
               </TableBody>
             </TableComponent>
             {isSubTable ? null : <ScrollBar orientation="horizontal" />}

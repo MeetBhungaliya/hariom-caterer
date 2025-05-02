@@ -1,7 +1,6 @@
 import { getCategoryList } from '@/api/query-option'
 import { getCategoriesOption, getSubCategoriesOption } from '@/api/select-options'
 import { ControlledInput } from '@/components/common/controlled-input'
-import { ControlledMultipleSelector } from '@/components/common/controlled-multiselector'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { ControlledTagInput } from '@/components/common/controlled-taginput'
 import { Button } from '@/components/ui/button'
