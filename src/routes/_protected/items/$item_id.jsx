@@ -1,5 +1,5 @@
 import { getItemList } from '@/api/query-option'
-import { getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
+import { getAllCrockeryOption, getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledImageuploader } from '@/components/common/controlled-imageuploader'
 import { ControlledInput } from '@/components/common/controlled-input'
@@ -20,7 +20,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import { toFormData } from 'axios'
 import { ReceiptIndianRupee, UserPen, UtensilsCrossed } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
 import { Route as ItemsRoute } from './index'
 
@@ -30,7 +30,6 @@ export const Route = createFileRoute('/_protected/items/$item_id')({
 
 function RouteComponent() {
   const { location } = useRouterState()
-
 
   const router = useRouter()
   const canGoBack = useCanGoBack()
@@ -63,6 +62,7 @@ function RouteComponent() {
   const category_id = useStore(store, state => state.values.category_id)
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
+  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption({ paginate: false }))
 
   const subCategoriesOption = typeof category_id === "number" ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
   const itemCrockeryOption = typeof category_id === "number" ? queryClient.ensureQueryData(getItemCrockeryOption({ category_id })) : []
@@ -91,6 +91,11 @@ function RouteComponent() {
   }, [category_id])
 
   async function onSubmit({ value }) {
+
+    if(!(value.image instanceof File)){
+      delete value.image
+    }
+
     let result = null
     let crockery_list = []
 
@@ -164,12 +169,43 @@ function RouteComponent() {
     },
   ], [JSON.stringify(itemCrockeryData)])
 
+  const isNewCrockeryAdded = useCallback(
+     () => {
+      const crockery_list = new Set()
+
+      crockeryData.forEach(data => crockery_list.add(data.crockery_id))
+      updateItemCrockery.forEach(data => crockery_list.add(data.crockery_id))
+
+      let isNew = false
+
+      crockery_list.forEach(id => {
+        if (!crockeryData.length) {
+          isNew = true
+        } else {
+          crockeryData.forEach(crockery => {
+            if (crockery.crockery_id !== id) {
+              isNew = true
+            }
+          })
+        }
+      }
+      )
+
+      return isNew
+    },
+    [JSON.stringify([...crockeryData, ...updateItemCrockery])],
+  )
+
+  useEffect(() => {
+    isNewCrockeryAdded()
+  }, [JSON.stringify([...crockeryData, ...updateItemCrockery])])
+
   return (
     <>
       <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
         <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
           <Subscribe
-            selector={state => state.isDirty}
+            selector={(state) => state.isDirty || isNewCrockeryAdded()}
             children={isDirty => (
               <Button
                 type="button"
@@ -177,7 +213,7 @@ function RouteComponent() {
                 disabled={!isDirty || addItemMutation.isPending || updateItemMutation.isPending}
                 onClick={handleSubmit}
               >
-                Save
+                Update
               </Button>
             )}
           />

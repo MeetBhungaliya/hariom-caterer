@@ -3,7 +3,7 @@ import { TagInput } from 'emblor';
 import { useCallback, useEffect, useState } from 'react';
 
 function ControlledTagInput({ id, label, className, prefix, field, enableAutocomplete = false, ...props }) {
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState((field.state.value ?? "").split(",").map((data, index) => ({ id: index, text: data.trim() })) ?? []);
   const [activeTagIndex, setActiveTagIndex] = useState(null);
 
   const errorMsg = field.state.meta.errors?.[0]?.message
