@@ -12,9 +12,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     plugins: [TanStackRouterVite({ target: 'react', autoCodeSplitting: true }), react(), tailwindcss()],
-    base: process.env.VITE_BASE_PATH || "/hariom-caterers",
+    base: env.VITE_BASE_PATH,
     server: {
       host: true,
+    },
+    preview: {
+      port: 3000
     },
     resolve: {
       alias: {

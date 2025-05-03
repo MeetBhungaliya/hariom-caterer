@@ -33,7 +33,7 @@ function Sidebar({ props }) {
     <SidebarComponent {...props} collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
         <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-400 inline-block text-transparent bg-clip-text">
-          {sidebarState.open ? 'Hariom Caterers' : 'H'}
+        {sidebarState.open ? 'Hariom Caterers' : 'H'}
         </h2>
       </SidebarHeader>
       <SidebarContent>
