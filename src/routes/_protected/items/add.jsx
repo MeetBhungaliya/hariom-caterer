@@ -1,5 +1,5 @@
-import { getCategoryList, getItemList } from '@/api/query-option'
-import { getAllCrockeryOption, getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
+import { getItemList } from '@/api/query-option'
+import { getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledImageuploader } from '@/components/common/controlled-imageuploader'
 import { ControlledInput } from '@/components/common/controlled-input'
@@ -9,7 +9,7 @@ import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { METHODS, pagination } from '@/constants/common'
-import { ADD_CATEGORY, ADD_ITEM, UPDATE_CATEGORY, UPDATE_ITEM } from '@/constants/endpoints'
+import { ADD_ITEM } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditItemSchema } from '@/lib/schema'
@@ -48,10 +48,6 @@ function RouteComponent() {
     mutationFn: async data => fetchApi({ url: ADD_ITEM, method: METHODS.POST, data }),
   })
 
-  const updateItemMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: `${UPDATE_ITEM}?_method=${METHODS.PUT}`, method: METHODS.POST, data }),
-  })
-
   const { Field, handleSubmit, Subscribe, reset, store, setFieldValue } = useForm({
     onSubmit,
     validators: { onSubmit: addEditItemSchema }
@@ -88,7 +84,6 @@ function RouteComponent() {
   }, [category_id])
 
   async function onSubmit({ value }) {
-    let result = null
     let crockery_list = []
 
     crockeryData.forEach(data => crockery_list.push({ crockery_id: data.crockery_id, add_to_category: false }))
@@ -99,12 +94,7 @@ function RouteComponent() {
 
     const formData = toFormData(value)
 
-    if ('item_id' in value) {
-      result = await asyncResponseToaster(() => updateItemMutation.mutateAsync(formData))
-    }
-    else {
-      result = await asyncResponseToaster(() => addItemMutation.mutateAsync(formData))
-    }
+    const result = await asyncResponseToaster(() => addItemMutation.mutateAsync(formData))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       queryClient.refetchQueries(getItemList)
@@ -171,7 +161,7 @@ function RouteComponent() {
               <Button
                 type="button"
                 className="w-full max-w-[160px] py-2 text-base bg-sky-600 text-white"
-                disabled={!isDirty || addItemMutation.isPending || updateItemMutation.isPending}
+                disabled={!isDirty || addItemMutation.isPending}
                 onClick={handleSubmit}
               >
                 Save

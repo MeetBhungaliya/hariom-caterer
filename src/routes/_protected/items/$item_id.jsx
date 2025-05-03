@@ -45,10 +45,6 @@ function RouteComponent() {
   const [crockeryData, setCrockeryData] = useState([])
   const [itemCrockeryData, setItemCrockeryData] = useState([])
 
-  const addItemMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_ITEM, method: METHODS.POST, data }),
-  })
-
   const updateItemMutation = useMutation({
     mutationFn: async data => fetchApi({ url: `${UPDATE_ITEM}?_method=${METHODS.PUT}`, method: METHODS.POST, data }),
   })
@@ -62,7 +58,6 @@ function RouteComponent() {
   const category_id = useStore(store, state => state.values.category_id)
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
-  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption({ paginate: false }))
 
   const subCategoriesOption = typeof category_id === "number" ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
   const itemCrockeryOption = typeof category_id === "number" ? queryClient.ensureQueryData(getItemCrockeryOption({ category_id })) : []
@@ -92,11 +87,10 @@ function RouteComponent() {
 
   async function onSubmit({ value }) {
 
-    if(!(value.image instanceof File)){
+    if (!(value.image instanceof File)) {
       delete value.image
     }
 
-    let result = null
     let crockery_list = []
 
     crockeryData.forEach(data => crockery_list.push({ crockery_id: data.crockery_id, add_to_category: false }))
@@ -107,12 +101,7 @@ function RouteComponent() {
 
     const formData = toFormData(value)
 
-    if ('item_id' in value) {
-      result = await asyncResponseToaster(() => updateItemMutation.mutateAsync(formData))
-    }
-    else {
-      result = await asyncResponseToaster(() => addItemMutation.mutateAsync(formData))
-    }
+    const result = await asyncResponseToaster(() => updateItemMutation.mutateAsync(formData))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       queryClient.refetchQueries(getItemList)
@@ -170,7 +159,7 @@ function RouteComponent() {
   ], [JSON.stringify(itemCrockeryData)])
 
   const isNewCrockeryAdded = useCallback(
-     () => {
+    () => {
       const crockery_list = new Set()
 
       crockeryData.forEach(data => crockery_list.add(data.crockery_id))
@@ -210,7 +199,7 @@ function RouteComponent() {
               <Button
                 type="button"
                 className="w-full max-w-[160px] py-2 text-base bg-sky-600 text-white"
-                disabled={!isDirty || addItemMutation.isPending || updateItemMutation.isPending}
+                disabled={!isDirty || updateItemMutation.isPending}
                 onClick={handleSubmit}
               >
                 Update

@@ -1,23 +1,22 @@
 import { getItemList } from '@/api/query-option'
+import ImageViewer_Motion from '@/components/commerce-ui/image-viewer-motion'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
+import Img from '@/components/img'
 import { SubComponent } from '@/components/sub-component'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
 import { paginationSchema } from '@/lib/schema/common'
 import { cn } from '@/lib/utils'
-import { AddEditItemModal } from '@/modals/item'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { ClipboardPenLine, CornerUpRight, Edit, Search } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { useBoolean, useDebounceValue } from 'usehooks-ts'
-import { Route as AddItemRoute } from './add'
+import { useMemo } from 'react'
+import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateItemRoute } from './$item_id'
-import Img from '@/components/img'
-import ImageViewer_Motion from '@/components/commerce-ui/image-viewer-motion'
+import { Route as AddItemRoute } from './add'
 
 export const Route = createFileRoute('/_protected/items/')({
   component: RouteComponent,
@@ -25,11 +24,8 @@ export const Route = createFileRoute('/_protected/items/')({
 })
 
 function RouteComponent() {
-  const [updateItem, setUpdateItem] = useState()
-
   const { page, limit } = Route.useSearch()
   const navigate = Route.useNavigate()
-  const itemModal = useBoolean(false)
 
   const isLoading = useAuthStore(state => state.isLoading)
   const searchForm = useForm()
@@ -100,7 +96,6 @@ function RouteComponent() {
       cell: (props) => (
         <div className="flex gap-x-4 justify-end">
           <Button onClick={() => {
-            setUpdateItem(props.row.original)
             navigate({
               to: UpdateItemRoute.fullPath,
               params: { item_id: props.row.original.item_id },
@@ -147,8 +142,6 @@ function RouteComponent() {
           SubComponent={SubComponent}
         />
       </div>
-
-      <AddEditItemModal modalState={itemModal} data={updateItem} setData={setUpdateItem} />
     </>
   )
 }
