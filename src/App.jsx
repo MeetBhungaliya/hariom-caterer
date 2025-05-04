@@ -48,7 +48,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} context={{ isAuthenticated }} />
+      <RouterProvider router={router} context={{ isAuthenticated }} basepath={import.meta.VITE_BASE_PATH}/>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
