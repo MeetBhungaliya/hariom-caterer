@@ -5,5 +5,5 @@ export const Route = createFileRoute('/_protected/')({
 })
 
 function RouteComponent() {
-  return <div>Hello "/_protected/"!</div>
+  return <></>
 }
