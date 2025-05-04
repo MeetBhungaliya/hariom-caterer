@@ -45,10 +45,10 @@ const router = createRouter({
 
 function App() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated)
-
+  
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} context={{ isAuthenticated }} basepath={import.meta.VITE_BASE_PATH}/>
+      <RouterProvider router={router} context={{ isAuthenticated }} basepath={import.meta.env.VITE_BASE_PATH}/>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
