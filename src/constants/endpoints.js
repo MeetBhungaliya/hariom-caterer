@@ -22,3 +22,6 @@ export const GET_ITEMS = 'getItemList'
 export const GET_ITEM_DETAILS = 'getItemDetails'
 export const ADD_ITEM = 'addItem'
 export const UPDATE_ITEM = 'updateItem'
+
+export const GET_PACKAGES = 'getPackage'
+export const GET_PACKAGE_ITEMS = 'getPackageItem'

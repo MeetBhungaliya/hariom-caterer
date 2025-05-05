@@ -18,7 +18,7 @@ import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateItemRoute } from './$item_id'
 import { Route as AddItemRoute } from './add'
 
-export const Route = createFileRoute('/_protected/items/')({
+export const Route = createFileRoute('/_protected/item/')({
   component: RouteComponent,
   validateSearch: search => paginationSchema.parse(search),
 })

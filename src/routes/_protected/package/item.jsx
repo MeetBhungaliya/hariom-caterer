@@ -1,38 +1,38 @@
-import { getSubCategoryList } from '@/api/query-option'
+import { getPackageItemList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
-import AddEditSubcategoryModal from '@/modals/subcategory'
+import { AddEditPackageItem } from '@/modals/package-item'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { ClipboardList, Edit, Search } from 'lucide-react'
+import { Edit, PackagePlus, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
-export const Route = createFileRoute('/_protected/foods/$category-id')({
+export const Route = createFileRoute('/_protected/package/item')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const params = Route.useParams()
-  const [updateSubCategory, setUpdateSubCategory] = useState()
+  const [updatePackageItem, setUpdatePackageItem] = useState()
 
-  const { name, page, limit } = Route.useSearch()
-  const subCategoryModal = useBoolean(false)
+  const searchForm = useForm()
 
   const isLoading = useAuthStore(state => state.isLoading)
-  const searchForm = useForm()
+  const { page, limit } = Route.useSearch()
+  const packageItemModal = useBoolean(false)
+
   const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500)
 
-  const subCategoryList = useQuery(getSubCategoryList({ page, limit, category_id: params['category-id'], search: debouncedSearchedValue }))
+  const packageItemList = useQuery(getPackageItemList({ page, limit, search: debouncedSearchedValue }))
 
   const columns = useMemo(() => [
     {
-      header: 'Subcategory Id',
-      accessorKey: 'scm_id',
+      header: 'Package Item Id',
+      accessorKey: 'pim_id',
       size: 200,
     },
     {
@@ -43,23 +43,23 @@ function RouteComponent() {
     {
       id: 'actions',
       cell: props => (
-        <div className="flex justify-end">
-          <Button onClick={() => {
-            setUpdateSubCategory({
-              name: props.row.original.name,
-              category_id: props.row.original.category_id,
-              scm_id: props.row.original.scm_id,
-            })
-            subCategoryModal.setTrue()
-          }}
-          >
-            <Edit className="size-4" />
-          </Button>
-        </div>
+        <Button onClick={() => {
+          setUpdatePackageItem({
+            pim_id: props.row.original.pim_id,
+            name: props.row.original.name,
+          })
+          itemModal.setTrue()
+        }}
+        >
+          <Edit className="size-4" />
+        </Button>
       ),
       size: 62,
     },
   ], [])
+
+  if (packageItemList.isError)
+    return null
 
   return (
     <>
@@ -78,17 +78,17 @@ function RouteComponent() {
               />
             )}
           />
-          <IconButton icon={<ClipboardList className="size-5" />} label={`Add ${name || 'Subcategory'}`} onClick={subCategoryModal.setTrue} />
+          <IconButton icon={<PackagePlus className="size-5" />} label="Add Package Item" onClick={packageItemModal.setTrue} />
         </div>
         <Table
           columns={columns}
-          data={subCategoryList.data.result.list}
-          isLoading={isLoading || subCategoryList.fetchStatus === 'fetching'}
-          totalRecords={subCategoryList.data.result.totalRecords}
+          data={packageItemList.data.result.list}
+          isLoading={isLoading || packageItemList.fetchStatus === 'fetching'}
+          totalRecords={packageItemList.data.result.totalRecords}
         />
       </div>
 
-      <AddEditSubcategoryModal modalState={subCategoryModal} data={updateSubCategory} setData={setUpdateSubCategory} />
+      <AddEditPackageItem modalState={packageItemModal} data={updatePackageItem} setData={setUpdatePackageItem} />
     </>
   )
 }

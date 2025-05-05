@@ -8,11 +8,11 @@ import {
 } from '@/components/ui/breadcrumb'
 import { navLinks } from '@/constants/common'
 import { cn } from '@/lib/utils'
-import { Route as SubCategoryRoute } from '@/routes/_protected/foods/$category-id'
+import { Route as SubCategoryRoute } from '@/routes/_protected/food/$category-id'
 import { useLocation, useMatch } from '@tanstack/react-router'
 import { SidebarTrigger, useSidebar } from '../ui/sidebar'
-import { Route as AddItemRoute } from '@/routes/_protected/items/add'
-import { Route as UpdateItemRoute } from '@/routes/_protected/items/$item_id'
+import { Route as AddItemRoute } from '@/routes/_protected/item/add'
+import { Route as UpdateItemRoute } from '@/routes/_protected/item/$item_id'
 
 function Header() {
   const sidebarState = useSidebar()

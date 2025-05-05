@@ -14,15 +14,16 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as ProtectedImport } from './routes/_protected'
 import { Route as ProtectedIndexImport } from './routes/_protected/index'
 import { Route as ProtectedPartyImport } from './routes/_protected/party'
-import { Route as ProtectedPackageImport } from './routes/_protected/package'
 import { Route as ProtectedCrockeryImport } from './routes/_protected/crockery'
 import { Route as ProtectedCoastingImport } from './routes/_protected/coasting'
 import { Route as authLoginImport } from './routes/(auth)/login'
-import { Route as ProtectedItemsIndexImport } from './routes/_protected/items/index'
-import { Route as ProtectedFoodsIndexImport } from './routes/_protected/foods/index'
-import { Route as ProtectedItemsAddImport } from './routes/_protected/items/add'
-import { Route as ProtectedItemsItemidImport } from './routes/_protected/items/$item_id'
-import { Route as ProtectedFoodsCategoryIdImport } from './routes/_protected/foods/$category-id'
+import { Route as ProtectedPackageIndexImport } from './routes/_protected/package/index'
+import { Route as ProtectedItemIndexImport } from './routes/_protected/item/index'
+import { Route as ProtectedFoodIndexImport } from './routes/_protected/food/index'
+import { Route as ProtectedPackageItemImport } from './routes/_protected/package/item'
+import { Route as ProtectedItemAddImport } from './routes/_protected/item/add'
+import { Route as ProtectedItemItemidImport } from './routes/_protected/item/$item_id'
+import { Route as ProtectedFoodCategoryIdImport } from './routes/_protected/food/$category-id'
 
 // Create/Update Routes
 
@@ -40,12 +41,6 @@ const ProtectedIndexRoute = ProtectedIndexImport.update({
 const ProtectedPartyRoute = ProtectedPartyImport.update({
   id: '/party',
   path: '/party',
-  getParentRoute: () => ProtectedRoute,
-} as any)
-
-const ProtectedPackageRoute = ProtectedPackageImport.update({
-  id: '/package',
-  path: '/package',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
@@ -67,33 +62,45 @@ const authLoginRoute = authLoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const ProtectedItemsIndexRoute = ProtectedItemsIndexImport.update({
-  id: '/items/',
-  path: '/items/',
+const ProtectedPackageIndexRoute = ProtectedPackageIndexImport.update({
+  id: '/package/',
+  path: '/package/',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
-const ProtectedFoodsIndexRoute = ProtectedFoodsIndexImport.update({
-  id: '/foods/',
-  path: '/foods/',
+const ProtectedItemIndexRoute = ProtectedItemIndexImport.update({
+  id: '/item/',
+  path: '/item/',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
-const ProtectedItemsAddRoute = ProtectedItemsAddImport.update({
-  id: '/items/add',
-  path: '/items/add',
+const ProtectedFoodIndexRoute = ProtectedFoodIndexImport.update({
+  id: '/food/',
+  path: '/food/',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
-const ProtectedItemsItemidRoute = ProtectedItemsItemidImport.update({
-  id: '/items/$item_id',
-  path: '/items/$item_id',
+const ProtectedPackageItemRoute = ProtectedPackageItemImport.update({
+  id: '/package/item',
+  path: '/package/item',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
-const ProtectedFoodsCategoryIdRoute = ProtectedFoodsCategoryIdImport.update({
-  id: '/foods/$category-id',
-  path: '/foods/$category-id',
+const ProtectedItemAddRoute = ProtectedItemAddImport.update({
+  id: '/item/add',
+  path: '/item/add',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedItemItemidRoute = ProtectedItemItemidImport.update({
+  id: '/item/$item_id',
+  path: '/item/$item_id',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedFoodCategoryIdRoute = ProtectedFoodCategoryIdImport.update({
+  id: '/food/$category-id',
+  path: '/food/$category-id',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
@@ -129,13 +136,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedCrockeryImport
       parentRoute: typeof ProtectedImport
     }
-    '/_protected/package': {
-      id: '/_protected/package'
-      path: '/package'
-      fullPath: '/package'
-      preLoaderRoute: typeof ProtectedPackageImport
-      parentRoute: typeof ProtectedImport
-    }
     '/_protected/party': {
       id: '/_protected/party'
       path: '/party'
@@ -150,39 +150,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedIndexImport
       parentRoute: typeof ProtectedImport
     }
-    '/_protected/foods/$category-id': {
-      id: '/_protected/foods/$category-id'
-      path: '/foods/$category-id'
-      fullPath: '/foods/$category-id'
-      preLoaderRoute: typeof ProtectedFoodsCategoryIdImport
+    '/_protected/food/$category-id': {
+      id: '/_protected/food/$category-id'
+      path: '/food/$category-id'
+      fullPath: '/food/$category-id'
+      preLoaderRoute: typeof ProtectedFoodCategoryIdImport
       parentRoute: typeof ProtectedImport
     }
-    '/_protected/items/$item_id': {
-      id: '/_protected/items/$item_id'
-      path: '/items/$item_id'
-      fullPath: '/items/$item_id'
-      preLoaderRoute: typeof ProtectedItemsItemidImport
+    '/_protected/item/$item_id': {
+      id: '/_protected/item/$item_id'
+      path: '/item/$item_id'
+      fullPath: '/item/$item_id'
+      preLoaderRoute: typeof ProtectedItemItemidImport
       parentRoute: typeof ProtectedImport
     }
-    '/_protected/items/add': {
-      id: '/_protected/items/add'
-      path: '/items/add'
-      fullPath: '/items/add'
-      preLoaderRoute: typeof ProtectedItemsAddImport
+    '/_protected/item/add': {
+      id: '/_protected/item/add'
+      path: '/item/add'
+      fullPath: '/item/add'
+      preLoaderRoute: typeof ProtectedItemAddImport
       parentRoute: typeof ProtectedImport
     }
-    '/_protected/foods/': {
-      id: '/_protected/foods/'
-      path: '/foods'
-      fullPath: '/foods'
-      preLoaderRoute: typeof ProtectedFoodsIndexImport
+    '/_protected/package/item': {
+      id: '/_protected/package/item'
+      path: '/package/item'
+      fullPath: '/package/item'
+      preLoaderRoute: typeof ProtectedPackageItemImport
       parentRoute: typeof ProtectedImport
     }
-    '/_protected/items/': {
-      id: '/_protected/items/'
-      path: '/items'
-      fullPath: '/items'
-      preLoaderRoute: typeof ProtectedItemsIndexImport
+    '/_protected/food/': {
+      id: '/_protected/food/'
+      path: '/food'
+      fullPath: '/food'
+      preLoaderRoute: typeof ProtectedFoodIndexImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/item/': {
+      id: '/_protected/item/'
+      path: '/item'
+      fullPath: '/item'
+      preLoaderRoute: typeof ProtectedItemIndexImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/package/': {
+      id: '/_protected/package/'
+      path: '/package'
+      fullPath: '/package'
+      preLoaderRoute: typeof ProtectedPackageIndexImport
       parentRoute: typeof ProtectedImport
     }
   }
@@ -193,27 +207,29 @@ declare module '@tanstack/react-router' {
 interface ProtectedRouteChildren {
   ProtectedCoastingRoute: typeof ProtectedCoastingRoute
   ProtectedCrockeryRoute: typeof ProtectedCrockeryRoute
-  ProtectedPackageRoute: typeof ProtectedPackageRoute
   ProtectedPartyRoute: typeof ProtectedPartyRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
-  ProtectedFoodsCategoryIdRoute: typeof ProtectedFoodsCategoryIdRoute
-  ProtectedItemsItemidRoute: typeof ProtectedItemsItemidRoute
-  ProtectedItemsAddRoute: typeof ProtectedItemsAddRoute
-  ProtectedFoodsIndexRoute: typeof ProtectedFoodsIndexRoute
-  ProtectedItemsIndexRoute: typeof ProtectedItemsIndexRoute
+  ProtectedFoodCategoryIdRoute: typeof ProtectedFoodCategoryIdRoute
+  ProtectedItemItemidRoute: typeof ProtectedItemItemidRoute
+  ProtectedItemAddRoute: typeof ProtectedItemAddRoute
+  ProtectedPackageItemRoute: typeof ProtectedPackageItemRoute
+  ProtectedFoodIndexRoute: typeof ProtectedFoodIndexRoute
+  ProtectedItemIndexRoute: typeof ProtectedItemIndexRoute
+  ProtectedPackageIndexRoute: typeof ProtectedPackageIndexRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedCoastingRoute: ProtectedCoastingRoute,
   ProtectedCrockeryRoute: ProtectedCrockeryRoute,
-  ProtectedPackageRoute: ProtectedPackageRoute,
   ProtectedPartyRoute: ProtectedPartyRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
-  ProtectedFoodsCategoryIdRoute: ProtectedFoodsCategoryIdRoute,
-  ProtectedItemsItemidRoute: ProtectedItemsItemidRoute,
-  ProtectedItemsAddRoute: ProtectedItemsAddRoute,
-  ProtectedFoodsIndexRoute: ProtectedFoodsIndexRoute,
-  ProtectedItemsIndexRoute: ProtectedItemsIndexRoute,
+  ProtectedFoodCategoryIdRoute: ProtectedFoodCategoryIdRoute,
+  ProtectedItemItemidRoute: ProtectedItemItemidRoute,
+  ProtectedItemAddRoute: ProtectedItemAddRoute,
+  ProtectedPackageItemRoute: ProtectedPackageItemRoute,
+  ProtectedFoodIndexRoute: ProtectedFoodIndexRoute,
+  ProtectedItemIndexRoute: ProtectedItemIndexRoute,
+  ProtectedPackageIndexRoute: ProtectedPackageIndexRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
@@ -225,28 +241,30 @@ export interface FileRoutesByFullPath {
   '/login': typeof authLoginRoute
   '/coasting': typeof ProtectedCoastingRoute
   '/crockery': typeof ProtectedCrockeryRoute
-  '/package': typeof ProtectedPackageRoute
   '/party': typeof ProtectedPartyRoute
   '/': typeof ProtectedIndexRoute
-  '/foods/$category-id': typeof ProtectedFoodsCategoryIdRoute
-  '/items/$item_id': typeof ProtectedItemsItemidRoute
-  '/items/add': typeof ProtectedItemsAddRoute
-  '/foods': typeof ProtectedFoodsIndexRoute
-  '/items': typeof ProtectedItemsIndexRoute
+  '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
+  '/item/$item_id': typeof ProtectedItemItemidRoute
+  '/item/add': typeof ProtectedItemAddRoute
+  '/package/item': typeof ProtectedPackageItemRoute
+  '/food': typeof ProtectedFoodIndexRoute
+  '/item': typeof ProtectedItemIndexRoute
+  '/package': typeof ProtectedPackageIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/login': typeof authLoginRoute
   '/coasting': typeof ProtectedCoastingRoute
   '/crockery': typeof ProtectedCrockeryRoute
-  '/package': typeof ProtectedPackageRoute
   '/party': typeof ProtectedPartyRoute
   '/': typeof ProtectedIndexRoute
-  '/foods/$category-id': typeof ProtectedFoodsCategoryIdRoute
-  '/items/$item_id': typeof ProtectedItemsItemidRoute
-  '/items/add': typeof ProtectedItemsAddRoute
-  '/foods': typeof ProtectedFoodsIndexRoute
-  '/items': typeof ProtectedItemsIndexRoute
+  '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
+  '/item/$item_id': typeof ProtectedItemItemidRoute
+  '/item/add': typeof ProtectedItemAddRoute
+  '/package/item': typeof ProtectedPackageItemRoute
+  '/food': typeof ProtectedFoodIndexRoute
+  '/item': typeof ProtectedItemIndexRoute
+  '/package': typeof ProtectedPackageIndexRoute
 }
 
 export interface FileRoutesById {
@@ -255,14 +273,15 @@ export interface FileRoutesById {
   '/(auth)/login': typeof authLoginRoute
   '/_protected/coasting': typeof ProtectedCoastingRoute
   '/_protected/crockery': typeof ProtectedCrockeryRoute
-  '/_protected/package': typeof ProtectedPackageRoute
   '/_protected/party': typeof ProtectedPartyRoute
   '/_protected/': typeof ProtectedIndexRoute
-  '/_protected/foods/$category-id': typeof ProtectedFoodsCategoryIdRoute
-  '/_protected/items/$item_id': typeof ProtectedItemsItemidRoute
-  '/_protected/items/add': typeof ProtectedItemsAddRoute
-  '/_protected/foods/': typeof ProtectedFoodsIndexRoute
-  '/_protected/items/': typeof ProtectedItemsIndexRoute
+  '/_protected/food/$category-id': typeof ProtectedFoodCategoryIdRoute
+  '/_protected/item/$item_id': typeof ProtectedItemItemidRoute
+  '/_protected/item/add': typeof ProtectedItemAddRoute
+  '/_protected/package/item': typeof ProtectedPackageItemRoute
+  '/_protected/food/': typeof ProtectedFoodIndexRoute
+  '/_protected/item/': typeof ProtectedItemIndexRoute
+  '/_protected/package/': typeof ProtectedPackageIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -272,41 +291,44 @@ export interface FileRouteTypes {
     | '/login'
     | '/coasting'
     | '/crockery'
-    | '/package'
     | '/party'
     | '/'
-    | '/foods/$category-id'
-    | '/items/$item_id'
-    | '/items/add'
-    | '/foods'
-    | '/items'
+    | '/food/$category-id'
+    | '/item/$item_id'
+    | '/item/add'
+    | '/package/item'
+    | '/food'
+    | '/item'
+    | '/package'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/coasting'
     | '/crockery'
-    | '/package'
     | '/party'
     | '/'
-    | '/foods/$category-id'
-    | '/items/$item_id'
-    | '/items/add'
-    | '/foods'
-    | '/items'
+    | '/food/$category-id'
+    | '/item/$item_id'
+    | '/item/add'
+    | '/package/item'
+    | '/food'
+    | '/item'
+    | '/package'
   id:
     | '__root__'
     | '/_protected'
     | '/(auth)/login'
     | '/_protected/coasting'
     | '/_protected/crockery'
-    | '/_protected/package'
     | '/_protected/party'
     | '/_protected/'
-    | '/_protected/foods/$category-id'
-    | '/_protected/items/$item_id'
-    | '/_protected/items/add'
-    | '/_protected/foods/'
-    | '/_protected/items/'
+    | '/_protected/food/$category-id'
+    | '/_protected/item/$item_id'
+    | '/_protected/item/add'
+    | '/_protected/package/item'
+    | '/_protected/food/'
+    | '/_protected/item/'
+    | '/_protected/package/'
   fileRoutesById: FileRoutesById
 }
 
@@ -339,14 +361,15 @@ export const routeTree = rootRoute
       "children": [
         "/_protected/coasting",
         "/_protected/crockery",
-        "/_protected/package",
         "/_protected/party",
         "/_protected/",
-        "/_protected/foods/$category-id",
-        "/_protected/items/$item_id",
-        "/_protected/items/add",
-        "/_protected/foods/",
-        "/_protected/items/"
+        "/_protected/food/$category-id",
+        "/_protected/item/$item_id",
+        "/_protected/item/add",
+        "/_protected/package/item",
+        "/_protected/food/",
+        "/_protected/item/",
+        "/_protected/package/"
       ]
     },
     "/(auth)/login": {
@@ -360,10 +383,6 @@ export const routeTree = rootRoute
       "filePath": "_protected/crockery.jsx",
       "parent": "/_protected"
     },
-    "/_protected/package": {
-      "filePath": "_protected/package.jsx",
-      "parent": "/_protected"
-    },
     "/_protected/party": {
       "filePath": "_protected/party.jsx",
       "parent": "/_protected"
@@ -372,24 +391,32 @@ export const routeTree = rootRoute
       "filePath": "_protected/index.jsx",
       "parent": "/_protected"
     },
-    "/_protected/foods/$category-id": {
-      "filePath": "_protected/foods/$category-id.jsx",
+    "/_protected/food/$category-id": {
+      "filePath": "_protected/food/$category-id.jsx",
       "parent": "/_protected"
     },
-    "/_protected/items/$item_id": {
-      "filePath": "_protected/items/$item_id.jsx",
+    "/_protected/item/$item_id": {
+      "filePath": "_protected/item/$item_id.jsx",
       "parent": "/_protected"
     },
-    "/_protected/items/add": {
-      "filePath": "_protected/items/add.jsx",
+    "/_protected/item/add": {
+      "filePath": "_protected/item/add.jsx",
       "parent": "/_protected"
     },
-    "/_protected/foods/": {
-      "filePath": "_protected/foods/index.jsx",
+    "/_protected/package/item": {
+      "filePath": "_protected/package/item.jsx",
       "parent": "/_protected"
     },
-    "/_protected/items/": {
-      "filePath": "_protected/items/index.jsx",
+    "/_protected/food/": {
+      "filePath": "_protected/food/index.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/item/": {
+      "filePath": "_protected/item/index.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/package/": {
+      "filePath": "_protected/package/index.jsx",
       "parent": "/_protected"
     }
   }

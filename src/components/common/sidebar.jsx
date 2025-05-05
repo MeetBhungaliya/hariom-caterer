@@ -19,7 +19,9 @@ function Sidebar({ props }) {
   const sidebarState = useSidebar()
   const { pathname } = useLocation()
 
-  const activeIndex = useMemo(() => navLinks().findIndex(item => (pathname.split("/").length > 2 ? pathname.split("/").slice(0, -1).join('/') : pathname) === ((item.url !== "/" && item.url.endsWith("/")) ? item.url.split('/').slice(0, -1).join('/') : item.url)), [pathname])
+  const removeBasePath = pathname.replace(new RegExp(`^${import.meta.env.VITE_BASE_PATH}`), '');
+
+  const activeIndex = useMemo(() => navLinks().findIndex(item => (removeBasePath.split("/").length > 2 ? removeBasePath.split("/").slice(0, -1).join('/') : removeBasePath) === ((item.url !== "/" && item.url.endsWith("/")) ? item.url.split('/').slice(0, -1).join('/') : item.url)), [removeBasePath])
 
   const ITEM_HEIGHT = 48.28
   const ITEM_GAP = 8
@@ -33,7 +35,7 @@ function Sidebar({ props }) {
     <SidebarComponent {...props} collapsible="icon">
       <SidebarHeader className="h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
         <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-400 inline-block text-transparent bg-clip-text">
-        {sidebarState.open ? 'Rahul' : 'R'}
+          {sidebarState.open ? 'Hariom' : 'H'}
         </h2>
       </SidebarHeader>
       <SidebarContent>

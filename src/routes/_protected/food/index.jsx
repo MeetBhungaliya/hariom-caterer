@@ -15,7 +15,7 @@ import { Apple, Edit, Eye, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
-export const Route = createFileRoute('/_protected/foods/')({
+export const Route = createFileRoute('/_protected/food/')({
   component: RouteComponent,
   validateSearch: search => paginationSchema.parse(search),
 })

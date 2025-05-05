@@ -24,7 +24,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
 import { Route as ItemsRoute } from './index'
 
-export const Route = createFileRoute('/_protected/items/$item_id')({
+export const Route = createFileRoute('/_protected/item/$item_id')({
   component: RouteComponent,
 })
 

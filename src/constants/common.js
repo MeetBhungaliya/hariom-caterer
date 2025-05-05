@@ -1,11 +1,11 @@
 import { Route as CoastingRoute } from '@/routes/_protected/coasting'
 import { Route as CrockeryRoute } from '@/routes/_protected/crockery'
-import { Route as FoodsRoute } from '@/routes/_protected/foods/index'
+import { Route as FoodsRoute } from '@/routes/_protected/food/index'
 import { Route as DashboardRoute } from '@/routes/_protected/index'
-import { Route as ItemsRoute } from '@/routes/_protected/items/index'
+import { Route as ItemsRoute } from '@/routes/_protected/item/index'
 import { Route as PackageRoute } from '@/routes/_protected/package'
 import { Route as PartyRoute } from '@/routes/_protected/party'
-import { Apple, Boxes, ClipboardList, HandCoins, LayoutDashboard, UserRound, UtensilsCrossed } from 'lucide-react'
+import { Apple, ClipboardList, HandCoins, LayoutDashboard, Package, UserRound, UtensilsCrossed } from 'lucide-react'
 
 export const METHODS = {
   GET: 'GET',
@@ -38,14 +38,14 @@ export function navLinks() {
       search: pagination,
     },
     {
-      title: 'Foods',
+      title: 'Food',
       url: FoodsRoute.fullPath,
       icon: Apple,
       search: pagination,
       active: FoodsRoute.parentRoute.fullPath,
     },
     {
-      title: 'Items',
+      title: 'Item',
       url: ItemsRoute.fullPath,
       icon: ClipboardList,
       search: pagination,
@@ -60,8 +60,7 @@ export function navLinks() {
     {
       title: 'Package',
       url: PackageRoute.fullPath,
-      icon: Boxes,
-      search: pagination,
+      icon: Package,
     },
     {
       title: 'Party',

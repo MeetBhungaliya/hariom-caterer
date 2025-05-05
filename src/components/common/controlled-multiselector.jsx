@@ -148,11 +148,16 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (!arrayOptions || onSearch) return;
-    const newOption = transToGroupOption(arrayOptions || [], groupBy);
+    let newOption = []
+    if (typeof arrayOptions === "function") {
+      newOption = transToGroupOption(arrayOptions() || [], groupBy);
+    } else {
+      newOption = transToGroupOption(arrayOptions || [], groupBy);
+    }
     if (JSON.stringify(newOption) !== JSON.stringify(options)) {
       setOptions(newOption);
     }
-  }, [arrayOptions, arrayDefaultOptions, groupBy, onSearch, options]);
+  }, [arrayOptions, defaultOptions, groupBy, onSearch, options]);
 
   useEffect(() => {
     const doSearchSync = () => {
@@ -248,8 +253,8 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
     >
       <div
         className={cn(
-          'min-h-10 rounded-md border border-input text-base ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 md:text-sm',
-          { 'px-3 py-2': selected.length !== 0, 'cursor-text': !disabled && selected.length !== 0 },
+          'rounded-lg border border-input text-base md:text-sm',
+          { 'px-3 py-3': selected.length !== 0, 'cursor-text': !disabled && selected.length !== 0 },
           className
         )}
         onClick={() => !disabled && inputRef?.current?.focus()}
@@ -300,9 +305,10 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
             placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : placeholder}
             className={cn(
               'flex-1 bg-transparent outline-none placeholder:text-muted-foreground',
+              'text-sm md:text-base font-medium',
               {
                 'w-full': hidePlaceholderWhenSelected,
-                'px-3 py-2': selected.length === 0,
+                'px-3 py-3': selected.length === 0,
                 'ml-1': selected.length !== 0,
               },
               inputProps?.className
@@ -327,7 +333,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
       <div className="relative">
         {open && (
           <CommandList
-            className="absolute top-1 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in"
+            className="absolute top-1 z-10 w-full rounded-lg border bg-popover text-popover-foreground shadow-md outline-none animate-in"
             onMouseLeave={() => setOnScrollbar(false)}
             onMouseEnter={() => setOnScrollbar(true)}
             onMouseUp={() => inputRef?.current?.focus()}
