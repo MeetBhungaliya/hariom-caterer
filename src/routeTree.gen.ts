@@ -21,6 +21,7 @@ import { Route as ProtectedPackageIndexImport } from './routes/_protected/packag
 import { Route as ProtectedItemIndexImport } from './routes/_protected/item/index'
 import { Route as ProtectedFoodIndexImport } from './routes/_protected/food/index'
 import { Route as ProtectedPackageItemImport } from './routes/_protected/package/item'
+import { Route as ProtectedPackageAddImport } from './routes/_protected/package/add'
 import { Route as ProtectedItemAddImport } from './routes/_protected/item/add'
 import { Route as ProtectedItemItemidImport } from './routes/_protected/item/$item_id'
 import { Route as ProtectedFoodCategoryIdImport } from './routes/_protected/food/$category-id'
@@ -83,6 +84,12 @@ const ProtectedFoodIndexRoute = ProtectedFoodIndexImport.update({
 const ProtectedPackageItemRoute = ProtectedPackageItemImport.update({
   id: '/package/item',
   path: '/package/item',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
+const ProtectedPackageAddRoute = ProtectedPackageAddImport.update({
+  id: '/package/add',
+  path: '/package/add',
   getParentRoute: () => ProtectedRoute,
 } as any)
 
@@ -171,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedItemAddImport
       parentRoute: typeof ProtectedImport
     }
+    '/_protected/package/add': {
+      id: '/_protected/package/add'
+      path: '/package/add'
+      fullPath: '/package/add'
+      preLoaderRoute: typeof ProtectedPackageAddImport
+      parentRoute: typeof ProtectedImport
+    }
     '/_protected/package/item': {
       id: '/_protected/package/item'
       path: '/package/item'
@@ -212,6 +226,7 @@ interface ProtectedRouteChildren {
   ProtectedFoodCategoryIdRoute: typeof ProtectedFoodCategoryIdRoute
   ProtectedItemItemidRoute: typeof ProtectedItemItemidRoute
   ProtectedItemAddRoute: typeof ProtectedItemAddRoute
+  ProtectedPackageAddRoute: typeof ProtectedPackageAddRoute
   ProtectedPackageItemRoute: typeof ProtectedPackageItemRoute
   ProtectedFoodIndexRoute: typeof ProtectedFoodIndexRoute
   ProtectedItemIndexRoute: typeof ProtectedItemIndexRoute
@@ -226,6 +241,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedFoodCategoryIdRoute: ProtectedFoodCategoryIdRoute,
   ProtectedItemItemidRoute: ProtectedItemItemidRoute,
   ProtectedItemAddRoute: ProtectedItemAddRoute,
+  ProtectedPackageAddRoute: ProtectedPackageAddRoute,
   ProtectedPackageItemRoute: ProtectedPackageItemRoute,
   ProtectedFoodIndexRoute: ProtectedFoodIndexRoute,
   ProtectedItemIndexRoute: ProtectedItemIndexRoute,
@@ -246,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/item/$item_id': typeof ProtectedItemItemidRoute
   '/item/add': typeof ProtectedItemAddRoute
+  '/package/add': typeof ProtectedPackageAddRoute
   '/package/item': typeof ProtectedPackageItemRoute
   '/food': typeof ProtectedFoodIndexRoute
   '/item': typeof ProtectedItemIndexRoute
@@ -261,6 +278,7 @@ export interface FileRoutesByTo {
   '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/item/$item_id': typeof ProtectedItemItemidRoute
   '/item/add': typeof ProtectedItemAddRoute
+  '/package/add': typeof ProtectedPackageAddRoute
   '/package/item': typeof ProtectedPackageItemRoute
   '/food': typeof ProtectedFoodIndexRoute
   '/item': typeof ProtectedItemIndexRoute
@@ -278,6 +296,7 @@ export interface FileRoutesById {
   '/_protected/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/_protected/item/$item_id': typeof ProtectedItemItemidRoute
   '/_protected/item/add': typeof ProtectedItemAddRoute
+  '/_protected/package/add': typeof ProtectedPackageAddRoute
   '/_protected/package/item': typeof ProtectedPackageItemRoute
   '/_protected/food/': typeof ProtectedFoodIndexRoute
   '/_protected/item/': typeof ProtectedItemIndexRoute
@@ -296,6 +315,7 @@ export interface FileRouteTypes {
     | '/food/$category-id'
     | '/item/$item_id'
     | '/item/add'
+    | '/package/add'
     | '/package/item'
     | '/food'
     | '/item'
@@ -310,6 +330,7 @@ export interface FileRouteTypes {
     | '/food/$category-id'
     | '/item/$item_id'
     | '/item/add'
+    | '/package/add'
     | '/package/item'
     | '/food'
     | '/item'
@@ -325,6 +346,7 @@ export interface FileRouteTypes {
     | '/_protected/food/$category-id'
     | '/_protected/item/$item_id'
     | '/_protected/item/add'
+    | '/_protected/package/add'
     | '/_protected/package/item'
     | '/_protected/food/'
     | '/_protected/item/'
@@ -366,6 +388,7 @@ export const routeTree = rootRoute
         "/_protected/food/$category-id",
         "/_protected/item/$item_id",
         "/_protected/item/add",
+        "/_protected/package/add",
         "/_protected/package/item",
         "/_protected/food/",
         "/_protected/item/",
@@ -401,6 +424,10 @@ export const routeTree = rootRoute
     },
     "/_protected/item/add": {
       "filePath": "_protected/item/add.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/package/add": {
+      "filePath": "_protected/package/add.jsx",
       "parent": "/_protected"
     },
     "/_protected/package/item": {

@@ -181,7 +181,6 @@ function RouteComponent() {
               )
             }}
           />
-
         </div>
         <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
           <div className='h-full px-1 bg-white rounded-xl overflow-hidden'>

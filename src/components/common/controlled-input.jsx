@@ -5,7 +5,7 @@ import { Textarea } from '../ui/textarea'
 import { useEventListener } from 'usehooks-ts'
 import { useRef } from 'react'
 
-function ControlledInput({ id, label, className, prefix, field, type = 'text', textarea, ...props }) {
+function ControlledInput({ id, label,containerClassName, className, prefix, field, type = 'text', textarea, ...props }) {
   const errorMsg = field.state.meta.errors?.[0]?.message
 
   const inputRef = useRef()
@@ -62,7 +62,7 @@ function ControlledInput({ id, label, className, prefix, field, type = 'text', t
   }
 
   return (
-    <div className="relative w-full">
+    <div className={cn("relative w-full", containerClassName)}>
       {prefix && (
         <div
           className={cn(

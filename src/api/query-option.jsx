@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_DETAILS, GET_ITEMS, GET_PACKAGE_ITEMS, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
+import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_DETAILS, GET_ITEMS, GET_PACKAGE_ITEMS, GET_PACKAGES, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
 import { queryOptions } from '@tanstack/react-query'
 
@@ -47,6 +47,14 @@ export function getItemDetails({ item_id }) {
     queryKey: [GET_ITEM_DETAILS, item_id],
     queryFn: async () => fetchApi({ url: `${GET_ITEM_DETAILS}?item_id=${item_id}` }),
     placeholderData: { result: { crockery: [] } },
+  })
+}
+
+export function getPackagesList() {
+  return queryOptions({
+    queryKey: [GET_PACKAGES],
+    queryFn: async () => fetchApi({ url: GET_PACKAGES }),
+    placeholderData: { result: { list: [], totalRecords: null } },
   })
 }
 
