@@ -1,11 +1,11 @@
-import { getCategoryList } from '@/api/query-option'
+import { getPackageItemList } from '@/api/query-option'
 import { getCategoriesOption } from '@/api/select-options'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { ControlledMultipleSelector } from '@/components/common/controlled-multiselector'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { METHODS } from '@/constants/common'
-import { ADD_CATEGORY, UPDATE_CATEGORY } from '@/constants/endpoints'
+import { ADD_PACKAGE_ITEM, UPDATE_PACKAGE_ITEM } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
 import { addEditCategorySchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
@@ -13,19 +13,32 @@ import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Package, UserPen } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 function AddEditPackageItem({ modalState, data, setData }) {
+
+  const [categoryOptions, setCategoryOptions] = useState([]);
+
   const queryClient = useQueryClient()
 
-  const addCategoryMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_CATEGORY, method: METHODS.POST, data }),
+  const addPackageItemMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: ADD_PACKAGE_ITEM, method: METHODS.POST, data }),
   })
 
-  const updateCategoryMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: UPDATE_CATEGORY, method: METHODS.PUT, data }),
+  const updatePackageItemMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: UPDATE_PACKAGE_ITEM, method: METHODS.PUT, data }),
   })
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
+
+  useEffect(() => {
+    if (!modalState.value) return
+
+    categoriesOption.then(res => {
+      const data = res?.result?.list
+      setCategoryOptions(data.map(option => ({ value: option.category_id, label: option.name })))
+    })
+  }, [modalState.value]);
 
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
@@ -36,15 +49,15 @@ function AddEditPackageItem({ modalState, data, setData }) {
   async function onSubmit({ value }) {
     let result = null
 
-    if ('category_id' in value) {
-      result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync(value))
+    if ('pim_id' in value) {
+      result = await asyncResponseToaster(() => updatePackageItemMutation.mutateAsync(value))
     }
     else {
-      result = await asyncResponseToaster(() => addCategoryMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => addPackageItemMutation.mutateAsync(value))
     }
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
-      queryClient.refetchQueries(getCategoryList)
+      queryClient.refetchQueries(getPackageItemList)
       onClose()
     }
   }
@@ -104,12 +117,10 @@ function AddEditPackageItem({ modalState, data, setData }) {
                   label="Package Item name"
                   field={field}
                   prefix={<Package className="size-5" />}
-                  options={() => {
-                    return [{
-                      label: "abc",
-                      value: "def"
-                    }]
-                  }}
+                  options={categoryOptions}
+                  removeAll={false}
+                  emptyIndicator="No Package Item left"
+                  onChange={data => field.handleChange(data.map(d => d.value))}
                 />
               )}
             />
@@ -127,7 +138,7 @@ function AddEditPackageItem({ modalState, data, setData }) {
                 <Button
                   type="submit"
                   className="py-2 text-base bg-sky-600 text-white"
-                  disabled={!isDirty || addCategoryMutation.isPending || updateCategoryMutation.isPending}
+                  disabled={!isDirty || addPackageItemMutation.isPending || updatePackageItemMutation.isPending}
                 >
                   {data ? 'Update' : 'Save'}
                 </Button>

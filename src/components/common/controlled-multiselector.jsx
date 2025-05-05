@@ -57,7 +57,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
   const {
     value,
     onChange,
-    placeholder,
+    label,
     defaultOptions = [],
     options: arrayOptions,
     delay,
@@ -78,13 +78,15 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
     commandProps = {},
     inputProps = {},
     hideClearAllButton = false,
+    loading,
+    removeAll
   } = props;
 
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [onScrollbar, setOnScrollbar] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(loading);
   const [selected, setSelected] = useState(value || []);
   const [options, setOptions] = useState(transToGroupOption(defaultOptions, groupBy));
   const [inputValue, setInputValue] = useState('');
@@ -148,12 +150,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (!arrayOptions || onSearch) return;
-    let newOption = []
-    if (typeof arrayOptions === "function") {
-      newOption = transToGroupOption(arrayOptions() || [], groupBy);
-    } else {
-      newOption = transToGroupOption(arrayOptions || [], groupBy);
-    }
+    const newOption = transToGroupOption(arrayOptions || [], groupBy);
     if (JSON.stringify(newOption) !== JSON.stringify(options)) {
       setOptions(newOption);
     }
@@ -264,8 +261,9 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
             <Badge
               key={option.value}
               className={cn(
-                'data-[disabled]:bg-muted-foreground data-[disabled]:text-muted data-[disabled]:hover:bg-muted-foreground',
-                'data-[fixed]:bg-muted-foreground data-[fixed]:text-muted data-[fixed]:hover:bg-muted-foreground',
+                'data-[disabled]:bg-sky-600 data-[disabled]:text-muted data-[disabled]:hover:bg-sky-600',
+                'data-[fixed]:bg-sky-600 data-[fixed]:text-muted data-[fixed]:hover:bg-sky-600',
+                'rounded-sm bg-sky-600',
                 badgeClassName
               )}
               data-fixed={option.fixed}
@@ -281,7 +279,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
                 onClick={() => handleUnselect(option)}
                 onMouseDown={(e) => e.preventDefault()}
               >
-                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+                <X className="h-3 w-3 text-sky600bg-sky-600 cursor-pointer" />
               </button>
             </Badge>
           ))}
@@ -302,9 +300,9 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
               setOpen(true);
               inputProps?.onFocus?.(event);
             }}
-            placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : placeholder}
+            placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : label}
             className={cn(
-              'flex-1 bg-transparent outline-none placeholder:text-muted-foreground',
+              'flex-1 bg-transparent outline-none placeholder:text-sky600bg-sky-600',
               'text-sm md:text-base font-medium',
               {
                 'w-full': hidePlaceholderWhenSelected,
@@ -314,7 +312,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
               inputProps?.className
             )}
           />
-          <button
+          {removeAll && <button
             type="button"
             onClick={() => {
               const fixed = selected.filter((s) => s.fixed);
@@ -327,7 +325,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
             )}
           >
             <X />
-          </button>
+          </button>}
         </div>
       </div>
       <div className="relative">
@@ -366,7 +364,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
                           }}
                           className={cn(
                             'cursor-pointer',
-                            option.disable && 'cursor-default text-muted-foreground'
+                            option.disable && 'cursor-default text-sky600bg-sky-600'
                           )}
                         >
                           {option.label}
