@@ -109,9 +109,9 @@ const AddEditItemCrockery = ({ modalState, data, setData, filterCrockeryData }) 
                 Cancel
               </Button>
             </DialogClose>
-            <Subscribe
-              selector={state => state.isDirty}
-              children={isDirty => (
+              <Subscribe
+                selector={state => state.isDirty}
+                children={isDirty => (
                 <Button
                   type="submit"
                   className="py-2 text-base bg-sky-600 text-white"

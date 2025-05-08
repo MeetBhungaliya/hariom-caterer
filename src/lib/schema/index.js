@@ -40,3 +40,16 @@ export const addEditItemSchema = z.object({
 export const addEditItemCrockerySchema = z.object({
   crockery_id: z.string({ required_error: 'Crockery is required' }).trim().regex(/^\d+$/, 'Invalid crockery id').or(z.number()),
 })
+
+export const addEditPackageSchema = z.object({
+  name: z.string({ required_error: 'Name is required' }).trim(),
+  data: z.array(
+    z.object({
+      pim_id: z.number({ required_error: 'Package item is required' }),
+      quantity: z
+        .number({ required_error: 'Quantity is required' })
+        .min(1, { message: 'Quantity must be at least 1' })
+        .max(99, { message: 'Quantity must be less than 100' }),
+    })
+  ).min(1, { message: 'At least one package item is required' })
+})

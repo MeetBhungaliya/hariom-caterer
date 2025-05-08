@@ -4,8 +4,9 @@ import { Minus, Plus } from 'lucide-react'
 import * as React from 'react'
 import { Input } from '../ui/input'
 import { Button } from '../ui/button'
+import { cn } from '@/lib/utils'
 
-function ControlledCountInput({ value = 0, min = -Infinity, max = Infinity, onChange }) {
+function ControlledCountInput({ value = 0, min = -Infinity, max = Infinity, onChange, error }) {
   const defaultValue = React.useRef(value)
   const inputRef = React.useRef(null)
   const [animated, setAnimated] = React.useState(true)
@@ -34,7 +35,9 @@ function ControlledCountInput({ value = 0, min = -Infinity, max = Infinity, onCh
     onChange?.(newVal)
   }
   return (
-    <div className="w-full max-w-[100px] min-w-[100px] border-l flex justify-between items-stretch font-semibold">
+    <div className={cn("w-full max-w-[100px] min-w-[100px] border-l flex justify-between items-stretch font-semibold",
+      error ? "border-red-500" : "border-border-1"
+    )}>
       <Button
         aria-hidden="true"
         tabIndex={-1}

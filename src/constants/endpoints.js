@@ -25,5 +25,6 @@ export const UPDATE_ITEM = 'updateItem'
 
 export const GET_PACKAGES = 'getPackage'
 export const GET_PACKAGE_ITEMS = 'getPackageItem'
+export const ADD_PACKAGE = 'addPackage'
 export const ADD_PACKAGE_ITEM = 'addPackageItem'
 export const UPDATE_PACKAGE_ITEM = 'updatePackageItem'
