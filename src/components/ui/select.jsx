@@ -25,6 +25,7 @@ function SelectTrigger({
   className,
   size = 'default',
   children,
+  icon,
   ...props
 }) {
   return (
@@ -38,9 +39,11 @@ function SelectTrigger({
       {...props}
     >
       {children}
-      <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 opacity-50" />
-      </SelectPrimitive.Icon>
+      {icon
+        && <SelectPrimitive.Icon asChild>
+          <ChevronDownIcon className="size-4 opacity-50" />
+        </SelectPrimitive.Icon>}
+
     </SelectPrimitive.Trigger>
   )
 }
@@ -67,7 +70,7 @@ function SelectContent({
         <SelectScrollUpButton />
         <SelectPrimitive.Viewport
           className={cn('p-1', position === 'popper'
-          && 'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1')}
+            && 'h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1')}
         >
           {children}
         </SelectPrimitive.Viewport>

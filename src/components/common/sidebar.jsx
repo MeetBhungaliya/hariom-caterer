@@ -19,7 +19,7 @@ function Sidebar({ props }) {
   const sidebarState = useSidebar()
   const { pathname } = useLocation()
 
-  const removeBasePath = pathname.replace(new RegExp(`^${import.meta.env.VITE_BASE_PATH}`), '');
+  const removeBasePath = pathname.replace(new RegExp(`^${import.meta.env.VITE_BASE_PATH}`), '/');
 
   const activeIndex = useMemo(() => navLinks().findIndex(item => (removeBasePath.split("/").length > 2 ? removeBasePath.split("/").slice(0, -1).join('/') : removeBasePath) === ((item.url !== "/" && item.url.endsWith("/")) ? item.url.split('/').slice(0, -1).join('/') : item.url)), [removeBasePath])
 

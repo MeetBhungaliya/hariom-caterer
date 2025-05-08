@@ -94,7 +94,7 @@ async function refreshTokenAndRetry(query, mutation, variables) {
 
     if (!isRedirecting) {
       isRedirecting = true
-      window.location = LoginRoute.fullPath
+      window.location = `${import.meta.env.VITE_BASE_PATH}${LoginRoute.fullPath}`
     }
 
     if (typeof error === 'string')

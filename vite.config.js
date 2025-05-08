@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename)
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  console.log(`${env.VITE_BASE_PATH}/?page=1&limit=10`)
   return {
     plugins: [TanStackRouterVite({ target: 'react', autoCodeSplitting: true }), react(), tailwindcss()],
     base: env.VITE_BASE_PATH,
