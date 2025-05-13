@@ -13,8 +13,8 @@ import { useState } from "react"
 
 const ControlledDatepicker = ({ label, field, extendContent }) => {
   const errorMsg = field.state.meta.errors?.[0]?.message
-
   const [date, setDate] = useState()
+  
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -24,7 +24,7 @@ const ControlledDatepicker = ({ label, field, extendContent }) => {
           aria-expanded={open}
           data-invalid={Boolean(errorMsg)}
           className={cn(
-            'w-full p-0 border !border-gray-300 justify-start rounded-lg relative text-base hover:bg-transparent',
+            'w-full p-0 gap-3 border !border-gray-300 justify-start rounded-lg relative text-sm md:text-base hover:bg-transparent',
             date ? 'text-text-1 border-sky-600 hover:text-text-1' : 'text-gray-500 border-border hover:text-gray-500',
             'data-[invalid=true]:!text-red-500 data-[invalid=true]:!border-red-400 data-[invalid=true]:!ring-red-200',
           )}
@@ -35,7 +35,7 @@ const ControlledDatepicker = ({ label, field, extendContent }) => {
           {date ? format(date, "PPP") : <span>{label}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] w-auto p-0">
         <Calendar
           mode="single"
           selected={date}

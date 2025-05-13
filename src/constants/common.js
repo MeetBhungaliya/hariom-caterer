@@ -71,4 +71,6 @@ export function navLinks() {
   ]
 }
 
-export const routes = []
+export const TIME_OPTIONS = [
+  { value: "Morning", label: "Morning" }
+]

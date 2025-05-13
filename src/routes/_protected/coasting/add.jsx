@@ -1,12 +1,15 @@
 import { getAllPacakgeOption, getAllPartyOption } from '@/api/select-options'
 import ControlledDatepicker from '@/components/common/controlled-datepicker'
+import { ControlledInput } from '@/components/common/controlled-input'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { TIME_OPTIONS } from '@/constants/common'
 import { paginationSchema } from '@/lib/schema/common'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { Calendar, Package, UserRound } from 'lucide-react'
+import { BadgeIndianRupee, Calendar, EthernetPort, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
 
 export const Route = createFileRoute('/_protected/coasting/add')({
   component: RouteComponent,
@@ -86,19 +89,83 @@ function RouteComponent() {
                 label="Select date"
                 field={field}
                 prefix={<Calendar className="size-5" />}
-                extendContent={
-                  <Field
-                    name="time"
-                    children={field => (
-                      <ControlledDatepicker
-                        id="time"
-                        label="Select date"
-                        field={field}
-                        prefix={<Calendar className="size-5" />}
-                      />
-                    )}
-                  />
-                }
+              />
+            )}
+          />
+          <Field
+            name="person"
+            children={field => (
+              <ControlledInput
+                id="person"
+                label="Person"
+                field={field}
+                prefix={<Users className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="jain_counter"
+            children={field => (
+              <ControlledInput
+                id="jain_counter"
+                label="Jain Counter"
+                field={field}
+                prefix={<EthernetPort className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="time"
+            children={(field) => {
+              return (
+                <Select defaultValue={field.state.value} onValueChange={field.state.onChange}>
+                  <SelectTrigger className="w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium border-gray-300 data-[placeholder]:text-gray-500 rounded-lg">
+                    <div className='h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white'>
+                      <Timer />
+                    </div>
+                    <SelectValue placeholder="Select item" />
+                  </SelectTrigger>
+                  <SelectContent align="middle" className="min-w-20">
+                    {TIME_OPTIONS.map((item, key) => (
+                      <SelectItem key={key} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )
+            }}
+          />
+          <Field
+            name="venue"
+            children={field => (
+              <ControlledInput
+                id="venue"
+                label="Venue"
+                field={field}
+                prefix={<MapPinHouse className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="per_plate_cost"
+            children={field => (
+              <ControlledInput
+                id="per_plate_cost"
+                label="Per Plate Cost"
+                field={field}
+                prefix={<BadgeIndianRupee className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="selling_price"
+            children={field => (
+              <ControlledInput
+                id="selling_price"
+                label="Selling Price"
+                field={field}
+                prefix={<BadgeIndianRupee className="size-5" />}
               />
             )}
           />

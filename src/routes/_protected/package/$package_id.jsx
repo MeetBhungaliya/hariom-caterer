@@ -151,7 +151,8 @@ function RouteComponent() {
                                 </SelectContent>
                               </Select>
                             )
-                          }} />
+                          }}
+                        />
                         <Field
                           name={`data[${index}].quantity`}
                           children={(subField) => <ControlledCountInput min={1} max={99} value={subField.state.value} onChange={value => subField.handleChange(value)} error={error?.length} />}
