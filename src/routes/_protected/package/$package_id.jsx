@@ -1,27 +1,40 @@
+import { getPackagesList } from '@/api/query-option'
 import { getPackageItemList } from '@/api/select-options'
 import { ControlledCountInput } from '@/components/common/controlled-count-input'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { METHODS } from '@/constants/common'
+import { UPDATE_PACKAGE } from '@/constants/endpoints'
 import { addEditPackageSchema } from '@/lib/schema'
+import { asyncResponseToaster } from '@/lib/toasts'
 import { cn } from '@/lib/utils'
 import { useForm, useStore } from '@tanstack/react-form'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouterState } from '@tanstack/react-router'
 import { PlusCircle, Trash2, UserPen } from 'lucide-react'
+import { Route as PackageItemRoute } from './index'
+import { fetchApi } from '@/lib/api'
 
 export const Route = createFileRoute('/_protected/package/$package_id')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const queryClient = useQueryClient()
+  const navigate = Route.useNavigate()
   const { location } = useRouterState()
+  const { package_id } = Route.useParams()
 
-  const { Field, handleSubmit, Subscribe, store } = useForm({
+  const { Field, handleSubmit, Subscribe, store, setFieldValue, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditPackageSchema },
     defaultValues: { name: location.state.name, data: location.state.package_item }
+  })
+
+  const updatePackageMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: `${UPDATE_PACKAGE}?_method=${METHODS.PUT}`, method: METHODS.POST, data }),
   })
 
   const itemFields = useStore(store, state => state.values.data)
@@ -29,14 +42,36 @@ function RouteComponent() {
   const packageItemList = useQuery(getPackageItemList())
 
   async function onSubmit({ value }) {
-    const deletedItems = []
+    const deleted_ppm_ids = []
+
+    const currentItems = new Set(value.data.map(item => item.ppm_id))
 
     location.state.package_item.forEach((item, index) => {
-      const isInValue = value.data.some(valueItem => valueItem.pim_id !== item.pim_id)
-      if (!isInValue) deletedItems.push(item.pim_id)
+      if (!item.ppm_id) { }
+      const isInValue = currentItems.has(item.ppm_id)
+      if (!isInValue) deleted_ppm_ids.push(item.ppm_id)
     })
 
-    console.log(value, location.state, deletedItems )
+    const payload = {
+      package_id,
+      deleted_ppm_ids,
+      name: value.name,
+      data: value.data.map(item => ({ pim_id: item.pim_id, quantity: item.quantity }))
+    }
+
+    const result = await asyncResponseToaster(() => updatePackageMutation.mutateAsync(payload))
+
+    if (result.success && result.value && result.value.ResponseCode === 1) {
+      queryClient.refetchQueries(getPackagesList)
+      onClose()
+    }
+  }
+
+  function onClose() {
+    setTimeout(() => {
+      navigate({ to: PackageItemRoute.fullPath })
+      reset({ name: undefined, data: [] })
+    }, 150)
   }
 
   return <>
@@ -87,9 +122,10 @@ function RouteComponent() {
         </div>
         <ScrollArea className="px-3 pb-4 overflow-hidden">
           <div className='w-full px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto'>
-            {itemFields.map((item, index) => {
+            {(itemFields ?? []).map((item, index) => {
               return (
                 <Subscribe
+                  key={index}
                   selector={state => state.errors}
                   children={(dataErrors) => {
                     const error = dataErrors.at(0)?.[`data[${index}].pim_id`]
@@ -102,7 +138,7 @@ function RouteComponent() {
                           name={`data[${index}].pim_id`}
                           children={(subField) => {
                             return (
-                              <Select defaultValue={subField.state.value} onValueChange={value => subField.handleChange(value)}>
+                              <Select defaultValue={subField.state.value} onValueChange={value => setFieldValue(`data[${index}]`, { pim_id: value, quantity: 1 })}>
                                 <SelectTrigger icon={false} className="w-full !h-auto border-border-1 gap-x-0 rounded-lg bg-transparent px-2 py-3 focus:ring-0 focus:ring-offset-0 border-none rounded-none truncate">
                                   <SelectValue placeholder="Select item" className="text-text-2 text-sm" />
                                 </SelectTrigger>

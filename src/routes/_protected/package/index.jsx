@@ -26,7 +26,7 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-5 overflow-hidden">
+      <div className="h-full flex flex-col gap-y-4 overflow-hidden">
         <div className="bg-white p-4 rounded-xl flex gap-x-4 justify-end">
           <IconButton
             icon={<Boxes className="size-5" />}
@@ -41,12 +41,12 @@ function RouteComponent() {
           />
         </div>
         <ScrollArea className="overflow-hidden">
-          <ResponsiveMasonry columnsCountBreakPoints={{ 300: 2, 500: 3, 700: 4, 900: 5 }}>
+          <ResponsiveMasonry columnsCountBreakPoints={{ 360: 2, 640: 3, 900: 3, 1200: 4 }}>
             <Masonry>
               {packageList.data.result.list.map(data => {
                 return (
-                  <Card key={data.package_id} className="w-full max-w-md h-max py-0 gap-y-0">
-                    <CardHeader className="py-4 flex justify-between items-center rounded-t-xl bg-sky-600 gap-0">
+                  <Card key={data.package_id} className="w-full max-w-md h-max my-1 py-0 gap-y-0">
+                    <CardHeader className="p-4 flex justify-between items-center rounded-t-xl bg-sky-600 gap-0">
                       <CardTitle className="text-white">{data.name}</CardTitle>
                       <Button type="button" className="w-full max-w-8 p-1.5 rounded-sm text-white hover:text-text-1 hover:bg-white"
                         onClick={() => navigate({
@@ -61,7 +61,7 @@ function RouteComponent() {
                     <CardContent className="p-0 flex flex-col justify-center divide-y">
                       {data.package_item.map(item => {
                         return (
-                          <div className='flex justify-between px-6 py-2'>
+                          <div key={item.ppm_id} className='flex justify-between px-4 py-2'>
                             <span className="w-full text-sm">{item.name}</span>
                             <span className='w-full text-sm max-w-8 text-center'>{item.quantity}</span>
                           </div>

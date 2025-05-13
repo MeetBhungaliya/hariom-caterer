@@ -302,7 +302,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
             }}
             placeholder={hidePlaceholderWhenSelected && selected.length !== 0 ? '' : label}
             className={cn(
-              'flex-1 bg-transparent outline-none placeholder:text-sky600bg-sky-600',
+              'flex-1 bg-transparent outline-none placeholder:text-sky600',
               'text-sm md:text-base font-medium',
               {
                 'w-full': hidePlaceholderWhenSelected,

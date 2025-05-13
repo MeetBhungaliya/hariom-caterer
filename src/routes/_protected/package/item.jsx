@@ -45,10 +45,11 @@ function RouteComponent() {
       cell: props => (
         <Button onClick={() => {
           setUpdatePackageItem({
-            pim_id: props.row.original.pim_id,
             name: props.row.original.name,
+            pim_id: props.row.original.pim_id,
+            categories: props.row.original.category
           })
-          itemModal.setTrue()
+          packageItemModal.setTrue()
         }}
         >
           <Edit className="size-4" />

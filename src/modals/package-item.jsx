@@ -43,11 +43,13 @@ function AddEditPackageItem({ modalState, data, setData }) {
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCategorySchema },
-    defaultValues: data,
+    defaultValues: data ? {name: data.name, pim_id: data.pim_id, category_ids: data.categories.map(item=>({value: item.category_id, label: item.name}))}:{},
   })
 
   async function onSubmit({ value }) {
     let result = null
+    console.log(value)
+    return
 
     if ('pim_id' in value) {
       result = await asyncResponseToaster(() => updatePackageItemMutation.mutateAsync(value))
@@ -120,6 +122,7 @@ function AddEditPackageItem({ modalState, data, setData }) {
                   options={categoryOptions}
                   removeAll={false}
                   emptyIndicator="No Package Item left"
+                  value={field.state.value ?? []}
                   onChange={data => field.handleChange(data.map(d => d.value))}
                 />
               )}

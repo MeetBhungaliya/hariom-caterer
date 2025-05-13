@@ -1,21 +1,21 @@
-import { ControlledInput } from '@/components/common/controlled-input'
-import { Button } from '@/components/ui/button'
-import { useForm, useStore } from '@tanstack/react-form'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { PlusCircle, Trash2, UserPen } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getPackagesList } from '@/api/query-option'
 import { getPackageItemList } from '@/api/select-options'
 import { ControlledCountInput } from '@/components/common/controlled-count-input'
+import { ControlledInput } from '@/components/common/controlled-input'
+import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { addEditPackageSchema } from '@/lib/schema'
-import { cn } from '@/lib/utils'
-import { fetchApi } from '@/lib/api'
-import { ADD_PACKAGE } from '@/constants/endpoints'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { METHODS } from '@/constants/common'
-import { getPackagesList } from '@/api/query-option'
-import { Route as PackageItemRoute } from './index'
+import { ADD_PACKAGE } from '@/constants/endpoints'
+import { fetchApi } from '@/lib/api'
+import { addEditPackageSchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
+import { cn } from '@/lib/utils'
+import { useForm, useStore } from '@tanstack/react-form'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { PlusCircle, Trash2, UserPen } from 'lucide-react'
+import { Route as PackageItemRoute } from './index'
 
 export const Route = createFileRoute('/_protected/package/add')({
     component: RouteComponent,
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_protected/package/add')({
 
 function RouteComponent() {
     const queryClient = useQueryClient()
-    const navigate = useNavigate()
+    const navigate = Route.useNavigate()
 
     const { Field, handleSubmit, Subscribe, store } = useForm({
         onSubmit,
@@ -109,6 +109,7 @@ function RouteComponent() {
                         {itemFields.map((item, index) => {
                             return (
                                 <Subscribe
+                                    key={index}
                                     selector={state => state.errors}
                                     children={(dataErrors) => {
                                         const error = dataErrors.at(0)?.[`data[${index}].pim_id`]
