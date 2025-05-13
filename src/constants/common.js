@@ -1,4 +1,4 @@
-import { Route as CoastingRoute } from '@/routes/_protected/coasting'
+import { Route as CoastingRoute } from '@/routes/_protected/coasting/index'
 import { Route as CrockeryRoute } from '@/routes/_protected/crockery'
 import { Route as FoodsRoute } from '@/routes/_protected/food/index'
 import { Route as DashboardRoute } from '@/routes/_protected/index'
@@ -70,3 +70,5 @@ export function navLinks() {
     },
   ]
 }
+
+export const routes = []

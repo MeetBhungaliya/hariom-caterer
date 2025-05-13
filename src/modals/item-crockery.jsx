@@ -12,7 +12,7 @@ import { useCallback } from 'react'
 const AddEditItemCrockery = ({ modalState, data, setData, filterCrockeryData }) => {
   const queryClient = useQueryClient()
 
-  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption({ paginate: false }))
+  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption())
 
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,

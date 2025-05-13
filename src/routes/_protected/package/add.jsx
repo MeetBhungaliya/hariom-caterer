@@ -58,7 +58,7 @@ function RouteComponent() {
     if (packageItemList.isError)
         return null
 
-    return <>
+    return (
         <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
             <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
                 <Subscribe
@@ -78,7 +78,6 @@ function RouteComponent() {
                         </Button>
                     )}
                 />
-
             </div>
             <div className='h-full flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden'>
                 <div className='p-6 pb-0 flex gap-x-2'>
@@ -164,5 +163,5 @@ function RouteComponent() {
                 </ScrollArea>
             </div>
         </div>
-    </>
+    )
 }

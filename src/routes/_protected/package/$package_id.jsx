@@ -46,7 +46,7 @@ function RouteComponent() {
 
     const currentItems = new Set(value.data.map(item => item.ppm_id))
 
-    location.state.package_item.forEach((item, index) => {
+    location.state.package_item.forEach(item => {
       if (!item.ppm_id) { }
       const isInValue = currentItems.has(item.ppm_id)
       if (!isInValue) deleted_ppm_ids.push(item.ppm_id)
@@ -90,7 +90,7 @@ function RouteComponent() {
               }}
               disabled={!isDirty}
             >
-              Add
+              Update
             </Button>
           )}
         />
