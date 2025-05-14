@@ -25,7 +25,7 @@ function RouteComponent() {
     const queryClient = useQueryClient()
     const navigate = Route.useNavigate()
 
-    const { Field, handleSubmit, Subscribe, store } = useForm({
+    const { Field, handleSubmit, Subscribe, store, reset } = useForm({
         onSubmit,
         validators: { onSubmit: addEditPackageSchema },
         defaultValues: { data: [] }
@@ -113,7 +113,7 @@ function RouteComponent() {
                                     children={(dataErrors) => {
                                         const error = dataErrors.at(0)?.[`data[${index}].pim_id`]
                                         return (
-                                            <div key={index} className={cn('flex border rounded-md',
+                                            <div key={index} className={cn('flex border rounded-lg',
                                                 error?.length ? "border-red-500" : "border-border-1"
                                             )}>
                                                 <Field
@@ -122,7 +122,7 @@ function RouteComponent() {
                                                     children={(subField) => {
                                                         return (
                                                             <Select defaultValue={subField.state.value} onValueChange={value => subField.handleChange(value)}>
-                                                                <SelectTrigger icon={false} className="w-full !h-auto border-border-1 gap-x-0 rounded-lg bg-transparent px-2 py-3 focus:ring-0 focus:ring-offset-0 border-none rounded-none truncate">
+                                                                <SelectTrigger icon={false} className="w-full !h-auto border-border-1 gap-x-0 bg-transparent px-2 py-3 focus:ring-0 focus:ring-offset-0 border-none truncate">
                                                                     <SelectValue placeholder="Select item" className="text-text-2 text-sm" />
                                                                 </SelectTrigger>
                                                                 <SelectContent align="middle" className="min-w-20">

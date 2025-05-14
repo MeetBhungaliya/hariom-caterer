@@ -34,7 +34,7 @@ function RouteComponent() {
             onClick={() => navigate({ to: AddPackageRoute.fullPath })}
           />
           <IconButton
-            iconend
+            iconEnd={true}
             icon={<ChevronRight className="size-5" />}
             label="View Package Item"
             onClick={() => navigate({ to: ItemRoute.fullPath, search: pagination })}

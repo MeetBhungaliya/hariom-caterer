@@ -41,7 +41,9 @@ function SelectTrigger({
       {children}
       {icon
         && <SelectPrimitive.Icon asChild>
-          <ChevronDownIcon className="size-4 opacity-50" />
+          <div className='h-full ml-auto aspect-square flex items-center justify-center'>
+            <ChevronDownIcon className="size-5" />
+          </div>
         </SelectPrimitive.Icon>}
 
     </SelectPrimitive.Trigger>

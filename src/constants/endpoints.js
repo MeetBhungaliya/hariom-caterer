@@ -31,3 +31,6 @@ export const UPDATE_PACKAGE_ITEM = 'updatePackageItem'
 export const UPDATE_PACKAGE = 'updatePackage'
 
 export const GET_ORDERS = 'getOrder'
+export const ADD_COASTING = 'addCosting'
+
+export const GET_LIST_OF_ITEM_OF_PACKAGE = 'getListOfItemOfPackage'

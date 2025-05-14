@@ -1,32 +1,79 @@
-import { getAllPacakgeOption, getAllPartyOption } from '@/api/select-options'
+import { getOrdersList } from '@/api/query-option'
+import { getAllPackageOption, getAllPartyOption } from '@/api/select-options'
+import { CoastingItem } from '@/components/CoastingItem'
 import ControlledDatepicker from '@/components/common/controlled-datepicker'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TIME_OPTIONS } from '@/constants/common'
-import { paginationSchema } from '@/lib/schema/common'
+import { Separator } from '@/components/ui/separator'
+import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
+import { ADD_COASTING } from '@/constants/endpoints'
+import { useAuthStore } from '@/hooks/use-auth'
+import { fetchApi } from '@/lib/api'
+import { addEditCoastingSchema } from '@/lib/schema'
+import { asyncResponseToaster } from '@/lib/toasts'
+import { cn } from '@/lib/utils'
 import { useForm } from '@tanstack/react-form'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { BadgeIndianRupee, Calendar, EthernetPort, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
+import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
+import { Route as OrderRoute } from './index'
 
 export const Route = createFileRoute('/_protected/coasting/add')({
   component: RouteComponent,
-  validateSearch: search => paginationSchema.parse(search),
 })
 
 function RouteComponent() {
+  const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
 
-  const { Field, handleSubmit, Subscribe, store } = useForm({
-    onSubmit,
+  const addCoastingMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
   })
 
-  const partiesOption = queryClient.ensureQueryData(getAllPartyOption())
-  const packagesOption = queryClient.ensureQueryData(getAllPacakgeOption())
+  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset } = useForm({
+    onSubmit,
+    validators: { onSubmit: addEditCoastingSchema },
+  })
 
-  async function onSubmit({ value }) { }
+  const isLoading = useAuthStore(state => state.isLoading)
+
+  const partiesOption = queryClient.ensureQueryData(getAllPartyOption())
+  const packagesOption = queryClient.ensureQueryData(getAllPackageOption())
+
+  async function onSubmit({ value }) {
+
+    const item = value.item.map(item => ({
+      pim_id: Number(item.pim_id),
+      item_id: Number(item.item_id),
+    }))
+
+    const payload = {
+      ...value,
+      item,
+      pro: value.pro ?? 0,
+      bom_boys: value.bom_boys ?? 0,
+      packed_bottle: value.packed_bottle ?? 0,
+    }
+
+    const result = await asyncResponseToaster(() => addCoastingMutation.mutateAsync(payload))
+
+    if (result.success && result.value && result.value.ResponseCode === 1) {
+      queryClient.refetchQueries(getOrdersList)
+      onClose()
+    }
+  }
+
+  function onClose() {
+    setTimeout(() => {
+      navigate({ to: OrderRoute.fullPath, search: pagination })
+      reset()
+    }, 150)
+  }
 
   return (
     <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
@@ -50,7 +97,7 @@ function RouteComponent() {
         />
       </div>
       <div className='h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden'>
-        <div className='grid grid-cols-3 gap-6'>
+        <div className='grid grid-cols-3 gap-4'>
           <Field
             name="client_id"
             children={field => (
@@ -62,12 +109,18 @@ function RouteComponent() {
                 options={partiesOption}
                 searchPlaceholder="Search party"
                 prepareOption={data => data.map(data => ({ value: data.client_id, label: data.name }))}
-                updateTriggerer={field.state.value}
+                updateTriggerer={field.state.value || isLoading}
               />
             )}
           />
           <Field
             name="package_id"
+            listeners={{
+              onChange: async (e) => {
+                const packageItem = (((await packagesOption).result.list ?? []).find(item => item.package_id === e.value)?.package_item)
+                setFieldValue('item', packageItem)
+              }
+            }}
             children={field => (
               <ControlledSearchableSelect
                 id="package_id"
@@ -77,7 +130,7 @@ function RouteComponent() {
                 options={packagesOption}
                 searchPlaceholder="Search party"
                 prepareOption={data => data.map(data => ({ value: data.package_id, label: data.name }))}
-                updateTriggerer={field.state.value}
+                updateTriggerer={field.state.value || isLoading}
               />
             )}
           />
@@ -96,6 +149,7 @@ function RouteComponent() {
             name="person"
             children={field => (
               <ControlledInput
+                type='number'
                 id="person"
                 label="Person"
                 field={field}
@@ -107,8 +161,9 @@ function RouteComponent() {
             name="jain_counter"
             children={field => (
               <ControlledInput
+                type='number'
                 id="jain_counter"
-                label="Jain Counter"
+                label="Jain counter"
                 field={field}
                 prefix={<EthernetPort className="size-5" />}
               />
@@ -117,13 +172,18 @@ function RouteComponent() {
           <Field
             name="time"
             children={(field) => {
+              const errorMsg = field.state.meta.errors?.[0]?.message
               return (
-                <Select defaultValue={field.state.value} onValueChange={field.state.onChange}>
-                  <SelectTrigger className="w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium border-gray-300 data-[placeholder]:text-gray-500 rounded-lg">
+                <Select defaultValue={field.state.value} onValueChange={field.handleChange}>
+                  <SelectTrigger icon
+                    className={cn("w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
+                      errorMsg ? "border-red-500 data-[placeholder]:text-red-500" : "data-[placeholder]:text-gray-500 border-gray-300"
+                    )}
+                  >
                     <div className='h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white'>
                       <Timer />
                     </div>
-                    <SelectValue placeholder="Select item" />
+                    <SelectValue placeholder="Select time" />
                   </SelectTrigger>
                   <SelectContent align="middle" className="min-w-20">
                     {TIME_OPTIONS.map((item, key) => (
@@ -147,29 +207,112 @@ function RouteComponent() {
               />
             )}
           />
-          <Field
-            name="per_plate_cost"
-            children={field => (
-              <ControlledInput
-                id="per_plate_cost"
-                label="Per Plate Cost"
-                field={field}
-                prefix={<BadgeIndianRupee className="size-5" />}
-              />
-            )}
-          />
-          <Field
-            name="selling_price"
-            children={field => (
-              <ControlledInput
-                id="selling_price"
-                label="Selling Price"
-                field={field}
-                prefix={<BadgeIndianRupee className="size-5" />}
-              />
-            )}
-          />
         </div>
+        <Separator />
+        <ScrollArea className="h-full pr-3 overflow-hidden">
+          <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto'>
+            <Field name="item" mode="array">
+              {(field) => {
+                const value = field.state.value ?? []
+                return value.map((item, i) => {
+                  return <CoastingItem key={i + item.pim_id} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} />
+                })
+              }}
+            </Field>
+          </div>
+        </ScrollArea>
+        <Separator />
+        <div className='flex items-center justify-between'>
+          <div className='space-y-4'>
+            <div className='flex items-center gap-x-2'>
+              <Label>Pro</Label>
+              <Field
+                name="pro"
+                children={field => (
+                  <Input
+                    type="number"
+                    className="w-full max-w-10 px-1 text-center"
+                    value={field.state.value}
+                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault()
+                      }
+                    }}
+                  />
+                )}
+              />
+              <span className='text-sm'>Extra</span>
+            </div>
+            <div className='flex items-center gap-x-2'>
+              <Label>Bom. Boys</Label>
+              <Field
+                name="bom_boys"
+                children={field => (
+                  <Input
+                    type="number"
+                    className="w-full max-w-10 px-1 text-center"
+                    value={field.state.value}
+                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault()
+                      }
+                    }}
+                  />
+                )}
+              />
+              <span className='text-sm'>Extra</span>
+            </div>
+            <div className='flex items-center gap-x-2'>
+              <Label>Packed Bottles</Label>
+              <Field
+                name="packed_bottle"
+                children={field => (
+                  <Input
+                    type="number"
+                    className="w-full max-w-10 px-1 text-center"
+                    value={field.state.value}
+                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault()
+                      }
+                    }}
+                  />
+                )}
+              />
+              <span className='text-sm'>Extra</span>
+            </div>
+          </div>
+          <div className='space-y-4'>
+            <Field
+              name="per_plate_cost"
+              children={field => (
+                <ControlledInput
+                  type='number'
+                  id="per_plate_cost"
+                  label="Per Plate Cost"
+                  field={field}
+                  prefix={<IndianRupee className="size-5" />}
+                />
+              )}
+            />
+            <Field
+              name="selling_price"
+              children={field => (
+                <ControlledInput
+                  type='number'
+                  id="selling_price"
+                  label="Selling Price"
+                  field={field}
+                  prefix={<IndianRupee className="size-5" />}
+                />
+              )}
+            />
+          </div>
+        </div>
+
       </div>
     </div>
   )

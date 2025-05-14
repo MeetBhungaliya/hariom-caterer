@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_CROCKERIES, GET_PACKAGE_ITEMS, GET_PACKAGES, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
+import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_CROCKERIES, GET_LIST_OF_ITEM_OF_PACKAGE, GET_PACKAGE_ITEMS, GET_PACKAGES, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
 import { queryOptions } from '@tanstack/react-query'
 
@@ -51,10 +51,18 @@ export function getAllPartyOption() {
   })
 }
 
-export function getAllPacakgeOption() {
+export function getAllPackageOption() {
   return queryOptions({
     queryKey: [GET_PACKAGES],
     queryFn: async () => fetchApi({ url: `${GET_PACKAGES}?paginate=false` }),
+    placeholderData: [],
+  })
+}
+
+export function getListOfItemOfPackage({ pim_id }) {
+  return queryOptions({
+    queryKey: [GET_LIST_OF_ITEM_OF_PACKAGE, pim_id],
+    queryFn: async () => fetchApi({ url: `${GET_LIST_OF_ITEM_OF_PACKAGE}?pim_id=${pim_id}` }),
     placeholderData: [],
   })
 }

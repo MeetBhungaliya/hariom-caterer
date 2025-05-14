@@ -126,7 +126,7 @@ function RouteComponent() {
         recipe: undefined,
         image: undefined
       })
-      setData(undefined)
+      setUpdateItemCrockery([])
     }, 150)
   }
 

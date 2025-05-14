@@ -53,3 +53,24 @@ export const addEditPackageSchema = z.object({
     })
   ).min(1, { message: 'At least one package item is required' })
 })
+
+export const coastingItemSchema = z.object({
+  pim_id: z.number({ required_error: 'Item ID is required' }),
+  item_id: z.number({ required_error: 'Item ID is required' }),
+})
+
+export const addEditCoastingSchema = z.object({
+  client_id: z.number({ required_error: 'Party selection is required' }),
+  package_id: z.number({ required_error: 'Package selection is required' }),
+  date: z.date({ required_error: 'Date is required' }),
+  person: z.number({ required_error: 'Number of persons is required' }).min(1, 'At least one person must be specified'),
+  jain_counter: z.number({ required_error: 'Jain counter is required' }).min(0, 'Jain counter cannot be negative'),
+  time: z.string({ required_error: 'Event time is required' }).min(1, 'Please select a valid time slot'),
+  venue: z.string({ required_error: 'Venue is required' }).min(1, 'Please enter a valid venue address'),
+  item: z.array(coastingItemSchema, { required_error: 'At least one item is required' }).min(1, 'Please add at least one item to the coasting list'),
+  per_plate_cost: z.number({required_error: 'Per plate cost is required'}),
+  selling_price: z.number({required_error: 'Selling price is required'}),
+  pro: z.number({invalid_type_error: 'Pro must be a number'}).optional(),
+  bom_boys: z.number({invalid_type_error: 'Bombay boys count must be a number'}).optional(),
+  packed_bottle: z.number({invalid_type_error: 'Packed bottles count must be a number'}).optional(),
+})

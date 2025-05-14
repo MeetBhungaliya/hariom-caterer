@@ -11,9 +11,11 @@ import moment from 'moment'
 import { useMemo } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as AddCoastingRoute } from './add'
+import { paginationSchema } from '@/lib/schema/common'
 
 export const Route = createFileRoute('/_protected/coasting/')({
   component: RouteComponent,
+  validateSearch: search => paginationSchema.parse(search),
 })
 
 function RouteComponent() {
@@ -91,6 +93,9 @@ function RouteComponent() {
       size: 200,
     },
   ], [])
+
+  if (ordersList.isError)
+    return null
 
   return (
     <>

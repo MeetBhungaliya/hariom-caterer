@@ -7,7 +7,7 @@ import { useBoolean } from 'usehooks-ts'
 import { Button } from '../ui/button'
 import { Skeleton } from '../ui/skeleton'
 
-function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholder, disabled, options }) {
+function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholder, disabled, options, icon = true, containerClassName }) {
   const optionsState = useBoolean()
   const errorMsg = field.state.meta.errors?.[0]?.message
 
@@ -17,12 +17,13 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
         <Button
           variant="outline"
           role="combobox"
-          aria-expanded={open}
+          aria-expanded={optionsState.value}
           data-invalid={Boolean(errorMsg)}
           className={cn(
             'w-full p-3 border !border-gray-300 justify-start rounded-lg relative hover:bg-transparent',
             optionsState.value ? 'border-sky-600' : 'border-border',
             'data-[invalid=true]:!text-red-500 data-[invalid=true]:!border-red-400 data-[invalid=true]:!ring-red-200',
+            containerClassName
           )}
           disabled={disabled}
         >
@@ -32,32 +33,33 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
                 'h-full absolute left-0 top-0',
                 'aspect-square flex items-center justify-center',
                 'rounded-l-lg bg-sky-600 backdrop-blur-sm',
-                'text-white dark:text-white',
+                'text-white dark:text-white'
               )}
             >
               {prefix}
             </div>
           )}
 
-          <span className={cn("ml-[3rem] text-sm md:text-base",
-            field.state.value ? "text-text-1" : "text-gray-500 dark:text-gray-400",
+          <span className={cn("text-sm md:text-base",
+            prefix ? "ml-[3rem]" : "ml-0",
+            errorMsg ? "text-red-500" : field.state.value ? "text-text-1" : "text-gray-500"
           )}>
             {field.state.value
               ? options.find(option => option.value === field.state.value)?.label
               : label}
           </span>
 
-          <div
-            className={cn(
-              'h-[calc(100%-2px)] absolute right-0 top-[1px] transition-colors',
-              'aspect-square flex items-center justify-center',
-              'rounded-r-lg bg-transparent backdrop-blur-sm',
-              optionsState.value ? 'text-sky-600' : 'text-gray-500',
-            )}
-          >
-            <ChevronDown className="size-5" />
-          </div>
-
+          {icon
+            && <div
+              className={cn(
+                'h-[calc(100%-2px)] absolute right-0 top-[1px] transition-colors',
+                'aspect-square flex items-center justify-center',
+                'rounded-r-lg bg-transparent backdrop-blur-sm',
+                optionsState.value ? 'text-sky-600' : 'text-gray-500',
+              )}
+            >
+              <ChevronDown className="size-5" />
+            </div>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="p-0 w-[var(--radix-popover-trigger-width)]">
@@ -95,7 +97,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
 
 function ControlledSearchableSelect(props) {
   const [options, setOptions] = useState([])
-  const [isLoading, setIsLoading] = useState()
+  const [isLoading, setIsLoading] = useState(props.isLoading ?? false)
 
   const getOptions = useCallback(
     async () => {
@@ -107,11 +109,13 @@ function ControlledSearchableSelect(props) {
             if (Array.isArray(result.value.result.list)) {
               if (props.filterFn) {
                 setOptions(props.filterFn(props.prepareOption(result.value.result.list)))
-              }else{
+              } else {
                 setOptions(props.prepareOption(result.value.result.list))
               }
             }
           }
+        } else {
+          setOptions(props.options)
         }
       }
       catch (error) {
