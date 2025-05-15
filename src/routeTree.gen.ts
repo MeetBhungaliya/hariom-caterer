@@ -27,6 +27,7 @@ import { Route as ProtectedItemAddImport } from './routes/_protected/item/add'
 import { Route as ProtectedItemItemidImport } from './routes/_protected/item/$item_id'
 import { Route as ProtectedFoodCategoryIdImport } from './routes/_protected/food/$category-id'
 import { Route as ProtectedCoastingAddImport } from './routes/_protected/coasting/add'
+import { Route as ProtectedCoastingOrderidImport } from './routes/_protected/coasting/$order_id'
 
 // Create/Update Routes
 
@@ -125,6 +126,12 @@ const ProtectedCoastingAddRoute = ProtectedCoastingAddImport.update({
   getParentRoute: () => ProtectedRoute,
 } as any)
 
+const ProtectedCoastingOrderidRoute = ProtectedCoastingOrderidImport.update({
+  id: '/coasting/$order_id',
+  path: '/coasting/$order_id',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -162,6 +169,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof ProtectedIndexImport
+      parentRoute: typeof ProtectedImport
+    }
+    '/_protected/coasting/$order_id': {
+      id: '/_protected/coasting/$order_id'
+      path: '/coasting/$order_id'
+      fullPath: '/coasting/$order_id'
+      preLoaderRoute: typeof ProtectedCoastingOrderidImport
       parentRoute: typeof ProtectedImport
     }
     '/_protected/coasting/add': {
@@ -250,6 +264,7 @@ interface ProtectedRouteChildren {
   ProtectedCrockeryRoute: typeof ProtectedCrockeryRoute
   ProtectedPartyRoute: typeof ProtectedPartyRoute
   ProtectedIndexRoute: typeof ProtectedIndexRoute
+  ProtectedCoastingOrderidRoute: typeof ProtectedCoastingOrderidRoute
   ProtectedCoastingAddRoute: typeof ProtectedCoastingAddRoute
   ProtectedFoodCategoryIdRoute: typeof ProtectedFoodCategoryIdRoute
   ProtectedItemItemidRoute: typeof ProtectedItemItemidRoute
@@ -267,6 +282,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedCrockeryRoute: ProtectedCrockeryRoute,
   ProtectedPartyRoute: ProtectedPartyRoute,
   ProtectedIndexRoute: ProtectedIndexRoute,
+  ProtectedCoastingOrderidRoute: ProtectedCoastingOrderidRoute,
   ProtectedCoastingAddRoute: ProtectedCoastingAddRoute,
   ProtectedFoodCategoryIdRoute: ProtectedFoodCategoryIdRoute,
   ProtectedItemItemidRoute: ProtectedItemItemidRoute,
@@ -290,6 +306,7 @@ export interface FileRoutesByFullPath {
   '/crockery': typeof ProtectedCrockeryRoute
   '/party': typeof ProtectedPartyRoute
   '/': typeof ProtectedIndexRoute
+  '/coasting/$order_id': typeof ProtectedCoastingOrderidRoute
   '/coasting/add': typeof ProtectedCoastingAddRoute
   '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/item/$item_id': typeof ProtectedItemItemidRoute
@@ -308,6 +325,7 @@ export interface FileRoutesByTo {
   '/crockery': typeof ProtectedCrockeryRoute
   '/party': typeof ProtectedPartyRoute
   '/': typeof ProtectedIndexRoute
+  '/coasting/$order_id': typeof ProtectedCoastingOrderidRoute
   '/coasting/add': typeof ProtectedCoastingAddRoute
   '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/item/$item_id': typeof ProtectedItemItemidRoute
@@ -328,6 +346,7 @@ export interface FileRoutesById {
   '/_protected/crockery': typeof ProtectedCrockeryRoute
   '/_protected/party': typeof ProtectedPartyRoute
   '/_protected/': typeof ProtectedIndexRoute
+  '/_protected/coasting/$order_id': typeof ProtectedCoastingOrderidRoute
   '/_protected/coasting/add': typeof ProtectedCoastingAddRoute
   '/_protected/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/_protected/item/$item_id': typeof ProtectedItemItemidRoute
@@ -349,6 +368,7 @@ export interface FileRouteTypes {
     | '/crockery'
     | '/party'
     | '/'
+    | '/coasting/$order_id'
     | '/coasting/add'
     | '/food/$category-id'
     | '/item/$item_id'
@@ -366,6 +386,7 @@ export interface FileRouteTypes {
     | '/crockery'
     | '/party'
     | '/'
+    | '/coasting/$order_id'
     | '/coasting/add'
     | '/food/$category-id'
     | '/item/$item_id'
@@ -384,6 +405,7 @@ export interface FileRouteTypes {
     | '/_protected/crockery'
     | '/_protected/party'
     | '/_protected/'
+    | '/_protected/coasting/$order_id'
     | '/_protected/coasting/add'
     | '/_protected/food/$category-id'
     | '/_protected/item/$item_id'
@@ -428,6 +450,7 @@ export const routeTree = rootRoute
         "/_protected/crockery",
         "/_protected/party",
         "/_protected/",
+        "/_protected/coasting/$order_id",
         "/_protected/coasting/add",
         "/_protected/food/$category-id",
         "/_protected/item/$item_id",
@@ -454,6 +477,10 @@ export const routeTree = rootRoute
     },
     "/_protected/": {
       "filePath": "_protected/index.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/coasting/$order_id": {
+      "filePath": "_protected/coasting/$order_id.jsx",
       "parent": "/_protected"
     },
     "/_protected/coasting/add": {

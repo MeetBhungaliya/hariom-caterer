@@ -1,43 +1,85 @@
-import { getOrdersList } from '@/api/query-option'
+import { getOrderItemList, getOrdersList } from '@/api/query-option'
 import { getAllPackageOption, getAllPartyOption } from '@/api/select-options'
 import { CoastingItem } from '@/components/coasting-item'
 import ControlledDatepicker from '@/components/common/controlled-datepicker'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
-import { ADD_COASTING } from '@/constants/endpoints'
+import { UPDATE_COASTING } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
 import { cn } from '@/lib/utils'
 import { useForm } from '@tanstack/react-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute, useRouterState } from '@tanstack/react-router'
+import { Calendar, EthernetPort, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
+import { useEffect } from 'react'
 import { Route as OrderRoute } from './index'
 
-export const Route = createFileRoute('/_protected/coasting/add')({
+export const Route = createFileRoute('/_protected/coasting/$order_id')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const navigate = Route.useNavigate()
+  const { location } = useRouterState()
+  const order_id = Route.useParams({ select: params => params.order_id })
+
   const queryClient = useQueryClient()
 
-  const addCoastingMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
+  const orderItemsList = useQuery(getOrderItemList({ order_id }))
+
+  useEffect(() => {
+    const items = orderItemsList.data.result.items || []
+
+    const filteredExtraItems = items.filter(item => item.pim_id)
+
+    const packageItems = []
+
+    filteredExtraItems.forEach(item => {
+      item.order_item.forEach(orderItem => {
+        packageItems.push({
+          item_id: orderItem.item_id,
+          pim_id: orderItem.pim_id,
+          oim_id: orderItem.oim_id,
+          price: orderItem.price,
+          name: item.name,
+        })
+      })
+
+    })
+
+    setFieldValue('item', packageItems)
+  }, [orderItemsList.isFetching]);
+
+  const updateCoastingMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: UPDATE_COASTING, method: METHODS.PUT, data }),
   })
 
   const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCoastingSchema },
+    defaultValues: {
+      order_id: location.state.order_id,
+      client_id: location.state.client_id,
+      package_id: location.state.package_id,
+      date: new Date(location.state.date),
+      time: location.state.time,
+      person: location.state.person,
+      venue: location.state.venue,
+      jain_counter: location.state.jain_counter,
+      per_plate_cost: location.state.per_plate_cost,
+      selling_price: location.state.selling_price,
+      pro: location.state.pro,
+      bom_boys: location.state.bom_boys,
+      packed_bottle: location.state.packed_bottle,
+    },
   })
 
   const isLoading = useAuthStore(state => state.isLoading)
@@ -46,7 +88,6 @@ function RouteComponent() {
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption())
 
   async function onSubmit({ value }) {
-
     const item = value.item.map(item => ({
       pim_id: Number(item.pim_id),
       item_id: Number(item.item_id),
@@ -60,7 +101,7 @@ function RouteComponent() {
       packed_bottle: value.packed_bottle ?? 0,
     }
 
-    const result = await asyncResponseToaster(() => addCoastingMutation.mutateAsync(payload))
+    const result = await asyncResponseToaster(() => updateCoastingMutation.mutateAsync(payload))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       queryClient.refetchQueries(getOrdersList)
@@ -74,6 +115,9 @@ function RouteComponent() {
       reset()
     }, 150)
   }
+
+  if (orderItemsList.isError)
+    return null
 
   return (
     <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
@@ -91,7 +135,7 @@ function RouteComponent() {
               }}
               disabled={!isDirty}
             >
-              Add
+              Update
             </Button>
           )}
         />
@@ -215,114 +259,23 @@ function RouteComponent() {
               {(field) => {
                 const value = field.state.value ?? []
                 return value.map((item, i) => {
-                  return <CoastingItem key={i + item.pim_id} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} />
+                  return (
+                    <CoastingItem
+                      key={i + item.pim_id}
+                      index={i}
+                      item={item}
+                      Field={Field}
+                      Subscribe={Subscribe}
+                      setFieldValue={setFieldValue}
+                      getFieldValue={getFieldValue}
+                    />
+                  )
                 })
               }}
             </Field>
           </div>
         </ScrollArea>
         <Separator />
-        <div className='flex items-center justify-between'>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-x-2'>
-              <Label>Pro</Label>
-              <Field
-                name="pro"
-                children={field => (
-                  <Input
-                    type="number"
-                    className="w-full max-w-10 px-1 text-center"
-                    value={field.state.value}
-                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
-                  />
-                )}
-              />
-              <span className='text-sm'>Extra</span>
-            </div>
-            <div className='flex items-center gap-x-2'>
-              <Label>Bom. Boys</Label>
-              <Field
-                name="bom_boys"
-                children={field => (
-                  <Input
-                    type="number"
-                    className="w-full max-w-10 px-1 text-center"
-                    value={field.state.value}
-                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
-                  />
-                )}
-              />
-              <span className='text-sm'>Extra</span>
-            </div>
-            <div className='flex items-center gap-x-2'>
-              <Label>Packed Bottles</Label>
-              <Field
-                name="packed_bottle"
-                children={field => (
-                  <Input
-                    type="number"
-                    className="w-full max-w-10 px-1 text-center"
-                    value={field.state.value}
-                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
-                  />
-                )}
-              />
-              <span className='text-sm'>Extra</span>
-            </div>
-          </div>
-          <div className='space-y-4'>
-            <Subscribe
-              selector={state => state.values.item}
-              children={(items) => {
-                const totalCost = (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0)
-                setFieldValue('per_plate_cost', totalCost)
-                return (
-                  <Field
-                    name="per_plate_cost"
-                    children={field => (
-                      <ControlledInput
-                        type='number'
-                        id="per_plate_cost"
-                        label="Per Plate Cost"
-                        field={field}
-                        value={totalCost || ""}
-                        prefix={<IndianRupee className="size-5" />}
-                        disabled={true}
-                      />
-                    )}
-                  />)
-              }}
-            />
-            <Field
-              name="selling_price"
-              children={field => (
-                <ControlledInput
-                  type='number'
-                  id="selling_price"
-                  label="Selling Price"
-                  field={field}
-                  prefix={<IndianRupee className="size-5" />}
-                />
-              )}
-            />
-          </div>
-        </div>
-
       </div>
     </div>
   )

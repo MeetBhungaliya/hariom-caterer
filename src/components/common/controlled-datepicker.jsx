@@ -12,7 +12,8 @@ import { useState } from "react"
 
 const ControlledDatepicker = ({ label, field, extendContent }) => {
   const errorMsg = field.state.meta.errors?.[0]?.message
-  const [date, setDate] = useState()
+
+  const [date, setDate] = useState(field.state.value ? new Date(field.state.value) : null)
 
   return (
     <Popover>

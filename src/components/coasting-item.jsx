@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 
-const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, validateAllFields }) => {
+const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscribe }) => {
   const queryClient = useQueryClient()
 
   const [options, setOptions] = useState([]);
@@ -17,16 +17,24 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, valida
     setIsLoading(true)
     queryClient.ensureQueryData(getListOfItemOfPackage({ pim_id: item.pim_id }))
       .then(data => {
-        setOptions((data.result.list[0]?.item ?? []).map(data => ({ value: data.item_id, label: data.name, pim_id: item.pim_id })))
+        setOptions((data.result.list[0]?.item ?? []).map(data => ({ value: data.item_id, label: data.name, pim_id: item.pim_id, price: data.price })))
       }).finally(() => {
         setIsLoading(false)
       })
   }, [item.pim_id]);
 
   const handleAddItem = () => {
+    const cloneItem = { ...item, deleteAble: true }
+
+    if (cloneItem.item_id) {
+      delete cloneItem.item_id
+      delete cloneItem.oim_id
+      delete cloneItem.price
+    }
+
     const previousItem = getFieldValue("item")
     const addItemIndex = index + 1
-    previousItem.splice(addItemIndex, 0, { ...item, deleteAble: true });
+    previousItem.splice(addItemIndex, 0, cloneItem);
     setFieldValue("item", previousItem);
   }
 
@@ -43,6 +51,15 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, valida
       </div>
       <Field
         name={`item[${index}].item_id`}
+        listeners={{
+          onChange: (e) => {
+            const selectedItem = options.find(item => item.value === e.value)
+            const previousItem = getFieldValue("item")
+            const itemWithPrice = previousItem.map(item => item.item_id === e.value ? { ...item, price: selectedItem?.price } : item)
+            setFieldValue('item', itemWithPrice)
+          }
+        }}
+
         children={field => {
           const error = field.state.meta.errors?.[0]?.message
           return (
@@ -58,8 +75,21 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, valida
                 options={options}
                 isLoading={isLoading}
                 searchPlaceholder="Search item"
-                updateTriggerer={field.state.value || isLoading || JSON.stringify(options)}
+                updateTriggerer={isLoading}
                 containerClassName='flex-1 border-none shadow-none'
+              />
+              <Subscribe
+                selector={state => state.values.item}
+                children={() => {
+                  const item = (options || []).find(item => item.value === field.state.value)
+                  return item?.price
+                    ? <div className='px-3 border-l flex items-center'>
+                      <span className='text-sm md:text-base font-medium'>
+                        {item?.price}
+                      </span>
+                    </div>
+                    : null
+                }}
               />
               <Field
                 name='item'

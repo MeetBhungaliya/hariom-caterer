@@ -6,12 +6,14 @@ import { useAuthStore } from '@/hooks/use-auth'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { HandCoins, Search } from 'lucide-react'
+import { Edit, HandCoins, Search } from 'lucide-react'
 import moment from 'moment'
 import { useMemo } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as AddCoastingRoute } from './add'
 import { paginationSchema } from '@/lib/schema/common'
+import { Button } from '@/components/ui/button'
+import { Route as UpdateOrderRoute } from './$order_id'
 
 export const Route = createFileRoute('/_protected/coasting/')({
   component: RouteComponent,
@@ -91,6 +93,24 @@ function RouteComponent() {
       header: 'Packed Bottle',
       accessorKey: 'packed_bottle',
       size: 200,
+    },
+    {
+      id: 'actions',
+      cell: (props) => (
+        <div className="flex gap-x-4 justify-end">
+          <Button onClick={() => {
+            navigate({
+              to: UpdateOrderRoute.fullPath,
+              params: { order_id: props.row.original.order_id },
+              state: props.row.original
+            })
+          }}
+          >
+            <Edit className="size-4" />
+          </Button>
+        </div>
+      ),
+      size: 160,
     },
   ], [])
 

@@ -103,7 +103,7 @@ function ControlledSearchableSelect(props) {
     async () => {
       try {
         setIsLoading(true)
-        if (props.options.then && typeof props.options.then === 'function') {
+        if (props.options && props.options.then && typeof props.options.then === 'function') {
           const result = await tryCatch(() => props.options)
           if (result.success && result.value) {
             if (Array.isArray(result.value.result.list)) {

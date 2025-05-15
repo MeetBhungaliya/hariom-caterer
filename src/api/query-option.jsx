@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_DETAILS, GET_ITEMS, GET_ORDERS, GET_PACKAGE_ITEMS, GET_PACKAGES, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
+import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_DETAILS, GET_ITEMS, GET_ORDER_ITEMS, GET_ORDERS, GET_PACKAGE_ITEMS, GET_PACKAGES, GET_PARTIES, GET_SUBCATEGORIES } from '@/constants/endpoints'
 import { fetchApi } from '@/lib/api'
 import { queryOptions } from '@tanstack/react-query'
 
@@ -70,6 +70,14 @@ export function getOrdersList({ page, limit, search, status }) {
   return queryOptions({
     queryKey: [GET_ORDERS, page, limit, search],
     queryFn: async () => fetchApi({ url: `${GET_ORDERS}?status=${status}&page=${page}&limit=${limit}${search ? `&search=${search}` : ''}` }),
+    placeholderData: { result: { list: [], totalRecords: null } },
+  })
+}
+
+export function getOrderItemList({ order_id }) {
+  return queryOptions({
+    queryKey: [GET_ORDER_ITEMS, order_id],
+    queryFn: async () => fetchApi({ url: `${GET_ORDER_ITEMS}?order_id=${order_id}` }),
     placeholderData: { result: { list: [], totalRecords: null } },
   })
 }
