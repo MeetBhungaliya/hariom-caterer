@@ -21,6 +21,7 @@ import { createFileRoute, useRouterState } from '@tanstack/react-router'
 import { Calendar, EthernetPort, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
 import { useEffect } from 'react'
 import { Route as OrderRoute } from './index'
+import { STATUS_OPTIONS } from '@/lib/schema/common'
 
 export const Route = createFileRoute('/_protected/coasting/$order_id')({
   component: RouteComponent,
@@ -73,6 +74,7 @@ function RouteComponent() {
       time: location.state.time,
       person: location.state.person,
       venue: location.state.venue,
+      status: location.state.status,
       jain_counter: location.state.jain_counter,
       per_plate_cost: location.state.per_plate_cost,
       selling_price: location.state.selling_price,
@@ -88,10 +90,13 @@ function RouteComponent() {
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption())
 
   async function onSubmit({ value }) {
+
     const item = value.item.map(item => ({
       pim_id: Number(item.pim_id),
       item_id: Number(item.item_id),
+      ...(item.oim_id ? { oim_id: Number(item.oim_id) } : {})
     }))
+
 
     const payload = {
       ...value,
@@ -250,6 +255,33 @@ function RouteComponent() {
                 prefix={<MapPinHouse className="size-5" />}
               />
             )}
+          />
+          <Field
+            name="status"
+            children={(field) => {
+              const errorMsg = field.state.meta.errors?.[0]?.message
+              return (
+                <Select defaultValue={field.state.value} onValueChange={field.handleChange}>
+                  <SelectTrigger icon
+                    className={cn("w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
+                      errorMsg ? "border-red-500 data-[placeholder]:text-red-500" : "data-[placeholder]:text-gray-500 border-gray-300"
+                    )}
+                  >
+                    <div className='h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white'>
+                      <Timer />
+                    </div>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent align="middle" className="min-w-20">
+                    {STATUS_OPTIONS.map((item, key) => (
+                      <SelectItem key={key} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )
+            }}
           />
         </div>
         <Separator />

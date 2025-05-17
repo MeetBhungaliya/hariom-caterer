@@ -67,27 +67,30 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>No value found.</CommandEmpty>
-            <CommandGroup>
-              {options.map(option => (
-                <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={() => {
-                    field.handleChange(option.value === field.state.value ? '' : option.value)
-                    optionsState.setFalse()
-                  }}
-                  className={cn(field.state.value === option.value ? '!text-white bg-sky-600 data-[selected=true]:bg-sky-600' : 'bg-transparent')}
-                >
-                  <Check
-                    className={cn(
-                      'mr-2 h-4 w-4',
-                      field.state.value === option.value ? 'opacity-100' : 'opacity-0',
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {Array.isArray(options)
+              ? <CommandGroup>
+                {options.map(option => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.value}
+                    onSelect={() => {
+                      field.handleChange(option.value === field.state.value ? '' : option.value)
+                      optionsState.setFalse()
+                    }}
+                    className={cn(field.state.value === option.value ? '!text-white bg-sky-600 data-[selected=true]:bg-sky-600' : 'bg-transparent')}
+                  >
+                    <Check
+                      className={cn(
+                        'mr-2 h-4 w-4',
+                        field.state.value === option.value ? 'opacity-100' : 'opacity-0',
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              : ""}
+
           </CommandList>
         </Command>
       </PopoverContent>

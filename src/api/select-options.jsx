@@ -62,7 +62,7 @@ export function getAllPackageOption() {
 export function getListOfItemOfPackage({ pim_id }) {
   return queryOptions({
     queryKey: [GET_LIST_OF_ITEM_OF_PACKAGE, pim_id],
-    queryFn: async () => fetchApi({ url: `${GET_LIST_OF_ITEM_OF_PACKAGE}?pim_id=${pim_id}` }),
+    queryFn: async () => fetchApi({ url: `${GET_LIST_OF_ITEM_OF_PACKAGE}?${pim_id ? pim_id : ""}` }),
     placeholderData: [],
   })
 }

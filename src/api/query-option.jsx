@@ -68,7 +68,7 @@ export function getPackageItemList({ page, limit, search }) {
 
 export function getOrdersList({ page, limit, search, status }) {
   return queryOptions({
-    queryKey: [GET_ORDERS, page, limit, search],
+    queryKey: [GET_ORDERS, page, limit, search, status],
     queryFn: async () => fetchApi({ url: `${GET_ORDERS}?status=${status}&page=${page}&limit=${limit}${search ? `&search=${search}` : ''}` }),
     placeholderData: { result: { list: [], totalRecords: null } },
   })

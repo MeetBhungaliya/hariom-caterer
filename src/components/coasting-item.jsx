@@ -17,7 +17,23 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscr
     setIsLoading(true)
     queryClient.ensureQueryData(getListOfItemOfPackage({ pim_id: item.pim_id }))
       .then(data => {
-        setOptions((data.result.list[0]?.item ?? []).map(data => ({ value: data.item_id, label: data.name, pim_id: item.pim_id, price: data.price })))
+        if (item.pim_id) {
+          setOptions((data.result.list[0]?.item ?? []).map(data => ({ value: data.item_id, label: data.name, name: item.name, pim_id: item.pim_id, price: data.price })))
+        } else {
+          const options = []
+          const groupedOptions = new Map()
+          data.result.list.forEach(items => {
+            items.item.forEach(data => {
+              groupedOptions.set(items.name,
+                [...(groupedOptions.get(items.name) ?? []),
+                { value: data.item_id, label: data.name, name: item.name, pim_id: item.pim_id, price: data.price }]
+              )
+              options.push({ value: data.item_id, label: data.name, name: item.name, pim_id: item.pim_id, price: data.price })
+            })
+          })
+          console.log(groupedOptions)
+          setOptions(options)
+        }
       }).finally(() => {
         setIsLoading(false)
       })

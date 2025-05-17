@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { emailSchema, passwordSchema, phoneSchema } from './common'
+import { emailSchema, passwordSchema, phoneSchema, STATUS_OPTIONS } from './common'
 
 export const loginSchema = z.object({
   email: emailSchema,
@@ -67,10 +67,11 @@ export const addEditCoastingSchema = z.object({
   jain_counter: z.number({ required_error: 'Jain counter is required' }).min(0, 'Jain counter cannot be negative'),
   time: z.string({ required_error: 'Event time is required' }).min(1, 'Please select a valid time slot'),
   venue: z.string({ required_error: 'Venue is required' }).min(1, 'Please enter a valid venue address'),
+  status: z.enum(STATUS_OPTIONS.map(option => option.value)),
   item: z.array(coastingItemSchema, { required_error: 'At least one item is required' }).min(1, 'Please add at least one item to the coasting list'),
-  per_plate_cost: z.number({required_error: 'Per plate cost is required'}),
-  selling_price: z.number({required_error: 'Selling price is required'}),
-  pro: z.number({invalid_type_error: 'Pro must be a number'}).optional(),
-  bom_boys: z.number({invalid_type_error: 'Bombay boys count must be a number'}).optional(),
-  packed_bottle: z.number({invalid_type_error: 'Packed bottles count must be a number'}).optional(),
+  per_plate_cost: z.number({ required_error: 'Per plate cost is required' }),
+  selling_price: z.number({ required_error: 'Selling price is required' }),
+  pro: z.number({ invalid_type_error: 'Pro must be a number' }).optional(),
+  bom_boys: z.number({ invalid_type_error: 'Bombay boys count must be a number' }).optional(),
+  packed_bottle: z.number({ invalid_type_error: 'Packed bottles count must be a number' }).optional(),
 })

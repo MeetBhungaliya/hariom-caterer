@@ -17,11 +17,13 @@ import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
 import { cn } from '@/lib/utils'
-import { useForm } from '@tanstack/react-form'
+import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
+import { useCallback, useEffect } from 'react'
 import { Route as OrderRoute } from './index'
+import { STATUS_OPTIONS } from '@/lib/schema/common'
 
 export const Route = createFileRoute('/_protected/coasting/add')({
   component: RouteComponent,
@@ -35,10 +37,20 @@ function RouteComponent() {
     mutationFn: async data => fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
   })
 
-  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset } = useForm({
+  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset, store } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCoastingSchema },
   })
+
+  const items = useStore(store, state => state.values.item)
+
+  const getTotalCost = useCallback(() => {
+    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0)
+  }, [JSON.stringify(items)])
+
+  useEffect(() => {
+    setFieldValue('per_plate_cost', getTotalCost())
+  }, [JSON.stringify(items)]);
 
   const isLoading = useAuthStore(state => state.isLoading)
 
@@ -118,7 +130,8 @@ function RouteComponent() {
             listeners={{
               onChange: async (e) => {
                 const packageItem = (((await packagesOption).result.list ?? []).find(item => item.package_id === e.value)?.package_item)
-                setFieldValue('item', packageItem)
+                const extraItem = { pim_id: null, name: "Extra Item", deleteAble: true }
+                setFieldValue('item', [...packageItem, extraItem])
               }
             }}
             children={field => (
@@ -207,6 +220,33 @@ function RouteComponent() {
               />
             )}
           />
+          <Field
+            name="status"
+            children={(field) => {
+              const errorMsg = field.state.meta.errors?.[0]?.message
+              return (
+                <Select defaultValue={field.state.value} onValueChange={field.handleChange}>
+                  <SelectTrigger icon
+                    className={cn("w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
+                      errorMsg ? "border-red-500 data-[placeholder]:text-red-500" : "data-[placeholder]:text-gray-500 border-gray-300"
+                    )}
+                  >
+                    <div className='h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white'>
+                      <Timer />
+                    </div>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent align="middle" className="min-w-20">
+                    {STATUS_OPTIONS.map((item, key) => (
+                      <SelectItem key={key} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )
+            }}
+          />
         </div>
         <Separator />
         <ScrollArea className="h-full pr-3 overflow-hidden">
@@ -215,7 +255,7 @@ function RouteComponent() {
               {(field) => {
                 const value = field.state.value ?? []
                 return value.map((item, i) => {
-                  return <CoastingItem key={i + item.pim_id} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} />
+                  return <CoastingItem key={i} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} />
                 })
               }}
             </Field>
@@ -286,27 +326,19 @@ function RouteComponent() {
             </div>
           </div>
           <div className='space-y-4'>
-            <Subscribe
-              selector={state => state.values.item}
-              children={(items) => {
-                const totalCost = (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0)
-                setFieldValue('per_plate_cost', totalCost)
-                return (
-                  <Field
-                    name="per_plate_cost"
-                    children={field => (
-                      <ControlledInput
-                        type='number'
-                        id="per_plate_cost"
-                        label="Per Plate Cost"
-                        field={field}
-                        value={totalCost || ""}
-                        prefix={<IndianRupee className="size-5" />}
-                        disabled={true}
-                      />
-                    )}
-                  />)
-              }}
+            <Field
+              name="per_plate_cost"
+              children={field => (
+                <ControlledInput
+                  type='number'
+                  id="per_plate_cost"
+                  label="Per Plate Cost"
+                  field={field}
+                  value={getTotalCost() || ""}
+                  prefix={<IndianRupee className="size-5" />}
+                  disabled={true}
+                />
+              )}
             />
             <Field
               name="selling_price"

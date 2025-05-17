@@ -87,35 +87,3 @@ export const addEditCoastingSchema = z.object({
     invalid_type_error: 'Packed bottles count must be a number'
   }).optional(),
 })
-
-export const coastingSearchSchema = z.object({
-  page: z.number({
-    required_error: 'Page number is required',
-    invalid_type_error: 'Page must be a number'
-  }).min(1, 'Page number must be at least 1').default(1),
-  limit: z.number({
-    required_error: 'Page limit is required',
-    invalid_type_error: 'Limit must be a number'
-  }).min(1, 'Page limit must be at least 1')
-    .max(100, 'Page limit cannot exceed 100')
-    .default(10),
-  search: z.string({
-    invalid_type_error: 'Search term must be a string'
-  }).optional(),
-  start_date: z.date({
-    invalid_type_error: 'Start date must be a valid date'
-  }).refine(isNotFutureDate, {
-    message: 'Start date cannot be in the future'
-  }).optional(),
-  end_date: z.date({
-    invalid_type_error: 'End date must be a valid date'
-  }).refine(isNotFutureDate, {
-    message: 'End date cannot be in the future'
-  }).optional(),
-  client_id: z.string({
-    invalid_type_error: 'Client ID must be a string'
-  }).optional(),
-  package_id: z.string({
-    invalid_type_error: 'Package ID must be a string'
-  }).optional(),
-}) 
