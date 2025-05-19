@@ -29,7 +29,7 @@ function AddEditPackageItem({ modalState, data, setData }) {
     mutationFn: async data => fetchApi({ url: UPDATE_PACKAGE_ITEM, method: METHODS.PUT, data }),
   })
 
-  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
+  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
 
   useEffect(() => {
     if (!modalState.value) return
@@ -43,19 +43,27 @@ function AddEditPackageItem({ modalState, data, setData }) {
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCategorySchema },
-    defaultValues: data ? {name: data.name, pim_id: data.pim_id, category_ids: data.categories.map(item=>({value: item.category_id, label: item.name}))}:{},
+    defaultValues: data ? { name: data.name, pim_id: data.pim_id, category_ids: data.categories.map(item => ({ value: item.category_id, label: item.name })) } : {},
   })
 
   async function onSubmit({ value }) {
     let result = null
-    console.log(value)
-    return
 
     if ('pim_id' in value) {
-      result = await asyncResponseToaster(() => updatePackageItemMutation.mutateAsync(value))
+      const deleted_pcm_ids = []
+
+      const currentItems = new Set(value.category_ids.map(item => item.value))
+
+      data.categories.forEach(item => {
+        if (!item.category_id) { }
+        const isInValue = currentItems.has(item.category_id)
+        if (!isInValue) deleted_pcm_ids.push(item.pcm_id)
+      })
+
+      result = await asyncResponseToaster(() => updatePackageItemMutation.mutateAsync({ ...value, category_ids: value.category_ids.map(item => item.value), deleted_pcm_ids }))
     }
     else {
-      result = await asyncResponseToaster(() => addPackageItemMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => addPackageItemMutation.mutateAsync({ ...value, category_ids: value.category_ids.map(item => item.value) }))
     }
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
@@ -123,7 +131,7 @@ function AddEditPackageItem({ modalState, data, setData }) {
                   removeAll={false}
                   emptyIndicator="No Package Item left"
                   value={field.state.value ?? []}
-                  onChange={data => field.handleChange(data.map(d => d.value))}
+                  onChange={field.handleChange}
                 />
               )}
             />

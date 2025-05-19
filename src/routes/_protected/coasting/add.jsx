@@ -58,9 +58,8 @@ function RouteComponent() {
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption())
 
   async function onSubmit({ value }) {
-
     const item = value.item.map(item => ({
-      pim_id: Number(item.pim_id),
+      pim_id: item.pim_id ?? null,
       item_id: Number(item.item_id),
     }))
 
@@ -108,7 +107,7 @@ function RouteComponent() {
           )}
         />
       </div>
-      <div className='h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden'>
+      <div className='h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-y-auto'>
         <div className='grid grid-cols-3 gap-4'>
           <Field
             name="client_id"
@@ -126,28 +125,6 @@ function RouteComponent() {
             )}
           />
           <Field
-            name="package_id"
-            listeners={{
-              onChange: async (e) => {
-                const packageItem = (((await packagesOption).result.list ?? []).find(item => item.package_id === e.value)?.package_item)
-                const extraItem = { pim_id: null, name: "Extra Item", deleteAble: true }
-                setFieldValue('item', [...packageItem, extraItem])
-              }
-            }}
-            children={field => (
-              <ControlledSearchableSelect
-                id="package_id"
-                label="Select package"
-                field={field}
-                prefix={<Package className="size-5" />}
-                options={packagesOption}
-                searchPlaceholder="Search party"
-                prepareOption={data => data.map(data => ({ value: data.package_id, label: data.name }))}
-                updateTriggerer={field.state.value || isLoading}
-              />
-            )}
-          />
-          <Field
             name="date"
             children={field => (
               <ControlledDatepicker
@@ -155,30 +132,6 @@ function RouteComponent() {
                 label="Select date"
                 field={field}
                 prefix={<Calendar className="size-5" />}
-              />
-            )}
-          />
-          <Field
-            name="person"
-            children={field => (
-              <ControlledInput
-                type='number'
-                id="person"
-                label="Person"
-                field={field}
-                prefix={<Users className="size-5" />}
-              />
-            )}
-          />
-          <Field
-            name="jain_counter"
-            children={field => (
-              <ControlledInput
-                type='number'
-                id="jain_counter"
-                label="Jain counter"
-                field={field}
-                prefix={<EthernetPort className="size-5" />}
               />
             )}
           />
@@ -208,6 +161,30 @@ function RouteComponent() {
                 </Select>
               )
             }}
+          />
+          <Field
+            name="person"
+            children={field => (
+              <ControlledInput
+                type='number'
+                id="person"
+                label="Person"
+                field={field}
+                prefix={<Users className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="jain_counter"
+            children={field => (
+              <ControlledInput
+                type='number'
+                id="jain_counter"
+                label="Jain counter"
+                field={field}
+                prefix={<EthernetPort className="size-5" />}
+              />
+            )}
           />
           <Field
             name="venue"
@@ -247,21 +224,47 @@ function RouteComponent() {
               )
             }}
           />
+          <Field
+            name="package_id"
+            listeners={{
+              onChange: async (e) => {
+                if (!e.value) return setFieldValue('item', null)
+
+                const packageItem = (((await packagesOption).result.list ?? []).find(item => item.package_id === e.value)?.package_item)
+                const extraItem = { pim_id: null, name: "Extra Item", deleteAble: true }
+                setFieldValue('item', [...packageItem, extraItem])
+              }
+            }}
+            children={field => (
+              <ControlledSearchableSelect
+                id="package_id"
+                label="Select package"
+                field={field}
+                prefix={<Package className="size-5" />}
+                options={packagesOption}
+                searchPlaceholder="Search party"
+                prepareOption={data => data.map(data => ({ value: data.package_id, label: data.name }))}
+                updateTriggerer={field.state.value || isLoading}
+              />
+            )}
+          />
         </div>
-        <Separator />
-        <ScrollArea className="h-full pr-3 overflow-hidden">
-          <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto'>
-            <Field name="item" mode="array">
-              {(field) => {
-                const value = field.state.value ?? []
-                return value.map((item, i) => {
-                  return <CoastingItem key={i} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} />
-                })
-              }}
-            </Field>
-          </div>
-        </ScrollArea>
-        <Separator />
+        <Field name="item" mode="array">
+          {(field) => {
+            const value = field.state.value ?? []
+            return value.length
+              ? <>
+                <Separator />
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                  {value.map((item, i) => {
+                    return <CoastingItem key={i} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} />
+                  })}
+                </div>
+                <Separator />
+              </>
+              : null
+          }}
+        </Field>
         <div className='flex items-center justify-between'>
           <div className='space-y-4'>
             <div className='flex items-center gap-x-2'>
@@ -354,7 +357,6 @@ function RouteComponent() {
             />
           </div>
         </div>
-
       </div>
     </div>
   )

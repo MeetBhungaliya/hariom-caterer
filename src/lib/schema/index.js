@@ -24,6 +24,11 @@ export const addEditCrockerSchema = z.object({
 
 export const addEditCategorySchema = z.object({
   name: z.string({ required_error: 'Name is required' }).trim(),
+  crockery_ids: z.array(
+    z.object({
+      value: z.number({ required_error: 'Category item is required' }),
+      label: z.string({ required_error: 'Category item is required' }),
+    })).catch([])
 })
 
 export const addEditItemSchema = z.object({
@@ -55,7 +60,7 @@ export const addEditPackageSchema = z.object({
 })
 
 export const coastingItemSchema = z.object({
-  pim_id: z.number({ required_error: 'Item ID is required' }),
+  pim_id: z.number({ required_error: 'Item ID is required' }).nullable(),
   item_id: z.number({ required_error: 'Item ID is required' }),
 })
 

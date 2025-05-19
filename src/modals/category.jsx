@@ -1,5 +1,7 @@
 import { getCategoryList } from '@/api/query-option'
+import { getAllCrockeryOption } from '@/api/select-options'
 import { ControlledInput } from '@/components/common/controlled-input'
+import { ControlledMultipleSelector } from '@/components/common/controlled-multiselector'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { METHODS } from '@/constants/common'
@@ -10,9 +12,12 @@ import { asyncResponseToaster } from '@/lib/toasts'
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { UserPen } from 'lucide-react'
+import { UserPen, UtensilsCrossed } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 function AddEditCategoryModal({ modalState, data, setData }) {
+  const [crockeriesOptions, setCrockeriesOptions] = useState([]);
+
   const queryClient = useQueryClient()
 
   const addCategoryMutation = useMutation({
@@ -23,20 +28,33 @@ function AddEditCategoryModal({ modalState, data, setData }) {
     mutationFn: async data => fetchApi({ url: UPDATE_CATEGORY, method: METHODS.PUT, data }),
   })
 
+  const crockeriesOption = queryClient.ensureQueryData(getAllCrockeryOption())
+
+  useEffect(() => {
+    if (!modalState.value) return
+
+    crockeriesOption.then(res => {
+      const data = res?.result?.list
+      setCrockeriesOptions(data.map(option => ({ value: option.crockery_id, label: option.name })))
+    })
+  }, [modalState.value]);
+
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCategorySchema },
-    defaultValues: data,
+    defaultValues: { ...data, crockery_ids: data?.crockery_ids ? data.crockery_ids.map(item => ({ value: item.crockery_id, label: item.name })) : [] },
   })
 
   async function onSubmit({ value }) {
     let result = null
 
+    const payload = { ...value, crockery_ids: value.crockery_ids.map(item => item.value) }
+
     if ('category_id' in value) {
-      result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync(payload))
     }
     else {
-      result = await asyncResponseToaster(() => addCategoryMutation.mutateAsync(value))
+      result = await asyncResponseToaster(() => addCategoryMutation.mutateAsync(payload))
     }
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
@@ -80,7 +98,7 @@ function AddEditCategoryModal({ modalState, data, setData }) {
             handleSubmit()
           }}
         >
-          <div className="p-6">
+          <div className="p-6 space-y-6">
             <Field
               name="name"
               children={field => (
@@ -89,6 +107,22 @@ function AddEditCategoryModal({ modalState, data, setData }) {
                   label="Category name"
                   field={field}
                   prefix={<UserPen className="size-5" />}
+                />
+              )}
+            />
+            <Field
+              name="crockery_ids"
+              children={field => (
+                <ControlledMultipleSelector
+                  id="name"
+                  label="Select crockeries"
+                  field={field}
+                  prefix={<UtensilsCrossed className="size-5" />}
+                  options={crockeriesOptions}
+                  removeAll={false}
+                  emptyIndicator="No crockeries left"
+                  value={field.state.value ?? []}
+                  onChange={field.handleChange}
                 />
               )}
             />

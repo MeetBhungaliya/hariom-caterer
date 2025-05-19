@@ -39,11 +39,9 @@ function RouteComponent() {
   useEffect(() => {
     const items = orderItemsList.data.result.items || []
 
-    const filteredExtraItems = items.filter(item => item.pim_id)
-
     const packageItems = []
 
-    filteredExtraItems.forEach(item => {
+    items.forEach(item => {
       item.order_item.forEach(orderItem => {
         packageItems.push({
           item_id: orderItem.item_id,
@@ -53,8 +51,9 @@ function RouteComponent() {
           name: item.name,
         })
       })
-
     })
+
+
 
     setFieldValue('item', packageItems)
   }, [orderItemsList.isFetching]);

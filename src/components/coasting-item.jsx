@@ -31,7 +31,6 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscr
               options.push({ value: data.item_id, label: data.name, name: item.name, pim_id: item.pim_id, price: data.price })
             })
           })
-          console.log(groupedOptions)
           setOptions(options)
         }
       }).finally(() => {

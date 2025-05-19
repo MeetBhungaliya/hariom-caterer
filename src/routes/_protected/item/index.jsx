@@ -82,16 +82,6 @@ function RouteComponent() {
       size: 200,
     },
     {
-      header: 'Ingredient',
-      accessorKey: 'ingredient',
-      size: 200,
-    },
-    {
-      header: 'Recipe',
-      accessorKey: 'recipe',
-      size: 200,
-    },
-    {
       id: 'actions',
       cell: (props) => (
         <div className="flex gap-x-4 justify-end">

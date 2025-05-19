@@ -5,6 +5,7 @@ import { TableBody, TableCell, Table as TableComponent, TableHead, TableHeader, 
 import { DEFAULT_LIMIT } from '@/constants/common'
 import { cn } from '@/lib/utils'
 import { flexRender, getCoreRowModel, getExpandedRowModel, useReactTable } from '@tanstack/react-table'
+import { TriangleAlert } from 'lucide-react'
 import { Fragment } from 'react'
 
 function Table({ data, columns, isLoading, totalRecords, pagination = true, expandableRows = false, SubComponent, isSubTable = false }) {
@@ -66,34 +67,45 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
                       })}
                     </TableRow>
                   ))
-                  : table.getRowModel().rows.map((row) => {
-                    return (
-                      <Fragment key={row.id}>
-                        <TableRow className={cn('not-last:[&_td]:border-b', isSubTable && 'hover:bg-transparent')}>
-                          {row.getVisibleCells().map(cell => {
-                            return (
-                              <TableCell
-                                key={cell.id}
-                                className={cn("px-3",
-                                  cell.id.endsWith("align-center") ? "text-center" : ""
-                                )}
-                                style={cell.column.getSize() === 150 ? { width: '100%' } : { minWidth: `${cell.column.getSize()}px` }}
-                              >
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                              </TableCell>
-                            )
-                          })}
-                        </TableRow>
-                        {row.getIsExpanded() && (
-                          <TableRow>
-                            <TableCell colSpan={row.getVisibleCells().length} className="bg-bg-1">
-                              <SubComponent row={row} />
-                            </TableCell>
+                  :
+                  table.getRowModel().rows.length
+                    ? table.getRowModel().rows.map((row) => {
+                      return (
+                        <Fragment key={row.id}>
+                          <TableRow className={cn('not-last:[&_td]:border-b', isSubTable && 'hover:bg-transparent')}>
+                            {row.getVisibleCells().map(cell => {
+                              return (
+                                <TableCell
+                                  key={cell.id}
+                                  className={cn("px-3",
+                                    cell.id.endsWith("align-center") ? "text-center" : ""
+                                  )}
+                                  style={cell.column.getSize() === 150 ? { width: '100%' } : { minWidth: `${cell.column.getSize()}px` }}
+                                >
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                              )
+                            })}
                           </TableRow>
-                        )}
-                      </Fragment>
-                    )
-                  })}
+                          {row.getIsExpanded() && (
+                            <TableRow>
+                              <TableCell colSpan={row.getVisibleCells().length} className="bg-bg-1">
+                                <SubComponent row={row} />
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </Fragment>
+                      )
+                    })
+                    : <TableRow className="hover:bg-transparent">
+                      <TableCell colSpan={columns.length} className="py-10">
+                        <div className='flex flex-col items-center justify-center gap-y-2'>
+                          <TriangleAlert className='size-20' />
+                          <p className='text-lg font-medium'>No data to show</p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                }
               </TableBody>
             </TableComponent>
             {isSubTable ? null : <ScrollBar orientation="horizontal" />}
@@ -107,7 +119,7 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
             </>
           )}
       </div>
-    </div>
+    </div >
   )
 }
 

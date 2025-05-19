@@ -79,7 +79,8 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
     inputProps = {},
     hideClearAllButton = false,
     loading,
-    removeAll
+    removeAll,
+    field
   } = props;
 
   const inputRef = useRef(null);
@@ -91,6 +92,7 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
   const [options, setOptions] = useState(transToGroupOption(defaultOptions, groupBy));
   const [inputValue, setInputValue] = useState('');
   const debouncedSearchTerm = useDebounceValue(inputValue, delay || 500);
+  const error = field.state.meta.errors?.[0]?.message
 
   useImperativeHandle(ref, () => ({
     selectedValue: [...selected],
@@ -250,7 +252,8 @@ const ControlledMultipleSelector = forwardRef((props, ref) => {
     >
       <div
         className={cn(
-          'rounded-lg border border-input text-base md:text-sm',
+          'rounded-lg border text-base md:text-sm',
+          error ? "border-red-500" : "border-border-1",
           { 'px-3 py-3': selected.length !== 0, 'cursor-text': !disabled && selected.length !== 0 },
           className
         )}

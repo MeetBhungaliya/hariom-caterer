@@ -55,7 +55,7 @@ function RouteComponent() {
 
   const category_id = useStore(store, state => state.values.category_id)
 
-  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption({ paginate: false }))
+  const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
 
   const subCategoriesOption = typeof category_id === "number" ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
   const itemCrockeryOption = typeof category_id === "number" ? queryClient.ensureQueryData(getItemCrockeryOption({ category_id })) : []

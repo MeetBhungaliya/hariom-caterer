@@ -2,10 +2,10 @@ import { GET_CATEGORIES, GET_CROCKERIES, GET_ITEM_CROCKERIES, GET_LIST_OF_ITEM_O
 import { fetchApi } from '@/lib/api'
 import { queryOptions } from '@tanstack/react-query'
 
-export function getCategoriesOption({ paginate }) {
+export function getCategoriesOption() {
   return queryOptions({
     queryKey: [GET_CATEGORIES],
-    queryFn: async () => fetchApi({ url: `${GET_CATEGORIES}?${paginate ? `paginate=${paginate}` : ""}` }),
+    queryFn: async () => fetchApi({ url: `${GET_CATEGORIES}?paginate=false` }),
     placeholderData: [],
   })
 }
