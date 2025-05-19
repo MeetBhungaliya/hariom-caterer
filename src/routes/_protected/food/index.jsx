@@ -2,6 +2,7 @@ import { getCategoryList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
+import { SubComponent } from '@/components/sub-food-component'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { pagination } from '@/constants/common'
 import { useAuthStore } from '@/hooks/use-auth'
@@ -11,7 +12,7 @@ import { AddEditCategoryModal } from '@/modals/category'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { Apple, Edit, Eye, Search } from 'lucide-react'
+import { Apple, CornerUpRight, Edit, Eye, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
@@ -34,6 +35,21 @@ function RouteComponent() {
 
   const columns = useMemo(() => [
     {
+      id: 'view-crockeries',
+      cell: ({ row }) => {
+        return (
+          <Button
+            className={cn('text-base bg-transparent shadow-none border', row.getIsExpanded() ? 'border-sky-600 hover:border-sky-600 bg-sky-600 text-white [&_svg]:-scale-y-[1]' : 'text-sky-600 hover:text-white',
+            )}
+            onClick={row.getToggleExpandedHandler()}
+          >
+            <CornerUpRight className="size-4" />
+          </Button>
+        )
+      },
+      size: 60,
+    },
+    {
       header: 'Category Id',
       accessorKey: 'category_id',
       size: 200,
@@ -51,6 +67,7 @@ function RouteComponent() {
             setUpdateCategory({
               name: props.row.original.name,
               category_id: props.row.original.category_id,
+              crockery_item: props.row.original.crockery_item,
             })
             categoryModal.setTrue()
           }}
@@ -93,6 +110,8 @@ function RouteComponent() {
           data={categoryList.data.result.list}
           isLoading={isLoading || categoryList.fetchStatus === 'fetching'}
           totalRecords={categoryList.data.result.totalRecords}
+          expandableRows={true}
+          SubComponent={SubComponent}
         />
       </div>
 

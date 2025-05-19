@@ -19,7 +19,6 @@ function AddEditCategoryModal({ modalState, data, setData }) {
   const [crockeriesOptions, setCrockeriesOptions] = useState([]);
 
   const queryClient = useQueryClient()
-
   const addCategoryMutation = useMutation({
     mutationFn: async data => fetchApi({ url: ADD_CATEGORY, method: METHODS.POST, data }),
   })
@@ -42,16 +41,31 @@ function AddEditCategoryModal({ modalState, data, setData }) {
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCategorySchema },
-    defaultValues: { ...data, crockery_ids: data?.crockery_ids ? data.crockery_ids.map(item => ({ value: item.crockery_id, label: item.name })) : [] },
+    defaultValues: data ? {
+      name: data.name,
+      category_id: data.category_id,
+      crockery_ids: data?.crockery_item ? data.crockery_item.map(item => ({ value: item.crockery_id, label: item.crockery.name })) : []
+    } : { crockery_ids: [] },
   })
 
   async function onSubmit({ value }) {
     let result = null
 
     const payload = { ...value, crockery_ids: value.crockery_ids.map(item => item.value) }
+    console.log(value)
 
     if ('category_id' in value) {
-      result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync(payload))
+      const deleted_crockery_ids = []
+
+      const currentItems = new Set(value.crockery_ids.map(item => item.value))
+
+      data.crockery_item.forEach(item => {
+        if (!item.crockery_id) { }
+        const isInValue = currentItems.has(item.crockery_id)
+        if (!isInValue) deleted_crockery_ids.push(item.crockery_id)
+      })
+
+      result = await asyncResponseToaster(() => updateCategoryMutation.mutateAsync({ ...payload, deleted_crockery_ids }))
     }
     else {
       result = await asyncResponseToaster(() => addCategoryMutation.mutateAsync(payload))
