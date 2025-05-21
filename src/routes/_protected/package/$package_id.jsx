@@ -27,7 +27,7 @@ function RouteComponent() {
   const { location } = useRouterState()
   const { package_id } = Route.useParams()
 
-  const { Field, handleSubmit, Subscribe, store, setFieldValue, reset } = useForm({
+  const { Field, handleSubmit, Subscribe, store, setFieldValue, reset, validateField } = useForm({
     onSubmit,
     validators: { onSubmit: addEditPackageSchema },
     defaultValues: { name: location.state.name, data: location.state.package_item }
@@ -45,6 +45,7 @@ function RouteComponent() {
     const deleted_ppm_ids = []
 
     const currentItems = new Set(value.data.map(item => item.ppm_id))
+    const previousItems = Array.from(new Set(location.state.package_item.map(item => item.pim_id)))
 
     location.state.package_item.forEach(item => {
       if (!item.ppm_id) { }
@@ -52,11 +53,13 @@ function RouteComponent() {
       if (!isInValue) deleted_ppm_ids.push(item.ppm_id)
     })
 
+    const filteredData = value.data.filter(item => !previousItems.includes(item.pim_id))
+
     const payload = {
       package_id,
       deleted_ppm_ids,
       name: value.name,
-      data: value.data.map(item => ({ pim_id: item.pim_id, quantity: item.quantity }))
+      data: filteredData
     }
 
     const result = await asyncResponseToaster(() => updatePackageMutation.mutateAsync(payload))
@@ -122,7 +125,7 @@ function RouteComponent() {
         </div>
         <ScrollArea className="px-3 pb-4 overflow-hidden">
           <div className='w-full px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto'>
-            {(itemFields ?? []).map((item, index) => {
+            {itemFields.map((item, index) => {
               return (
                 <Subscribe
                   key={index}
@@ -130,7 +133,7 @@ function RouteComponent() {
                   children={(dataErrors) => {
                     const error = dataErrors.at(0)?.[`data[${index}].pim_id`]
                     return (
-                      <div key={index} className={cn('flex border rounded-md',
+                      <div key={index} className={cn('flex border rounded-lg',
                         error?.length ? "border-red-500" : "border-border-1"
                       )}>
                         <Field
@@ -138,8 +141,8 @@ function RouteComponent() {
                           name={`data[${index}].pim_id`}
                           children={(subField) => {
                             return (
-                              <Select defaultValue={subField.state.value} onValueChange={value => setFieldValue(`data[${index}]`, { pim_id: value, quantity: 1 })}>
-                                <SelectTrigger icon={false} className="w-full !h-auto border-border-1 gap-x-0 rounded-lg bg-transparent px-2 py-3 focus:ring-0 focus:ring-offset-0 border-none rounded-none truncate">
+                              <Select value={subField.state.value} onValueChange={value => subField.handleChange(value)}>
+                                <SelectTrigger icon={false} className="w-full !h-auto border-border-1 gap-x-0 bg-transparent px-2 py-3 focus:ring-0 focus:ring-offset-0 border-none truncate">
                                   <SelectValue placeholder="Select item" className="text-text-2 text-sm" />
                                 </SelectTrigger>
                                 <SelectContent align="middle" className="min-w-20">
@@ -151,8 +154,7 @@ function RouteComponent() {
                                 </SelectContent>
                               </Select>
                             )
-                          }}
-                        />
+                          }} />
                         <Field
                           name={`data[${index}].quantity`}
                           children={(subField) => <ControlledCountInput min={1} max={99} value={subField.state.value} onChange={value => subField.handleChange(value)} error={error?.length} />}
@@ -160,16 +162,18 @@ function RouteComponent() {
                         <Field
                           name='data'
                           mode='array'
-                          children={(field) => (
-                            <Button type='button'
-                              className={cn('px-3 border-0 border-l rounded-l-none hover:bg-red-500 hover:border-red-500',
-                                error?.length ? "border-red-500" : "border-border-1"
-                              )}
-                              onClick={() => field.removeValue(index)}
-                            >
-                              <Trash2 className='size-5' />
-                            </Button>
-                          )}
+                          children={(field) => {
+                            return (
+                              <Button type='button'
+                                className={cn('px-3 border-0 border-l rounded-l-none hover:bg-red-500 hover:border-red-500',
+                                  error?.length ? "border-red-500" : "border-border-1"
+                                )}
+                                onClick={() => field.removeValue(index)}
+                              >
+                                <Trash2 className='size-5' />
+                              </Button>
+                            )
+                          }}
                         />
                       </div>
                     )

@@ -32,7 +32,7 @@ function RouteComponent() {
   const columns = useMemo(() => [
     {
       header: 'Subcategory Id',
-      accessorKey: 'scm_id',
+      cell: props => (props.row.index + 1) + ((page - 1) * limit),
       size: 200,
     },
     {
@@ -59,7 +59,7 @@ function RouteComponent() {
       ),
       size: 62,
     },
-  ], [])
+  ], [page, limit])
 
   return (
     <>

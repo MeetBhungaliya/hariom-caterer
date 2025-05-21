@@ -7,7 +7,6 @@ import { ControlledSearchableSelect } from '@/components/common/controlled-searc
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from '@/components/ui/separator'
 import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
@@ -15,15 +14,17 @@ import { ADD_COASTING } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
+import { STATUS_OPTIONS } from '@/lib/schema/common'
 import { asyncResponseToaster } from '@/lib/toasts'
 import { cn } from '@/lib/utils'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Route as OrderRoute } from './index'
-import { STATUS_OPTIONS } from '@/lib/schema/common'
+import { Switch } from '@/components/ui/switch'
+import { useBoolean, useToggle } from 'usehooks-ts'
 
 export const Route = createFileRoute('/_protected/coasting/add')({
   component: RouteComponent,
@@ -32,6 +33,8 @@ export const Route = createFileRoute('/_protected/coasting/add')({
 function RouteComponent() {
   const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
+
+  const showPrice = useBoolean(false)
 
   const addCoastingMutation = useMutation({
     mutationFn: async data => fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
@@ -88,7 +91,12 @@ function RouteComponent() {
 
   return (
     <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
-      <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+      <div className="bg-white p-4 rounded-xl flex items-center justify-end gap-x-4">
+        <Switch
+          className="size-auto w-16 h-7 [&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
+          checked={showPrice.value}
+          onCheckedChange={showPrice.toggle}
+        />
         <Subscribe
           selector={state => state.isDirty}
           children={isDirty => (
@@ -257,7 +265,7 @@ function RouteComponent() {
                 <Separator />
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                   {value.map((item, i) => {
-                    return <CoastingItem key={i} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} />
+                    return <CoastingItem key={i} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} showPrice={showPrice} />
                   })}
                 </div>
                 <Separator />
@@ -271,19 +279,22 @@ function RouteComponent() {
               <Label>Pro</Label>
               <Field
                 name="pro"
-                children={field => (
-                  <Input
-                    type="number"
-                    className="w-full max-w-10 px-1 text-center"
-                    value={field.state.value}
-                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
-                  />
-                )}
+                children={field => {
+                  const MAX = 999
+                  return (
+                    <Input
+                      type="number"
+                      className="w-full max-w-10 px-1 text-center"
+                      value={field.state.value}
+                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('pro', getFieldValue('pro')) : field.handleChange(e.target.valueAsNumber)}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )
+                }}
               />
               <span className='text-sm'>Extra</span>
             </div>
@@ -291,19 +302,22 @@ function RouteComponent() {
               <Label>Bom. Boys</Label>
               <Field
                 name="bom_boys"
-                children={field => (
-                  <Input
-                    type="number"
-                    className="w-full max-w-10 px-1 text-center"
-                    value={field.state.value}
-                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
-                  />
-                )}
+                children={field => {
+                  const MAX = 999
+                  return (
+                    <Input
+                      type="number"
+                      className="w-full max-w-10 px-1 text-center"
+                      value={field.state.value}
+                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('bom_boys', getFieldValue('bom_boys')) : field.handleChange(e.target.valueAsNumber)}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )
+                }}
               />
               <span className='text-sm'>Extra</span>
             </div>
@@ -311,19 +325,22 @@ function RouteComponent() {
               <Label>Packed Bottles</Label>
               <Field
                 name="packed_bottle"
-                children={field => (
-                  <Input
-                    type="number"
-                    className="w-full max-w-10 px-1 text-center"
-                    value={field.state.value}
-                    onChange={e => field.handleChange(e.target.valueAsNumber || 0)}
-                    onKeyPress={(e) => {
-                      if (!/[0-9]/.test(e.key)) {
-                        e.preventDefault()
-                      }
-                    }}
-                  />
-                )}
+                children={field => {
+                  const MAX = 99999
+                  return (
+                    <Input
+                      type="number"
+                      className="w-full max-w-14 px-1 text-center"
+                      value={field.state.value ?? ""}
+                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('packed_bottle', getFieldValue('packed_bottle')) : field.handleChange(e.target.valueAsNumber)}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )
+                }}
               />
               <span className='text-sm'>Extra</span>
             </div>
@@ -340,6 +357,7 @@ function RouteComponent() {
                   value={getTotalCost() || ""}
                   prefix={<IndianRupee className="size-5" />}
                   disabled={true}
+                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}
                 />
               )}
             />

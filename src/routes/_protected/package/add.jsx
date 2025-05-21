@@ -121,7 +121,7 @@ function RouteComponent() {
                                                     name={`data[${index}].pim_id`}
                                                     children={(subField) => {
                                                         return (
-                                                            <Select defaultValue={subField.state.value} onValueChange={value => subField.handleChange(value)}>
+                                                            <Select value={subField.state.value} onValueChange={value => subField.handleChange(value)}>
                                                                 <SelectTrigger icon={false} className="w-full !h-auto border-border-1 gap-x-0 bg-transparent px-2 py-3 focus:ring-0 focus:ring-offset-0 border-none truncate">
                                                                     <SelectValue placeholder="Select item" className="text-text-2 text-sm" />
                                                                 </SelectTrigger>
@@ -142,16 +142,18 @@ function RouteComponent() {
                                                 <Field
                                                     name='data'
                                                     mode='array'
-                                                    children={(field) => (
-                                                        <Button type='button'
-                                                            className={cn('px-3 border-0 border-l rounded-l-none hover:bg-red-500 hover:border-red-500',
-                                                                error?.length ? "border-red-500" : "border-border-1"
-                                                            )}
-                                                            onClick={() => field.removeValue(index)}
-                                                        >
-                                                            <Trash2 className='size-5' />
-                                                        </Button>
-                                                    )}
+                                                    children={(field) => {
+                                                        return (
+                                                            <Button type='button'
+                                                                className={cn('px-3 border-0 border-l rounded-l-none hover:bg-red-500 hover:border-red-500',
+                                                                    error?.length ? "border-red-500" : "border-border-1"
+                                                                )}
+                                                                onClick={() => field.removeValue(index)}
+                                                            >
+                                                                <Trash2 className='size-5' />
+                                                            </Button>
+                                                        )
+                                                    }}
                                                 />
                                             </div>
                                         )

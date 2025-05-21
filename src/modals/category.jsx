@@ -52,7 +52,6 @@ function AddEditCategoryModal({ modalState, data, setData }) {
     let result = null
 
     const payload = { ...value, crockery_ids: value.crockery_ids.map(item => item.value) }
-    console.log(value)
 
     if ('category_id' in value) {
       const deleted_crockery_ids = []

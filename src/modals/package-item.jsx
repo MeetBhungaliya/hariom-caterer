@@ -124,12 +124,12 @@ function AddEditPackageItem({ modalState, data, setData }) {
               children={field => (
                 <ControlledMultipleSelector
                   id="name"
-                  label="Package Item name"
+                  label="Category name"
                   field={field}
                   prefix={<Package className="size-5" />}
                   options={categoryOptions}
                   removeAll={false}
-                  emptyIndicator="No Package Item left"
+                  emptyIndicator="No category left"
                   value={field.state.value ?? []}
                   onChange={field.handleChange}
                 />

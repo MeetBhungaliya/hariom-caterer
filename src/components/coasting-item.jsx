@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 
-const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscribe }) => {
+const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscribe, showPrice }) => {
   const queryClient = useQueryClient()
 
   const [options, setOptions] = useState([]);
@@ -98,7 +98,7 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscr
                 children={() => {
                   const item = (options || []).find(item => item.value === field.state.value)
                   return item?.price
-                    ? <div className='px-3 border-l flex items-center'>
+                    ? <div className={cn("px-3 border-l flex items-center transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}>
                       <span className='text-sm md:text-base font-medium'>
                         {item?.price}
                       </span>
