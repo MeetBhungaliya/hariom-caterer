@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 
-const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscribe, showPrice }) => {
+const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscribe, showPrice = false }) => {
   const queryClient = useQueryClient()
 
   const [options, setOptions] = useState([]);
