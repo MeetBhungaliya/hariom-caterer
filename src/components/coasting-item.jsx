@@ -9,7 +9,7 @@ import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
-const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, store, showPrice }) => {
+const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, showPrice, store }) => {
   const queryClient = useQueryClient()
 
   const [options, setOptions] = useState([]);

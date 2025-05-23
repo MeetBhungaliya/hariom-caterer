@@ -25,6 +25,7 @@ import { STATUS_OPTIONS } from '@/lib/schema/common'
 import { useBoolean } from 'usehooks-ts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { Switch } from '@/components/ui/switch'
 
 export const Route = createFileRoute('/_protected/coasting/$order_id')({
   component: RouteComponent,
@@ -137,7 +138,12 @@ function RouteComponent() {
 
   return (
     <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
-      <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+      <div className="bg-white p-4 rounded-xl flex items-center justify-end gap-x-4">
+        <Switch
+          className="size-auto w-16 h-7 [&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
+          checked={showPrice.value}
+          onCheckedChange={showPrice.toggle}
+        />
         <Subscribe
           selector={state => state.isDirty}
           children={isDirty => (

@@ -277,7 +277,16 @@ function RouteComponent() {
                 <Separator />
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
                   {groupWithCount.map((item, i) => {
-                    return <CoastingItem key={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} store={store} showPrice={showPrice} />
+                    return <CoastingItem
+                      key={i}
+                      item={item}
+                      Field={Field}
+                      setFieldValue={setFieldValue}
+                      getFieldValue={getFieldValue}
+                      Subscribe={Subscribe}
+                      store={store}
+                      showPrice={showPrice}
+                    />
                   })}
                 </div>
                 <Separator />
