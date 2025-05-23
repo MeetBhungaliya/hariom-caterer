@@ -20,7 +20,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
           aria-expanded={optionsState.value}
           data-invalid={Boolean(errorMsg)}
           className={cn(
-            'w-full p-3 border !border-gray-300 justify-start rounded-lg relative hover:bg-transparent',
+            'w-full p-3 border !border-gray-300 justify-start rounded-lg relative hover:bg-transparent overflow-hidden',
             optionsState.value ? 'border-sky-600' : 'border-border',
             'data-[invalid=true]:!text-red-500 data-[invalid=true]:!border-red-400 data-[invalid=true]:!ring-red-200',
             containerClassName
@@ -40,7 +40,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
             </div>
           )}
 
-          <span className={cn("text-sm md:text-base",
+          <span className={cn("text-sm md:text-base truncate",
             prefix ? "ml-[3rem]" : "ml-0",
             errorMsg ? "text-red-500" : field.state.value ? "text-text-1" : "text-gray-500"
           )}>

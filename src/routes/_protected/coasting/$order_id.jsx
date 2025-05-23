@@ -15,13 +15,16 @@ import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
 import { asyncResponseToaster } from '@/lib/toasts'
 import { cn } from '@/lib/utils'
-import { useForm } from '@tanstack/react-form'
+import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useRouterState } from '@tanstack/react-router'
-import { Calendar, EthernetPort, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
-import { useEffect } from 'react'
+import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
+import { useCallback, useEffect } from 'react'
 import { Route as OrderRoute } from './index'
 import { STATUS_OPTIONS } from '@/lib/schema/common'
+import { useBoolean } from 'usehooks-ts'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 export const Route = createFileRoute('/_protected/coasting/$order_id')({
   component: RouteComponent,
@@ -33,6 +36,8 @@ function RouteComponent() {
   const order_id = Route.useParams({ select: params => params.order_id })
 
   const queryClient = useQueryClient()
+
+  const showPrice = useBoolean(false)
 
   const orderItemsList = useQuery(getOrderItemList({ order_id }))
 
@@ -52,9 +57,6 @@ function RouteComponent() {
         })
       })
     })
-
-
-
     setFieldValue('item', packageItems)
   }, [orderItemsList.isFetching]);
 
@@ -62,7 +64,7 @@ function RouteComponent() {
     mutationFn: async data => fetchApi({ url: UPDATE_COASTING, method: METHODS.PUT, data }),
   })
 
-  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset } = useForm({
+  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset, store } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCoastingSchema },
     defaultValues: {
@@ -82,6 +84,16 @@ function RouteComponent() {
       packed_bottle: location.state.packed_bottle,
     },
   })
+
+  const items = useStore(store, state => state.values.item)
+
+  const getTotalCost = useCallback(() => {
+    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0)
+  }, [JSON.stringify(items)])
+
+  useEffect(() => {
+    setFieldValue('per_plate_cost', getTotalCost())
+  }, [JSON.stringify(items)]);
 
   const isLoading = useAuthStore(state => state.isLoading)
 
@@ -283,10 +295,44 @@ function RouteComponent() {
             }}
           />
         </div>
-        <Separator />
-        <ScrollArea className="h-full pr-3 overflow-hidden">
-          <div className='w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto'>
-            <Field name="item" mode="array">
+        <Field name="item" mode="array">
+          {(field) => {
+            const value = field.state.value ?? []
+
+            const groupWithCount = value.reduce((acc, item, index) => {
+              const existing = acc.find(e => e.pim_id === item.pim_id);
+              if (existing) {
+                existing.count += 1
+              } else {
+                acc.push({ ...item, count: 1 });
+              }
+              item.index = index;
+              return acc;
+            }, []);
+
+            return groupWithCount && groupWithCount.length
+              ? <>
+                <Separator />
+                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                  {groupWithCount.map((item, i) => {
+                    return <CoastingItem
+                      key={i}
+                      item={item}
+                      Field={Field}
+                      setFieldValue={setFieldValue}
+                      getFieldValue={getFieldValue}
+                      Subscribe={Subscribe}
+                      store={store}
+                      showPrice={showPrice}
+                    />
+                  })}
+                </div>
+                <Separator />
+              </>
+              : null
+          }}
+        </Field>
+        {/* <Field name="item" mode="array">
               {(field) => {
                 const value = field.state.value ?? []
                 return value.map((item, i) => {
@@ -299,14 +345,115 @@ function RouteComponent() {
                       Subscribe={Subscribe}
                       setFieldValue={setFieldValue}
                       getFieldValue={getFieldValue}
+                      store={store}
+                      showPrice={showPrice}
                     />
                   )
                 })
               }}
-            </Field>
+            </Field> */}
+        <div className='flex items-center justify-between'>
+          <div className='space-y-4'>
+            <div className='flex items-center gap-x-2'>
+              <Label>Pro</Label>
+              <Field
+                name="pro"
+                children={field => {
+                  const MAX = 999
+                  return (
+                    <Input
+                      type="number"
+                      className="w-full max-w-10 px-1 text-center"
+                      value={field.state.value}
+                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('pro', getFieldValue('pro')) : field.handleChange(e.target.valueAsNumber)}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )
+                }}
+              />
+              <span className='text-sm'>Extra</span>
+            </div>
+            <div className='flex items-center gap-x-2'>
+              <Label>Bom. Boys</Label>
+              <Field
+                name="bom_boys"
+                children={field => {
+                  const MAX = 999
+                  return (
+                    <Input
+                      type="number"
+                      className="w-full max-w-10 px-1 text-center"
+                      value={field.state.value}
+                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('bom_boys', getFieldValue('bom_boys')) : field.handleChange(e.target.valueAsNumber)}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )
+                }}
+              />
+              <span className='text-sm'>Extra</span>
+            </div>
+            <div className='flex items-center gap-x-2'>
+              <Label>Packed Bottles</Label>
+              <Field
+                name="packed_bottle"
+                children={field => {
+                  const MAX = 99999
+                  return (
+                    <Input
+                      type="number"
+                      className="w-full max-w-14 px-1 text-center"
+                      value={field.state.value ?? ""}
+                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('packed_bottle', getFieldValue('packed_bottle')) : field.handleChange(e.target.valueAsNumber)}
+                      onKeyPress={(e) => {
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault()
+                        }
+                      }}
+                    />
+                  )
+                }}
+              />
+              <span className='text-sm'>Extra</span>
+            </div>
           </div>
-        </ScrollArea>
-        <Separator />
+          <div className='space-y-4'>
+            <Field
+              name="per_plate_cost"
+              children={field => (
+                <ControlledInput
+                  type='number'
+                  id="per_plate_cost"
+                  label="Per Plate Cost"
+                  field={field}
+                  value={getTotalCost() || ""}
+                  prefix={<IndianRupee className="size-5" />}
+                  disabled={true}
+                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}
+                />
+              )}
+            />
+            <Field
+              name="selling_price"
+              children={field => (
+                <ControlledInput
+                  type='number'
+                  id="selling_price"
+                  label="Selling Price"
+                  field={field}
+                  prefix={<IndianRupee className="size-5" />}
+                />
+              )}
+            />
+          </div>
+        </div>
       </div>
     </div>
   )

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
 import { ADD_COASTING } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
@@ -21,10 +22,9 @@ import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
+import { useBoolean } from 'usehooks-ts'
 import { Route as OrderRoute } from './index'
-import { Switch } from '@/components/ui/switch'
-import { useBoolean, useToggle } from 'usehooks-ts'
 
 export const Route = createFileRoute('/_protected/coasting/add')({
   component: RouteComponent,
@@ -260,12 +260,24 @@ function RouteComponent() {
         <Field name="item" mode="array">
           {(field) => {
             const value = field.state.value ?? []
-            return value.length
+
+            const groupWithCount = value.reduce((acc, item, index) => {
+              const existing = acc.find(e => e.pim_id === item.pim_id);
+              if (existing) {
+                existing.count += 1
+              } else {
+                acc.push({ ...item, count: 1 });
+              }
+              item.index = index;
+              return acc;
+            }, []);
+
+            return groupWithCount && groupWithCount.length
               ? <>
                 <Separator />
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-                  {value.map((item, i) => {
-                    return <CoastingItem key={i} index={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} showPrice={showPrice} />
+                  {groupWithCount.map((item, i) => {
+                    return <CoastingItem key={i} item={item} Field={Field} setFieldValue={setFieldValue} getFieldValue={getFieldValue} Subscribe={Subscribe} store={store} showPrice={showPrice} />
                   })}
                 </div>
                 <Separator />

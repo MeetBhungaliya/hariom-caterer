@@ -1,17 +1,21 @@
 import { getListOfItemOfPackage } from '@/api/select-options'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { cn } from '@/lib/utils'
+import { useStore } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 
-const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscribe, showPrice }) => {
+const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, store, showPrice }) => {
   const queryClient = useQueryClient()
 
   const [options, setOptions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const submissionAttempts = useStore(store, state => state.submissionAttempts)
 
   useEffect(() => {
     setIsLoading(true)
@@ -38,6 +42,11 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscr
       })
   }, [item.pim_id]);
 
+  const getGroupedItems = useMemo(() => {
+    const allItems = getFieldValue("item")
+    return allItems.filter(i => i.pim_id === item.pim_id)
+  }, [JSON.stringify(item)])
+
   const handleAddItem = () => {
     const cloneItem = { ...item, deleteAble: true }
 
@@ -48,7 +57,7 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscr
     }
 
     const previousItem = getFieldValue("item")
-    const addItemIndex = index + 1
+    const addItemIndex = item.index + 1
     previousItem.splice(addItemIndex, 0, cloneItem);
     setFieldValue("item", previousItem);
   }
@@ -56,78 +65,99 @@ const CoastingItem = ({ index, item, Field, setFieldValue, getFieldValue, Subscr
   return (
     <div className='flex flex-col gap-y-2'>
       <div className='px-2 flex items-center justify-between'>
-        <Label htmlFor={`item[${index}].item_id`} className='text-sm md:text-base font-medium'>
+        <Label className='text-sm md:text-base font-medium'>
           {item.name}
         </Label>
-        <Button type='button' variant='outline' className='p-1.5 bg-sky-600 rounded-sm border-transparent text-white hover:text-sky-600'
-          onClick={handleAddItem}>
+        <Button
+          type='button'
+          variant='outline'
+          className='p-1.5 bg-sky-600 rounded-sm border-transparent text-white hover:text-sky-600'
+          onClick={handleAddItem}
+        >
           <Plus className='size-4 stroke-3' />
         </Button>
       </div>
-      <Field
-        name={`item[${index}].item_id`}
-        listeners={{
-          onChange: (e) => {
-            const selectedItem = options.find(item => item.value === e.value)
-            const previousItem = getFieldValue("item")
-            const itemWithPrice = previousItem.map(item => item.item_id === e.value ? { ...item, price: selectedItem?.price } : item)
-            setFieldValue('item', itemWithPrice)
-          }
-        }}
-
-        children={field => {
-          const error = field.state.meta.errors?.[0]?.message
-          return (
-            <div className={cn('w-full flex border rounded-lg',
-              error ? "border-red-500" : "border-border-1"
-            )}>
-              <ControlledSearchableSelect
-                id={`item[${index}].item_id`}
-                label={`Select ${item.name.toLowerCase()}`}
-                field={field}
-                prefix={false}
-                icon={false}
-                options={options}
-                isLoading={isLoading}
-                searchPlaceholder="Search item"
-                updateTriggerer={isLoading}
-                containerClassName='flex-1 border-none shadow-none'
-              />
-              <Subscribe
-                selector={state => state.values.item}
-                children={() => {
-                  const item = (options || []).find(item => item.value === field.state.value)
-                  return item?.price
-                    ? <div className={cn("px-3 border-l flex items-center transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}>
-                      <span className='text-sm md:text-base font-medium'>
-                        {item?.price}
-                      </span>
-                    </div>
-                    : null
-                }}
-              />
+      <Popover>
+        <div className={cn('flex border rounded-lg',
+          submissionAttempts
+            ? getGroupedItems.some(i => !i.item_id) ? "border-red-500" : "border-border-1"
+            : "border-border-1")}
+        >
+          <div className="px-4 border-r flex items-center">
+            <span className='text-sm md:text-base font-medium'>
+              {item?.count}
+            </span>
+          </div>
+          <PopoverTrigger className="w-full px-4 py-2.5 font-medium text-start text-sm md:text-base ml-0 text-gray-500 cursor-pointer">Select {item.name}</PopoverTrigger>
+        </div>
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+          {getGroupedItems.map((item, index) => {
+            return (
               <Field
-                name='item'
-                mode='array'
-                children={(field) => {
-                  const deleteAble = field.state.value.find((_, i) => i === index)?.deleteAble
+                key={index}
+                name={`item[${item.index}].item_id`}
+                listeners={{
+                  onChange: (e) => {
+                    const selectedItem = options.find(item => item.value === e.value)
+                    const previousItem = getFieldValue("item")
+                    const itemWithPrice = previousItem.map(item => item.item_id === e.value ? { ...item, price: selectedItem?.price } : item)
+                    setFieldValue('item', itemWithPrice)
+                  }
+                }}
+                children={field => {
                   return (
-                    <Button type='button'
-                      className={cn('px-3 border-0 border-l rounded-l-none hover:bg-red-500 hover:border-red-500',
-                        error?.length ? "border-red-500" : "border-border-1"
-                      )}
-                      onClick={() => field.removeValue(index)}
-                      disabled={!deleteAble}
-                    >
-                      <Trash2 className='size-5' />
-                    </Button>
+                    <div className='flex justify-between border-b last:border-b-0'>
+                      <ControlledSearchableSelect
+                        id={`item[${item.index}].item_id`}
+                        label={`Select ${item.name.toLowerCase()}`}
+                        field={field}
+                        prefix={false}
+                        icon={false}
+                        options={options}
+                        isLoading={isLoading}
+                        searchPlaceholder="Search item"
+                        updateTriggerer={isLoading}
+                        containerClassName='flex-1 border-none shadow-none'
+                      />
+                      <div className='flex'>
+                        <Subscribe
+                          selector={state => state.values.item}
+                          children={() => {
+                            const item = (options || []).find(item => item.value === field.state.value)
+                            return item?.price
+                              ? <div className={cn("px-3 border-l border-border-1 flex items-center transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}>
+                                <span className='text-sm md:text-base font-medium'>
+                                  {item?.price}
+                                </span>
+                              </div>
+                              : null
+                          }}
+                        />
+                        <Field
+                          name='item'
+                          mode='array'
+                          children={(field) => {
+                            const deleteAble = field.state.value.find((_, i) => i === item.index)?.deleteAble
+                            return (
+                              <Button type='button'
+                                className='px-3 border-0 border-l border-border-1 rounded-l-none hover:bg-red-500 hover:border-red-500'
+                                onClick={() => field.removeValue(item.index)}
+                                disabled={!deleteAble}
+                              >
+                                <Trash2 className='size-5' />
+                              </Button>
+                            )
+                          }}
+                        />
+                      </div>
+                    </div>
                   )
                 }}
               />
-            </div>
-          )
-        }}
-      />
+            )
+          })}
+        </PopoverContent>
+      </Popover>
     </div>
   )
 }
