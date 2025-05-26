@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuthStore } from '@/hooks/use-auth'
 import { paginationSchema, STATUS_OPTIONS, statusSchema } from '@/lib/schema/common'
 import { useForm } from '@tanstack/react-form'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Edit, HandCoins, Search } from 'lucide-react'
 import moment from 'moment'
@@ -15,6 +15,11 @@ import { useMemo } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateOrderRoute } from './$order_id'
 import { Route as AddCoastingRoute } from './add'
+import { UPDATE_COASTING } from '@/constants/endpoints'
+import { METHODS } from '@/constants/common'
+import { fetchApi } from '@/lib/api'
+import { asyncResponseToaster } from '@/lib/toasts'
+import NoData from '@/components/common/NoData'
 
 export const Route = createFileRoute('/_protected/coasting/')({
   component: RouteComponent,
@@ -35,6 +40,18 @@ function RouteComponent() {
   const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500)
 
   const ordersList = useQuery(getOrdersList({ page, limit, search: debouncedSearchedValue, status }))
+
+  const updateCoastingMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: UPDATE_COASTING, method: METHODS.PUT, data }),
+  })
+
+  const handleAcceptOrder = async (order_id) => {
+    const result = await asyncResponseToaster(() => updateCoastingMutation.mutateAsync({ order_id, status: STATUS_OPTIONS.at(0).value }))
+
+    if (result.success && result.value && result.value.ResponseCode === 1) {
+      ordersList.refetch()
+    }
+  }
 
   const columns = useMemo(() => [
     {
@@ -103,6 +120,10 @@ function RouteComponent() {
       id: 'actions',
       cell: (props) => (
         <div className="flex gap-x-4 justify-end">
+          <Button className="text-sm" onClick={() => handleAcceptOrder(props.row.original.order_id)}
+          >
+            Accept Order
+          </Button>
           <Button onClick={() => {
             navigate({
               to: UpdateOrderRoute.fullPath,
@@ -153,12 +174,16 @@ function RouteComponent() {
           </Select>
           <IconButton icon={<HandCoins className="size-5" />} label="Add Coasting" onClick={() => navigate({ to: AddCoastingRoute.fullPath })} />
         </div>
-        <Table
-          columns={columns}
-          data={ordersList.data.result.list}
-          isLoading={isLoading || ordersList.fetchStatus === 'fetching'}
-          totalRecords={ordersList.data.result.totalRecords}
-        />
+
+        {ordersList.data.result.list.length || isLoading || ordersList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={ordersList.data.result.list}
+            isLoading={isLoading || ordersList.fetchStatus === 'fetching'}
+            totalRecords={ordersList.data.result.totalRecords}
+          />
+          : <NoData />
+        }
       </div>
     </>
   )

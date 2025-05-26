@@ -1,15 +1,16 @@
 import { getItemList } from '@/api/query-option'
-import { getAllCrockeryOption, getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
+import { getCategoriesOption, getItemCrockeryOption, getSubCategoriesOption } from '@/api/select-options'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledImageuploader } from '@/components/common/controlled-imageuploader'
 import { ControlledInput } from '@/components/common/controlled-input'
 import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
 import { ControlledTagInput } from '@/components/common/controlled-taginput'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { METHODS, pagination } from '@/constants/common'
-import { ADD_ITEM, UPDATE_ITEM } from '@/constants/endpoints'
+import { METHODS } from '@/constants/common'
+import { UPDATE_ITEM } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditItemSchema } from '@/lib/schema'
@@ -17,9 +18,9 @@ import { asyncResponseToaster } from '@/lib/toasts'
 import AddEditItemCrockery from '@/modals/item-crockery'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
+import { createFileRoute, useRouter, useRouterState } from '@tanstack/react-router'
 import { toFormData } from 'axios'
-import { ReceiptIndianRupee, UserPen, UtensilsCrossed } from 'lucide-react'
+import { ReceiptIndianRupee, Trash2, UserPen, UtensilsCrossed } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
 import { Route as ItemsRoute } from './index'
@@ -32,8 +33,7 @@ function RouteComponent() {
   const { location } = useRouterState()
 
   const router = useRouter()
-  const canGoBack = useCanGoBack()
-
+  const { page, limit } = Route.useSearch()
   const queryClient = useQueryClient()
   const inputContainerRef = useRef()
   const isLoading = useAuthStore(state => state.isLoading)
@@ -55,7 +55,7 @@ function RouteComponent() {
     validators: { onSubmit: addEditItemSchema }
   })
 
-  const category_id = useStore(store, state => state.values.category_id)
+  const [category_id, item_name] = useStore(store, state => [state.values.category_id, state.values.name])
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
 
@@ -111,11 +111,8 @@ function RouteComponent() {
 
   function onClose() {
     setTimeout(() => {
-      if (canGoBack) {
-        router.history.back()
-      } else {
-        router.navigate({ to: ItemsRoute.fullPath, search: pagination })
-      }
+      router.navigate({ to: ItemsRoute.fullPath, search: { page, limit } })
+
       reset({
         category_id: undefined,
         scm_id: undefined,
@@ -152,11 +149,28 @@ function RouteComponent() {
       cell: (props) => {
         const category_id = props.row.original.category_id
         const category_name = itemCrockeryData.find(data => data.category_id === category_id)?.name
-        return category_name
+        return category_name ?? item_name
       },
       size: 200,
     },
-  ], [JSON.stringify(itemCrockeryData)])
+    {
+      id: 'actions',
+      cell: (props) => {
+        const category_id = props.row.original.category_id
+        return (
+          <div className="flex gap-x-4 justify-end">
+            <Button className="text-red-600 hover:border-red-600 hover:bg-red-600 hover:text-white"
+              onClick={() => setUpdateItemCrockery(prev => prev.filter(data => data.crockery_id !== props.row.original.crockery_id))}
+              disabled={Boolean(category_id)}
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </div >
+        )
+      },
+      size: 160,
+    },
+  ], [JSON.stringify(itemCrockeryData), item_name])
 
   const isNewCrockeryAdded = useCallback(
     () => {
@@ -345,12 +359,15 @@ function RouteComponent() {
               </form>
             </ScrollArea>
           </div>
-          <Table
-            columns={columns}
-            data={[...crockeryData, ...updateItemCrockery]}
-            pagination={false}
-            isLoading={isLoading || isCrockeryLoading}
-          />
+          {[...crockeryData, ...updateItemCrockery].length ?
+            <Table
+              columns={columns}
+              data={[...crockeryData, ...updateItemCrockery]}
+              pagination={false}
+              isLoading={isLoading || isCrockeryLoading}
+            />
+            : <NoData />
+          }
         </div>
       </div>
 

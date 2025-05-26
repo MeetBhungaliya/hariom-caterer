@@ -1,6 +1,7 @@
 import { getCategoryList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { SubComponent } from '@/components/sub-food-component'
 import { Button, buttonVariants } from '@/components/ui/button'
@@ -105,14 +106,17 @@ function RouteComponent() {
           />
           <IconButton icon={<Apple className="size-5" />} label="Add Category" onClick={categoryModal.setTrue} />
         </div>
-        <Table
-          columns={columns}
-          data={categoryList.data.result.list}
-          isLoading={isLoading || categoryList.fetchStatus === 'fetching'}
-          totalRecords={categoryList.data.result.totalRecords}
-          expandableRows={true}
-          SubComponent={SubComponent}
-        />
+        {categoryList.data.result.list.length || isLoading || categoryList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={categoryList.data.result.list}
+            isLoading={isLoading || categoryList.fetchStatus === 'fetching'}
+            totalRecords={categoryList.data.result.totalRecords}
+            expandableRows={true}
+            SubComponent={SubComponent}
+          />
+          : <NoData />
+        }
       </div>
 
       <AddEditCategoryModal modalState={categoryModal} data={updateCategory} setData={setUpdateCategory} />

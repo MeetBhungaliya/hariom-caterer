@@ -1,6 +1,7 @@
 import { getCrockeryList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
@@ -99,12 +100,15 @@ function RouteComponent() {
           />
           <IconButton icon={<UtensilsCrossed className="size-5" />} label="Add Crockery" onClick={crockeryModal.setTrue} />
         </div>
-        <Table
-          columns={columns}
-          data={crockeryList.data.result.list}
-          isLoading={isLoading || crockeryList.fetchStatus === 'fetching'}
-          totalRecords={crockeryList.data.result.totalRecords}
-        />
+        {crockeryList.data.result.list.length || isLoading || crockeryList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={crockeryList.data.result.list}
+            isLoading={isLoading || crockeryList.fetchStatus === 'fetching'}
+            totalRecords={crockeryList.data.result.totalRecords}
+          />
+          : <NoData />
+        }
       </div>
 
       <AddEditCrockery modalState={crockeryModal} data={updateCrockery} setData={setUpdateCrockery} />

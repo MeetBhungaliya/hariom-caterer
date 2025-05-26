@@ -1,6 +1,7 @@
 import { getSubCategoryList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
@@ -61,6 +62,9 @@ function RouteComponent() {
     },
   ], [page, limit])
 
+  if (subCategoryList.isError)
+    return null
+
   return (
     <>
       <div className="h-full flex flex-col gap-y-5">
@@ -80,12 +84,16 @@ function RouteComponent() {
           />
           <IconButton icon={<ClipboardList className="size-5" />} label={`Add ${name || 'Subcategory'}`} onClick={subCategoryModal.setTrue} />
         </div>
-        <Table
-          columns={columns}
-          data={subCategoryList.data.result.list}
-          isLoading={isLoading || subCategoryList.fetchStatus === 'fetching'}
-          totalRecords={subCategoryList.data.result.totalRecords}
-        />
+        {subCategoryList.data.result.list.length || isLoading || subCategoryList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={subCategoryList.data.result.list}
+            isLoading={isLoading || subCategoryList.fetchStatus === 'fetching'}
+            totalRecords={subCategoryList.data.result.totalRecords}
+          />
+          : <NoData />
+        }
+
       </div>
 
       <AddEditSubcategoryModal modalState={subCategoryModal} data={updateSubCategory} setData={setUpdateSubCategory} />

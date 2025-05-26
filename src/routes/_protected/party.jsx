@@ -1,5 +1,6 @@
 import { getPartiesList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
@@ -75,12 +76,15 @@ function RouteComponent() {
         <div className="bg-white p-4 rounded-xl flex justify-end">
           <IconButton icon={<UserRound className="size-5" />} label="Add Party" onClick={partyModal.setTrue} />
         </div>
-        <Table
-          columns={columns}
-          data={partyList.data.result.list}
-          isLoading={isLoading || partyList.fetchStatus === 'fetching'}
-          totalRecords={partyList.data.result.totalRecords}
-        />
+        {partyList.data.result.list.length || isLoading || partyList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={partyList.data.result.list}
+            isLoading={isLoading || partyList.fetchStatus === 'fetching'}
+            totalRecords={partyList.data.result.totalRecords}
+          />
+          : <NoData />
+        }
       </div>
 
       <AddEditParty modalState={partyModal} data={updateParty} setData={setUpdateParty} />

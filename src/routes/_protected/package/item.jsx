@@ -1,6 +1,7 @@
 import { getPackageItemList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
@@ -81,12 +82,15 @@ function RouteComponent() {
           />
           <IconButton icon={<PackagePlus className="size-5" />} label="Add Package Item" onClick={packageItemModal.setTrue} />
         </div>
-        <Table
-          columns={columns}
-          data={packageItemList.data.result.list}
-          isLoading={isLoading || packageItemList.fetchStatus === 'fetching'}
-          totalRecords={packageItemList.data.result.totalRecords}
-        />
+        {packageItemList.data.result.list.length || isLoading || packageItemList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={packageItemList.data.result.list}
+            isLoading={isLoading || packageItemList.fetchStatus === 'fetching'}
+            totalRecords={packageItemList.data.result.totalRecords}
+          />
+          : <NoData />
+        }
       </div>
 
       <AddEditPackageItem modalState={packageItemModal} data={updatePackageItem} setData={setUpdatePackageItem} />

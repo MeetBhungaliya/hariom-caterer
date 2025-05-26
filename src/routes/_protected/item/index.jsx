@@ -5,18 +5,19 @@ import { ControlledInput } from '@/components/common/controlled-input'
 import { Table } from '@/components/common/table'
 import Img from '@/components/img'
 import { SubComponent } from '@/components/sub-item-component'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { useAuthStore } from '@/hooks/use-auth'
 import { paginationSchema } from '@/lib/schema/common'
 import { cn } from '@/lib/utils'
 import { useForm } from '@tanstack/react-form'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { ClipboardPenLine, CornerUpRight, Edit, Search } from 'lucide-react'
 import { useMemo } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateItemRoute } from './$item_id'
 import { Route as AddItemRoute } from './add'
+import NoData from '@/components/common/NoData'
 
 export const Route = createFileRoute('/_protected/item/')({
   component: RouteComponent,
@@ -85,21 +86,14 @@ function RouteComponent() {
       id: 'actions',
       cell: (props) => (
         <div className="flex gap-x-4 justify-end">
-          <Button onClick={() => {
-            navigate({
-              to: UpdateItemRoute.fullPath,
-              params: { item_id: props.row.original.item_id },
-              state: props.row.original
-            })
-          }}
-          >
+          <Link to={UpdateItemRoute.fullPath} params={{ item_id: props.row.original.item_id }} state={props.row.original} search={{ page, limit }} className={buttonVariants()}>
             <Edit className="size-4" />
-          </Button>
-        </div>
+          </Link>
+        </div >
       ),
       size: 160,
     },
-  ], [])
+  ], [page, limit])
 
   if (itemList.isError)
     return null
@@ -123,14 +117,17 @@ function RouteComponent() {
           />
           <IconButton icon={<ClipboardPenLine className="size-5" />} label="Add Item" onClick={() => navigate({ to: AddItemRoute.fullPath })} />
         </div>
-        <Table
-          columns={columns}
-          data={itemList.data.result.list}
-          isLoading={isLoading || itemList.fetchStatus === 'fetching'}
-          totalRecords={itemList.data.result.totalRecords}
-          expandableRows={true}
-          SubComponent={SubComponent}
-        />
+        {itemList.data.result.list.length || isLoading || itemList.fetchStatus === 'fetching' ?
+          <Table
+            columns={columns}
+            data={itemList.data.result.list}
+            isLoading={isLoading || itemList.fetchStatus === 'fetching'}
+            totalRecords={itemList.data.result.totalRecords}
+            expandableRows={true}
+            SubComponent={SubComponent}
+          />
+          : <NoData />
+        }
       </div>
     </>
   )

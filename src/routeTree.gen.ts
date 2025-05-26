@@ -11,7 +11,6 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ListingImport } from './routes/listing'
 import { Route as ProtectedImport } from './routes/_protected'
 import { Route as ProtectedIndexImport } from './routes/_protected/index'
 import { Route as ProtectedPartyImport } from './routes/_protected/party'
@@ -31,12 +30,6 @@ import { Route as ProtectedCoastingAddImport } from './routes/_protected/coastin
 import { Route as ProtectedCoastingOrderidImport } from './routes/_protected/coasting/$order_id'
 
 // Create/Update Routes
-
-const ListingRoute = ListingImport.update({
-  id: '/listing',
-  path: '/listing',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const ProtectedRoute = ProtectedImport.update({
   id: '/_protected',
@@ -148,13 +141,6 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: ''
       preLoaderRoute: typeof ProtectedImport
-      parentRoute: typeof rootRoute
-    }
-    '/listing': {
-      id: '/listing'
-      path: '/listing'
-      fullPath: '/listing'
-      preLoaderRoute: typeof ListingImport
       parentRoute: typeof rootRoute
     }
     '/(auth)/login': {
@@ -316,7 +302,6 @@ const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof ProtectedRouteWithChildren
-  '/listing': typeof ListingRoute
   '/login': typeof authLoginRoute
   '/crockery': typeof ProtectedCrockeryRoute
   '/party': typeof ProtectedPartyRoute
@@ -336,7 +321,6 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
-  '/listing': typeof ListingRoute
   '/login': typeof authLoginRoute
   '/crockery': typeof ProtectedCrockeryRoute
   '/party': typeof ProtectedPartyRoute
@@ -358,7 +342,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_protected': typeof ProtectedRouteWithChildren
-  '/listing': typeof ListingRoute
   '/(auth)/login': typeof authLoginRoute
   '/_protected/crockery': typeof ProtectedCrockeryRoute
   '/_protected/party': typeof ProtectedPartyRoute
@@ -381,7 +364,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/listing'
     | '/login'
     | '/crockery'
     | '/party'
@@ -400,7 +382,6 @@ export interface FileRouteTypes {
     | '/package'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/listing'
     | '/login'
     | '/crockery'
     | '/party'
@@ -420,7 +401,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_protected'
-    | '/listing'
     | '/(auth)/login'
     | '/_protected/crockery'
     | '/_protected/party'
@@ -442,13 +422,11 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   ProtectedRoute: typeof ProtectedRouteWithChildren
-  ListingRoute: typeof ListingRoute
   authLoginRoute: typeof authLoginRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   ProtectedRoute: ProtectedRouteWithChildren,
-  ListingRoute: ListingRoute,
   authLoginRoute: authLoginRoute,
 }
 
@@ -463,7 +441,6 @@ export const routeTree = rootRoute
       "filePath": "__root.jsx",
       "children": [
         "/_protected",
-        "/listing",
         "/(auth)/login"
       ]
     },
@@ -486,9 +463,6 @@ export const routeTree = rootRoute
         "/_protected/item/",
         "/_protected/package/"
       ]
-    },
-    "/listing": {
-      "filePath": "listing.jsx"
     },
     "/(auth)/login": {
       "filePath": "(auth)/login.jsx"

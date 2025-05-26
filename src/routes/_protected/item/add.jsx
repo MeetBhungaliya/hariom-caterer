@@ -19,10 +19,11 @@ import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useCanGoBack, useRouter } from '@tanstack/react-router'
 import { toFormData } from 'axios'
-import { ReceiptIndianRupee, UserPen, UtensilsCrossed } from 'lucide-react'
+import { ReceiptIndianRupee, Trash2, UserPen, UtensilsCrossed } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
 import { Route as ItemsRoute } from './index'
+import NoData from '@/components/common/NoData'
 
 export const Route = createFileRoute('/_protected/item/add')({
   component: RouteComponent,
@@ -53,7 +54,7 @@ function RouteComponent() {
     validators: { onSubmit: addEditItemSchema }
   })
 
-  const category_id = useStore(store, state => state.values.category_id)
+  const [category_id, item_name] = useStore(store, state => [state.values.category_id, state.values.name])
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
 
@@ -145,11 +146,28 @@ function RouteComponent() {
       cell: (props) => {
         const category_id = props.row.original.category_id
         const category_name = itemCrockeryData.find(data => data.category_id === category_id)?.name
-        return category_name
+        return category_name ?? item_name
       },
       size: 200,
     },
-  ], [JSON.stringify(itemCrockeryData)])
+    {
+      id: 'actions',
+      cell: (props) => {
+        const category_id = props.row.original.category_id
+        return (
+          <div className="flex gap-x-4 justify-end">
+            <Button className="text-red-600 hover:border-red-600 hover:bg-red-600 hover:text-white"
+              onClick={() => setUpdateItemCrockery(prev => prev.filter(data => data.crockery_id !== props.row.original.crockery_id))}
+              disabled={Boolean(category_id)}
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </div >
+        )
+      },
+      size: 160,
+    },
+  ], [JSON.stringify(itemCrockeryData), item_name])
 
   return (
     <>
@@ -306,12 +324,15 @@ function RouteComponent() {
               </form>
             </ScrollArea>
           </div>
-          <Table
-            columns={columns}
-            data={[...crockeryData, ...updateItemCrockery]}
-            pagination={false}
-            isLoading={isLoading || isCrockeryLoading}
-          />
+          {[...crockeryData, ...updateItemCrockery].length ?
+            <Table
+              columns={columns}
+              data={[...crockeryData, ...updateItemCrockery]}
+              pagination={false}
+              isLoading={isLoading || isCrockeryLoading}
+            />
+            : <NoData />
+          }
         </div>
       </div>
 
