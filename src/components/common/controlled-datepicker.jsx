@@ -34,7 +34,7 @@ const ControlledDatepicker = ({ label, field, extendContent }) => {
           {date ? format(date, "PPP") : <span>{label}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] w-auto p-0">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
         <Calendar
           mode="single"
           selected={date}

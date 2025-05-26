@@ -8,6 +8,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import { Badge } from './ui/badge'
+import { ScrollArea, ScrollBar } from './ui/scroll-area'
 
 const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, showPrice, store }) => {
   const queryClient = useQueryClient()
@@ -45,7 +47,12 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
   const getGroupedItems = useMemo(() => {
     const allItems = getFieldValue("item")
     return allItems.filter(i => i.pim_id === item.pim_id)
-  }, [JSON.stringify(item)])
+  }, [item])
+
+  const selectedItems = useMemo(() => {
+    const items = getGroupedItems.map(e => options.find(a => a.value === e.item_id)).filter(b => b)
+    return { items: items.map(a => a?.label), price: items.reduce((acc, curr) => acc += curr.price, 0) }
+  }, [item])
 
   const handleAddItem = () => {
     const cloneItem = { ...item, deleteAble: true }
@@ -68,14 +75,23 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
         <Label className='text-sm md:text-base font-medium'>
           {item.name}
         </Label>
-        <Button
-          type='button'
-          variant='outline'
-          className='p-1.5 bg-sky-600 rounded-sm border-transparent text-white hover:text-sky-600'
-          onClick={handleAddItem}
-        >
-          <Plus className='size-4 stroke-3' />
-        </Button>
+        <div className='flex gap-x-4 items-center'>
+          <span>
+            {getGroupedItems.filter(e => e.item_id).length}
+            &nbsp;
+            of
+            &nbsp;
+            {getGroupedItems.length}
+          </span>
+          <Button
+            type='button'
+            variant='outline'
+            className='p-1.5 bg-sky-600 rounded-sm border-transparent text-white hover:text-sky-600'
+            onClick={handleAddItem}
+          >
+            <Plus className='size-4 stroke-3' />
+          </Button>
+        </div>
       </div>
       <Popover>
         <div className={cn('flex border rounded-lg',
@@ -88,7 +104,28 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
               {item?.count}
             </span>
           </div>
-          <PopoverTrigger className="w-full px-4 py-2.5 font-medium text-start text-sm md:text-base ml-0 text-gray-500 cursor-pointer">Select {item.name}</PopoverTrigger>
+          <PopoverTrigger className="w-full font-medium text-start text-sm md:text-base ml-0 text-gray-500 cursor-pointer flex justify-between overflow-hidden">
+            <div className='overflow-hidden'>
+              {selectedItems.items.length
+                ? <ScrollArea className="w-full px-2 py-2.5">
+                  <div className='flex gap-x-2'>
+                    {selectedItems.items.map((l, i) => {
+                      return <Badge key={i} variant="outline">{l}</Badge>
+                    })}
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+                : <p className='py-2.5 pl-2'>Select {item.name}</p>
+              }
+            </div>
+            {selectedItems?.price
+              ? <div className={cn("px-3 border-l border-border-1 flex items-center transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}>
+                <span className='text-sm md:text-base font-medium'>
+                  {selectedItems?.price}
+                </span>
+              </div>
+              : null}
+          </PopoverTrigger>
         </div>
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           {getGroupedItems.map((item, index) => {
