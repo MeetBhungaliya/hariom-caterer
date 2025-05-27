@@ -65,6 +65,7 @@ function RouteComponent() {
       pim_id: item.pim_id ?? null,
       item_id: Number(item.item_id),
     }))
+      .filter(item => item.item_id)
 
     const payload = {
       ...value,
@@ -240,7 +241,7 @@ function RouteComponent() {
 
                 const packageItem = (((await packagesOption).result.list ?? []).find(item => item.package_id === e.value)?.package_item)
                 const extraItem = { pim_id: null, name: "Extra Item", deleteAble: true }
-                setFieldValue('item', [...packageItem, extraItem])
+                setFieldValue('item', [...packageItem.map(item => Array.from({ length: item.quantity }).map(() => ({ ...item }))).flat(), extraItem])
               }
             }}
             children={field => (

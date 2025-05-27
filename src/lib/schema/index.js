@@ -61,7 +61,7 @@ export const addEditPackageSchema = z.object({
 
 export const coastingItemSchema = z.object({
   pim_id: z.number({ required_error: 'Item ID is required' }).nullable(),
-  item_id: z.number({ required_error: 'Item ID is required' }),
+  item_id: z.number({ required_error: 'Item ID is required' }).nullable().optional(),
 })
 
 export const addEditCoastingSchema = z.object({

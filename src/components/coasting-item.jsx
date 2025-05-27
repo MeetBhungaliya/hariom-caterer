@@ -47,12 +47,12 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
   const getGroupedItems = useMemo(() => {
     const allItems = getFieldValue("item")
     return allItems.filter(i => i.pim_id === item.pim_id)
-  }, [item])
+  }, [isLoading, item])
 
   const selectedItems = useMemo(() => {
     const items = getGroupedItems.map(e => options.find(a => a.value === e.item_id)).filter(b => b)
     return { items: items.map(a => a?.label), price: items.reduce((acc, curr) => acc += curr.price, 0) }
-  }, [item])
+  }, [isLoading, item])
 
   const handleAddItem = () => {
     const cloneItem = { ...item, deleteAble: true }
@@ -99,6 +99,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
             ? getGroupedItems.some(i => !i.item_id) ? "border-red-500" : "border-border-1"
             : "border-border-1")}
         >
+          {/* <div className='flex border rounded-lg border-border-1'> */}
           <div className="px-4 border-r flex items-center">
             <span className='text-sm md:text-base font-medium'>
               {item?.count}

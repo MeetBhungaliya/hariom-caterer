@@ -1,11 +1,16 @@
 import { getOrdersList } from '@/api/query-option'
 import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
+import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { METHODS } from '@/constants/common'
+import { CONVERT_TO_ORDER } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
+import { fetchApi } from '@/lib/api'
 import { paginationSchema, STATUS_OPTIONS, statusSchema } from '@/lib/schema/common'
+import { asyncResponseToaster } from '@/lib/toasts'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -15,11 +20,6 @@ import { useMemo } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateOrderRoute } from './$order_id'
 import { Route as AddCoastingRoute } from './add'
-import { UPDATE_COASTING } from '@/constants/endpoints'
-import { METHODS } from '@/constants/common'
-import { fetchApi } from '@/lib/api'
-import { asyncResponseToaster } from '@/lib/toasts'
-import NoData from '@/components/common/NoData'
 
 export const Route = createFileRoute('/_protected/coasting/')({
   component: RouteComponent,
@@ -41,12 +41,12 @@ function RouteComponent() {
 
   const ordersList = useQuery(getOrdersList({ page, limit, search: debouncedSearchedValue, status }))
 
-  const updateCoastingMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: UPDATE_COASTING, method: METHODS.PUT, data }),
+  const updateOrderStatusMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: CONVERT_TO_ORDER, method: METHODS.PUT, data }),
   })
 
   const handleAcceptOrder = async (order_id) => {
-    const result = await asyncResponseToaster(() => updateCoastingMutation.mutateAsync({ order_id, status: STATUS_OPTIONS.at(0).value }))
+    const result = await asyncResponseToaster(() => updateOrderStatusMutation.mutateAsync({ order_id, status: STATUS_OPTIONS.at(0).value }))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       ordersList.refetch()
@@ -120,11 +120,15 @@ function RouteComponent() {
       id: 'actions',
       cell: (props) => (
         <div className="flex gap-x-4 justify-end">
-          <Button className="text-sm" onClick={() => handleAcceptOrder(props.row.original.order_id)}
-          >
-            Accept Order
-          </Button>
-          <Button onClick={() => {
+          {status === STATUS_OPTIONS.at(1).value
+            ? (
+              <Button className="text-sm" onClick={() => handleAcceptOrder(props.row.original.order_id)}>
+                Accept Order
+              </Button>
+            )
+            : null}
+
+          <Button className="px-[10px]" onClick={() => {
             navigate({
               to: UpdateOrderRoute.fullPath,
               params: { order_id: props.row.original.order_id },
@@ -138,7 +142,7 @@ function RouteComponent() {
       ),
       size: 160,
     },
-  ], [])
+  ], [status])
 
   if (ordersList.isError)
     return null
