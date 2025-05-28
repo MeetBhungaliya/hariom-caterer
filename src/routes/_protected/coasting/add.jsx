@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
-import { ADD_COASTING } from '@/constants/endpoints'
+import { ADD_COASTING, GET_ORDERS } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
@@ -34,7 +34,7 @@ function RouteComponent() {
   const navigate = Route.useNavigate()
   const queryClient = useQueryClient()
 
-  const showPrice = useBoolean(false)
+  const showPrice = useBoolean(true)
 
   const addCoastingMutation = useMutation({
     mutationFn: async data => fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
@@ -78,7 +78,7 @@ function RouteComponent() {
     const result = await asyncResponseToaster(() => addCoastingMutation.mutateAsync(payload))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
-      queryClient.refetchQueries(getOrdersList)
+      queryClient.invalidateQueries({ queryKey: GET_ORDERS })
       onClose()
     }
   }
@@ -379,7 +379,7 @@ function RouteComponent() {
                   value={getTotalCost() || ""}
                   prefix={<IndianRupee className="size-5" />}
                   disabled={true}
-                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}
+                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-100" : "opacity-0")}
                 />
               )}
             />

@@ -99,7 +99,6 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
             ? getGroupedItems.some(i => !i.item_id) ? "border-red-500" : "border-border-1"
             : "border-border-1")}
         >
-          {/* <div className='flex border rounded-lg border-border-1'> */}
           <div className="px-4 border-r flex items-center">
             <span className='text-sm md:text-base font-medium'>
               {item?.count}
@@ -120,7 +119,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
               }
             </div>
             {selectedItems?.price
-              ? <div className={cn("px-3 border-l border-border-1 flex items-center transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}>
+              ? <div className={cn("px-3 border-l border-border-1 flex items-center transition-opacity", showPrice.value ? "opacity-full" : "opacity-0")}>
                 <span className='text-sm md:text-base font-medium'>
                   {selectedItems?.price}
                 </span>
@@ -163,7 +162,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                           children={() => {
                             const item = (options || []).find(item => item.value === field.state.value)
                             return item?.price
-                              ? <div className={cn("px-3 border-l border-border-1 flex items-center transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}>
+                              ? <div className={cn("px-3 border-l border-border-1 flex items-center transition-opacity", showPrice.value ? "opacity-100" : "opacity-0")}>
                                 <span className='text-sm md:text-base font-medium'>
                                   {item?.price}
                                 </span>

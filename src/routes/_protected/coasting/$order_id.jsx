@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
-import { UPDATE_COASTING } from '@/constants/endpoints'
+import { GET_ORDERS, UPDATE_COASTING } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
@@ -38,7 +38,7 @@ function RouteComponent() {
 
   const queryClient = useQueryClient()
 
-  const showPrice = useBoolean(false)
+  const showPrice = useBoolean(true)
 
   const orderItemsList = useQuery(getOrderItemList({ order_id }))
 
@@ -121,6 +121,7 @@ function RouteComponent() {
     const result = await asyncResponseToaster(() => updateCoastingMutation.mutateAsync(payload))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
+      queryClient.invalidateQueries({ queryKey: GET_ORDERS })
       queryClient.refetchQueries(getOrdersList)
       onClose()
     }
@@ -339,26 +340,6 @@ function RouteComponent() {
               : null
           }}
         </Field>
-        {/* <Field name="item" mode="array">
-              {(field) => {
-                const value = field.state.value ?? []
-                return value.map((item, i) => {
-                  return (
-                    <CoastingItem
-                      key={i + item.pim_id}
-                      index={i}
-                      item={item}
-                      Field={Field}
-                      Subscribe={Subscribe}
-                      setFieldValue={setFieldValue}
-                      getFieldValue={getFieldValue}
-                      store={store}
-                      showPrice={showPrice}
-                    />
-                  )
-                })
-              }}
-            </Field> */}
         <div className='flex items-center justify-between'>
           <div className='space-y-4'>
             <div className='flex items-center gap-x-2'>
@@ -443,7 +424,7 @@ function RouteComponent() {
                   value={getTotalCost() || ""}
                   prefix={<IndianRupee className="size-5" />}
                   disabled={true}
-                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-0" : "opacity-full")}
+                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-100" : "opacity-0")}
                 />
               )}
             />

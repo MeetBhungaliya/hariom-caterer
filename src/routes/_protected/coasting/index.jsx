@@ -6,13 +6,13 @@ import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { METHODS } from '@/constants/common'
-import { CONVERT_TO_ORDER } from '@/constants/endpoints'
+import { CONVERT_TO_ORDER, GET_ORDERS } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { paginationSchema, STATUS_OPTIONS, statusSchema } from '@/lib/schema/common'
 import { asyncResponseToaster } from '@/lib/toasts'
 import { useForm } from '@tanstack/react-form'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { Edit, HandCoins, Search } from 'lucide-react'
 import moment from 'moment'
@@ -31,6 +31,7 @@ export const Route = createFileRoute('/_protected/coasting/')({
 
 function RouteComponent() {
   const navigate = Route.useNavigate()
+  const queryClient = useQueryClient()
 
   const { page, limit, status } = Route.useSearch()
 
@@ -50,6 +51,7 @@ function RouteComponent() {
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       ordersList.refetch()
+      queryClient.invalidateQueries({ queryKey: GET_ORDERS })
     }
   }
 
