@@ -206,7 +206,7 @@ function RouteComponent() {
               />
             )}
           />
-          <Field
+          {/* <Field
             name="status"
             children={(field) => {
               const errorMsg = field.state.meta.errors?.[0]?.message
@@ -232,7 +232,7 @@ function RouteComponent() {
                 </Select>
               )
             }}
-          />
+          /> */}
           <Field
             name="package_id"
             listeners={{

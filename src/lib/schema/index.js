@@ -61,7 +61,7 @@ export const addEditPackageSchema = z.object({
 
 export const coastingItemSchema = z.object({
   pim_id: z.number({ required_error: 'Item ID is required' }).nullable(),
-  item_id: z.number({ required_error: 'Item ID is required' }).nullable().optional,
+  item_id: z.number({ required_error: 'Item ID is required' }).nullable().optional(),
 })
 
 export const addEditCoastingSchema = z.object({
@@ -72,7 +72,7 @@ export const addEditCoastingSchema = z.object({
   jain_counter: z.number({ required_error: 'Jain counter is required' }).min(0, 'Jain counter cannot be negative'),
   time: z.string({ required_error: 'Event time is required' }).min(1, 'Please select a valid time slot'),
   venue: z.string({ required_error: 'Venue is required' }).min(1, 'Please enter a valid venue address'),
-  status: z.enum(STATUS_OPTIONS.map(option => option.value)),
+  // status: z.enum(STATUS_OPTIONS.map(option => option.value)),
   item: z.array(coastingItemSchema, { required_error: 'At least one item is required' }).min(1, 'Please add at least one item to the coasting list'),
   per_plate_cost: z.number({ required_error: 'Per plate cost is required' }),
   selling_price: z.number({ required_error: 'Selling price is required' }),

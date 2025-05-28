@@ -76,7 +76,7 @@ function RouteComponent() {
       time: location.state.time,
       person: location.state.person,
       venue: location.state.venue,
-      status: location.state.status,
+      // status: location.state.status,
       jain_counter: location.state.jain_counter,
       per_plate_cost: location.state.per_plate_cost,
       selling_price: location.state.selling_price,
@@ -274,7 +274,7 @@ function RouteComponent() {
               />
             )}
           />
-          <Field
+          {/* <Field
             name="status"
             children={(field) => {
               const errorMsg = field.state.meta.errors?.[0]?.message
@@ -300,7 +300,7 @@ function RouteComponent() {
                 </Select>
               )
             }}
-          />
+          /> */}
         </div>
         <Field name="item" mode="array">
           {(field) => {
