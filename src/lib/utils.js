@@ -19,3 +19,16 @@ export async function tryCatch(fn, errorHandler) {
     return { success: false, error: processedError }
   }
 }
+
+export const printPDF = (pdfUrl) => {
+  const iframe = document.createElement("iframe");
+  iframe.style.display = "none";
+  iframe.src = pdfUrl;
+  iframe.onload = () => {
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    }, 100);
+  };
+  document.body.appendChild(iframe);
+};

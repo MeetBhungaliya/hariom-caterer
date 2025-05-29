@@ -17,7 +17,7 @@ import { fetchApi } from '@/lib/api'
 import { addEditCoastingSchema } from '@/lib/schema'
 import { STATUS_OPTIONS } from '@/lib/schema/common'
 import { asyncResponseToaster } from '@/lib/toasts'
-import { cn } from '@/lib/utils'
+import { cn, printPDF } from '@/lib/utils'
 import { useForm, useStore } from '@tanstack/react-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -78,6 +78,7 @@ function RouteComponent() {
     const result = await asyncResponseToaster(() => addCoastingMutation.mutateAsync(payload))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
+      printPDF(result.value.result.url)
       queryClient.invalidateQueries({ queryKey: GET_ORDERS })
       onClose()
     }
