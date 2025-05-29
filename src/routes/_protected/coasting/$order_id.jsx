@@ -26,6 +26,7 @@ import { useBoolean } from 'usehooks-ts'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import moment from 'moment'
 
 export const Route = createFileRoute('/_protected/coasting/$order_id')({
   component: RouteComponent,
@@ -113,6 +114,7 @@ function RouteComponent() {
     const payload = {
       ...value,
       item,
+      date: moment(value.date).format("YYYY-MM-DD"),
       pro: value.pro ?? 0,
       bom_boys: value.bom_boys ?? 0,
       packed_bottle: value.packed_bottle ?? 0,
