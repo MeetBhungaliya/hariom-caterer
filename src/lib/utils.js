@@ -20,15 +20,23 @@ export async function tryCatch(fn, errorHandler) {
   }
 }
 
-export const printPDF = (pdfUrl) => {
-  const iframe = document.createElement("iframe");
-  iframe.style.display = "none";
-  iframe.src = pdfUrl;
-  iframe.onload = () => {
-    setTimeout(() => {
+export const printPDF = async (url) => {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = blobUrl;
+    document.body.appendChild(iframe)
+
+    iframe.onload = ()=>{
       iframe.contentWindow.focus();
       iframe.contentWindow.print();
-    }, 100);
-  };
-  document.body.appendChild(iframe);
+      URL.revokeObjectURL(blobUrl);
+    }
+  } catch (err) {
+    console.error("Error fetching or printing PDF", err);
+  }
 };

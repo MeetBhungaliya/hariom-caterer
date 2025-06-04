@@ -276,33 +276,6 @@ function RouteComponent() {
               />
             )}
           />
-          {/* <Field
-            name="status"
-            children={(field) => {
-              const errorMsg = field.state.meta.errors?.[0]?.message
-              return (
-                <Select defaultValue={field.state.value} onValueChange={field.handleChange}>
-                  <SelectTrigger icon
-                    className={cn("w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
-                      errorMsg ? "border-red-500 data-[placeholder]:text-red-500" : "data-[placeholder]:text-gray-500 border-gray-300"
-                    )}
-                  >
-                    <div className='h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white'>
-                      <Timer />
-                    </div>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent align="middle" className="min-w-20">
-                    {STATUS_OPTIONS.map((item, key) => (
-                      <SelectItem key={key} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )
-            }}
-          /> */}
         </div>
         <Field name="item" mode="array">
           {(field) => {

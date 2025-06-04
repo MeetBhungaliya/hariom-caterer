@@ -74,5 +74,6 @@ export function navLinks() {
 export const TIME_OPTIONS = [
   { value: "Morning", label: "Morning" },
   { value: "Evening", label: "Evening" },
+  { value: "Afternoon", label: "Afternoon" },
   { value: "Night", label: "Night" },
 ]

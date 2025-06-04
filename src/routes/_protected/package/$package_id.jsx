@@ -106,7 +106,7 @@ function RouteComponent() {
             children={field => (
               <ControlledInput
                 id="name"
-                label="Item name"
+                label="Package name"
                 containerClassName="w-full max-w-sm"
                 field={field}
                 prefix={<UserPen className="size-5" />}

@@ -179,7 +179,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                               <Button type='button'
                                 className='px-3 border-0 border-l border-border-1 rounded-l-none hover:bg-red-500 hover:border-red-500'
                                 onClick={() => field.removeValue(item.index)}
-                                disabled={!deleteAble}
+                                // disabled={!deleteAble}
                               >
                                 <Trash2 className='size-5' />
                               </Button>
