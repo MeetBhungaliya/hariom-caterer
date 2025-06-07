@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { PlusCircle, Trash2, UserPen } from "lucide-react";
+import { PlusCircle, ReceiptIndianRupee, Trash2, UserPen } from "lucide-react";
 import { Route as PackageItemRoute } from "./index";
 import { useMemo } from "react";
 
@@ -100,16 +100,28 @@ function RouteComponent() {
         />
       </div>
       <div className="h-full flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden">
-        <div className="p-6 pb-0 flex gap-x-2">
+        <div className="p-6 pb-0 flex gap-x-3">
           <Field
             name="name"
             children={(field) => (
               <ControlledInput
                 id="name"
                 label="Package name"
-                containerClassName="w-full max-w-sm"
+                containerClassName="w-full max-w-xs"
                 field={field}
                 prefix={<UserPen className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="price"
+            children={(field) => (
+              <ControlledInput
+                type="number"
+                label="Price"
+                field={field}
+                prefix={<ReceiptIndianRupee className="size-5" />}
+                containerClassName="w-full max-w-xs"
               />
             )}
           />

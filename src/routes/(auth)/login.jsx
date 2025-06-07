@@ -77,7 +77,7 @@ function RouteComponent() {
               children={field => (
                 <ControlledInput
                   id="email"
-                  label="Email"
+                  label="Email or username"
                   field={field}
                   prefix={<Mail className="size-5" />}
                 />

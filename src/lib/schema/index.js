@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { emailSchema, passwordSchema, phoneSchema } from './common'
 
 export const loginSchema = z.object({
-  email: emailSchema,
+  // email: emailSchema,
+  email: z.string({ required_error: 'Email or username is required' }).trim(),
   password: passwordSchema,
 })
 
@@ -48,6 +49,7 @@ export const addEditItemCrockerySchema = z.object({
 
 export const addEditPackageSchema = z.object({
   name: z.string({ required_error: 'Name is required' }).trim(),
+  price: z.number({ required_error: 'Price is required' }),
   data: z.array(
     z.object({
       pim_id: z.number({ required_error: 'Package item is required' }),

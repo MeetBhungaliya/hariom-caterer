@@ -12,7 +12,7 @@ function ControlledSearchableSelectBase({ label, prefix, field, searchPlaceholde
   const errorMsg = field.state.meta.errors?.[0]?.message
 
   return (
-    <Popover open={optionsState.value} onOpenChange={optionsState.setValue}>
+    <Popover modal open={optionsState.value} onOpenChange={optionsState.setValue}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
