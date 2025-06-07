@@ -27,10 +27,10 @@ export function getAllCrockeryOption() {
 }
 
 
-export function getItemCrockeryOption({ category_id }) {
+export function getItemCrockeryOption({ category_id, item_id }) {
   return queryOptions({
     queryKey: [GET_ITEM_CROCKERIES, category_id],
-    queryFn: async () => fetchApi({ url: `${GET_ITEM_CROCKERIES}?${category_id ? `category_id=${category_id}` : ''}` }),
+    queryFn: async () => fetchApi({ url: `${GET_ITEM_CROCKERIES}?${category_id ? `category_id=${category_id}` : ''}${item_id ? `&item_id=${item_id}` : ''}` }),
     placeholderData: [],
   })
 }

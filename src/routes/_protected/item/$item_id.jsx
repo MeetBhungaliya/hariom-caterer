@@ -55,12 +55,16 @@ function RouteComponent() {
     validators: { onSubmit: addEditItemSchema }
   })
 
-  const [category_id, item_name] = useStore(store, state => [state.values.category_id, state.values.name])
+  const [category_id, item_id, item_name] = useStore(store, (state) => [
+    state.values.category_id,
+    state.values.item_id,
+    state.values.name,
+  ]);
 
   const categoriesOption = queryClient.ensureQueryData(getCategoriesOption())
 
   const subCategoriesOption = typeof category_id === "number" ? queryClient.ensureQueryData(getSubCategoriesOption({ category_id })) : []
-  const itemCrockeryOption = typeof category_id === "number" ? queryClient.ensureQueryData(getItemCrockeryOption({ category_id })) : []
+  const itemCrockeryOption = typeof category_id === "number" ? queryClient.ensureQueryData(getItemCrockeryOption({ category_id, item_id })) : []
 
   useEffect(() => {
     if (!itemCrockeryOption.then) return
@@ -97,9 +101,14 @@ function RouteComponent() {
 
     updateItemCrockery.forEach(data => crockery_list.push({ crockery_id: data.crockery_id, add_to_category: false }))
 
-    value.crockery_list = JSON.stringify(crockery_list)
+    const newOrUpdatedCrockeryList = crockery_list.filter((crockery) =>
+      !crockeryData.some((data) => crockery.crockery_id === data.crockery_id)
+    );
 
-    const formData = toFormData(value)
+    const formData = toFormData({
+      ...value,
+      crockery_list: JSON.stringify(newOrUpdatedCrockeryList),
+    });
 
     const result = await asyncResponseToaster(() => updateItemMutation.mutateAsync(formData))
 
