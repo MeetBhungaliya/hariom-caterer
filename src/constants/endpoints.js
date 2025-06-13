@@ -39,3 +39,6 @@ export const UPDATE_COASTING = 'updateCosting'
 export const CONVERT_TO_ORDER = 'convertToOrder'
 
 export const GET_LIST_OF_ITEM_OF_PACKAGE = 'getListOfItemOfPackage'
+
+export const PRINT_CROCKERY = 'printCrockery'
+export const PRINT_ORDER = 'printOrder'

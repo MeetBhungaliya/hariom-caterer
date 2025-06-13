@@ -6,7 +6,7 @@ import { Table } from '@/components/common/table'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { METHODS } from '@/constants/common'
-import { CONVERT_TO_ORDER, GET_ORDERS } from '@/constants/endpoints'
+import { CONVERT_TO_ORDER, GET_ORDERS, PRINT_CROCKERY, PRINT_ORDER } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { paginationSchema, STATUS_OPTIONS, statusSchema } from '@/lib/schema/common'
@@ -20,6 +20,7 @@ import { useMemo } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateOrderRoute } from './$order_id'
 import { Route as AddCoastingRoute } from './add'
+import { printPDF } from '@/lib/utils'
 
 export const Route = createFileRoute('/_protected/coasting/')({
   component: RouteComponent,
@@ -46,6 +47,14 @@ function RouteComponent() {
     mutationFn: async data => fetchApi({ url: CONVERT_TO_ORDER, method: METHODS.PUT, data }),
   })
 
+  const printCrockeryMutation = useMutation({
+    mutationFn: async order_id => fetchApi({ url: `${PRINT_CROCKERY}?order_id=${order_id}`}),
+  })
+
+  const printOrderMutation = useMutation({
+    mutationFn: async order_id => fetchApi({ url: `${PRINT_ORDER}?order_id=${order_id}`}),
+  })
+
   const handleAcceptOrder = async (order_id) => {
     const result = await asyncResponseToaster(() => updateOrderStatusMutation.mutateAsync({ order_id, status: STATUS_OPTIONS.at(0).value }))
 
@@ -55,96 +64,95 @@ function RouteComponent() {
     }
   }
 
-  const columns = useMemo(() => [
-    {
-      header: 'Order Id',
-      accessorKey: 'order_id',
-      size: 200,
-    },
-    {
-      header: 'Client Name',
-      accessorKey: 'client.name',
-      size: 200,
-    },
-    {
-      header: 'Date & Time',
-      accessorKey: 'date',
-      cell: props => (
-        <span>
-          {moment(props.getValue()).format('DD-MM-YYYY')}
-          &nbsp;/&nbsp;
-          {props.row.original.time}
-        </span>
-      ),
-      size: 200,
-    },
-    {
-      header: 'Person',
-      accessorKey: 'person',
-      size: 200,
-    },
-    {
-      header: 'Venue',
-      accessorKey: 'venue',
-      size: 200,
-    },
-    {
-      header: 'Jain Counter',
-      accessorKey: 'jain_counter',
-      size: 200,
-    },
-    {
-      header: 'Per Plate Cost',
-      accessorKey: 'per_plate_cost',
-      size: 200,
-    },
-    {
-      header: 'Selling Price',
-      accessorKey: 'selling_price',
-      size: 200,
-    },
-    {
-      header: 'Pro',
-      accessorKey: 'pro',
-      size: 200,
-    },
-    {
-      header: 'Bom Boys',
-      accessorKey: 'bom_boys',
-      size: 200,
-    },
-    {
-      header: 'Packed Bottle',
-      accessorKey: 'packed_bottle',
-      size: 200,
-    },
-    {
-      id: 'actions',
-      cell: (props) => (
-        <div className="flex gap-x-4 justify-end">
-          {status === STATUS_OPTIONS.at(1).value
-            ? (
-              <Button className="text-sm" onClick={() => handleAcceptOrder(props.row.original.order_id)}>
-                Accept Order
-              </Button>
-            )
-            : null}
-
-          <Button className="px-[10px]" onClick={() => {
-            navigate({
-              to: UpdateOrderRoute.fullPath,
-              params: { order_id: props.row.original.order_id },
-              state: props.row.original
-            })
-          }}
-          >
-            <Edit className="size-4" />
-          </Button>
-        </div>
-      ),
-      size: 160,
-    },
-  ], [status])
+  const columns = useMemo(
+    () => [
+      {
+        header: "Order Id",
+        accessorKey: "order_id",
+        size: 200,
+      },
+      {
+        header: "Client Name",
+        accessorKey: "client.name",
+        size: 200,
+      },
+      {
+        header: "Date & Time",
+        accessorKey: "date",
+        cell: (props) => (
+          <span>
+            {moment(props.getValue()).format("DD-MM-YYYY")}
+            &nbsp;/&nbsp;
+            {props.row.original.time}
+          </span>
+        ),
+        size: 200,
+      },
+      {
+        header: "Person",
+        accessorKey: "person",
+        size: 200,
+      },
+      {
+        header: "Venue",
+        accessorKey: "venue",
+        size: 200,
+      },
+      {
+        id: "actions",
+        cell: (props) => (
+          <div className="flex gap-x-4 justify-end">
+            {status === STATUS_OPTIONS.at(1).value ? (
+              <>
+                <Button
+                  className="text-sm"
+                  onClick={() => handleAcceptOrder(props.row.original.order_id)}
+                >
+                  Accept Order
+                </Button>
+                <Button
+                  className="text-sm"
+                  onClick={async () => {
+                    const res = await printCrockeryMutation.mutateAsync(
+                      props.row.original.order_id
+                    );
+                    printPDF(res.result.url);
+                  }}
+                >
+                  Print Crockery
+                </Button>
+              </>
+            ) : null}
+            <Button
+              className="text-sm"
+              onClick={async () => {
+                const res = await printOrderMutation.mutateAsync(
+                  props.row.original.order_id
+                );
+                printPDF(res.result.url);
+              }}
+            >
+              Print Order
+            </Button>
+            <Button
+              className="px-[10px]"
+              onClick={() => {
+                navigate({
+                  to: UpdateOrderRoute.fullPath,
+                  params: { order_id: props.row.original.order_id },
+                  state: props.row.original,
+                });
+              }}
+            >
+              <Edit className="size-4" />
+            </Button>
+          </div>
+        ),
+        size: 160,
+      },
+    ],
+    [status]
+  );
 
   if (ordersList.isError)
     return null
