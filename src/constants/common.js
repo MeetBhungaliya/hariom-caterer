@@ -5,7 +5,8 @@ import { Route as DashboardRoute } from '@/routes/_protected/index'
 import { Route as ItemsRoute } from '@/routes/_protected/item/index'
 import { Route as PackageRoute } from '@/routes/_protected/package'
 import { Route as PartyRoute } from '@/routes/_protected/party'
-import { Apple, ClipboardList, HandCoins, LayoutDashboard, Package, UserRound, UtensilsCrossed } from 'lucide-react'
+import { Route as FunctionRoute } from '@/routes/_protected/function'
+import { Apple, Boxes, ClipboardList, HandCoins, LayoutDashboard, Package, UserRound, UtensilsCrossed } from 'lucide-react'
 
 export const METHODS = {
   GET: 'GET',
@@ -66,6 +67,12 @@ export function navLinks() {
       title: 'Party',
       url: PartyRoute.fullPath,
       icon: UserRound,
+      search: pagination,
+    },
+    {
+      title: 'Function',
+      url: FunctionRoute.fullPath,
+      icon: Boxes,
       search: pagination,
     },
   ]

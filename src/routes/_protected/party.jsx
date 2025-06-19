@@ -12,7 +12,7 @@ import { Edit, UserRound } from 'lucide-react'
 import moment from 'moment'
 import { useMemo, useState } from 'react'
 import { useBoolean } from 'usehooks-ts'
-
+``
 export const Route = createFileRoute('/_protected/party')({
   component: RouteComponent,
   validateSearch: search => paginationSchema.parse(search),
