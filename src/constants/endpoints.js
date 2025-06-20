@@ -46,3 +46,4 @@ export const GET_LIST_OF_ITEM_OF_PACKAGE = 'getListOfItemOfPackage'
 
 export const PRINT_CROCKERY = 'printCrockery'
 export const PRINT_ORDER = 'printOrder'
+export const PRINT_FUNCTION = 'printFunctionPdf'

@@ -2,7 +2,7 @@ import { IconButton } from '@/components/common/btn-with-icon'
 import { createFileRoute } from '@tanstack/react-router'
 import { Boxes, CornerUpRight, Edit, Search } from 'lucide-react'
 import { Route as AddFunctionRoute } from './add'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { getFunctionsList } from '@/api/query-option'
 import { useForm } from '@tanstack/react-form'
 import { useDebounceValue } from 'usehooks-ts'
@@ -14,8 +14,10 @@ import { useMemo } from 'react'
 import { Table } from '@/components/common/table'
 import { SubComponent } from '@/components/sub-function-component'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, printPDF } from '@/lib/utils'
 import { Route as EditRoute } from './edit'
+import { fetchApi } from '@/lib/api'
+import { PRINT_FUNCTION } from '@/constants/endpoints'
 
 export const Route = createFileRoute('/_protected/function/')({
   component: RouteComponent,
@@ -32,6 +34,10 @@ function RouteComponent() {
   const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500)
 
   const funtionsList = useQuery(getFunctionsList({ page, limit, search: debouncedSearchedValue }))
+
+  const printFunctionMutation = useMutation({
+    mutationFn: async function_id => fetchApi({ url: `${PRINT_FUNCTION}?function_id=${function_id}` }),
+  })
 
   const columns = useMemo(
     () => [
@@ -86,13 +92,26 @@ function RouteComponent() {
         size: 200,
       },
       {
-        id: 'actions',
-        cell: props => (
-          <Button onClick={() => navigate({ to: EditRoute.fullPath, state: props.row.original })}>
-            <Edit className="size-4" />
-          </Button>
+        id: "actions",
+        cell: (props) => (
+          <div className="flex gap-x-4 justify-end">
+            <Button
+              className="text-sm"
+              onClick={async () => {
+                const res = await printFunctionMutation.mutateAsync(
+                  props.row.original.function_id
+                );
+                printPDF(res.result.url);
+              }}
+            >
+              Print Function
+            </Button>
+            <Button onClick={() => navigate({ to: EditRoute.fullPath, state: props.row.original })}>
+              <Edit className="size-4" />
+            </Button>
+          </div>
         ),
-        size: 62,
+        size: 160,
       },
     ],
     []
