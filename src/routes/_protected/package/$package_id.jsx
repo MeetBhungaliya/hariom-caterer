@@ -65,8 +65,7 @@ function RouteComponent() {
     );
 
     location.state.package_item.forEach((item) => {
-      if (!item.ppm_id) {
-      }
+      if (!item.ppm_id) {}
       const isInValue = currentItems.has(item.ppm_id);
       if (!isInValue) deleted_ppm_ids.push(item.ppm_id);
     });

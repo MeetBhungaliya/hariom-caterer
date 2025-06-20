@@ -26,6 +26,7 @@ import { Route as ProtectedPackageAddImport } from './routes/_protected/package/
 import { Route as ProtectedPackagePackageidImport } from './routes/_protected/package/$package_id'
 import { Route as ProtectedItemAddImport } from './routes/_protected/item/add'
 import { Route as ProtectedItemItemidImport } from './routes/_protected/item/$item_id'
+import { Route as ProtectedFunctionEditImport } from './routes/_protected/function/edit'
 import { Route as ProtectedFunctionAddImport } from './routes/_protected/function/add'
 import { Route as ProtectedFoodCategoryIdImport } from './routes/_protected/food/$category-id'
 import { Route as ProtectedCoastingAddImport } from './routes/_protected/coasting/add'
@@ -122,6 +123,12 @@ const ProtectedItemItemidRoute = ProtectedItemItemidImport.update({
   getParentRoute: () => ProtectedRoute,
 } as any)
 
+const ProtectedFunctionEditRoute = ProtectedFunctionEditImport.update({
+  id: '/function/edit',
+  path: '/function/edit',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
 const ProtectedFunctionAddRoute = ProtectedFunctionAddImport.update({
   id: '/function/add',
   path: '/function/add',
@@ -213,6 +220,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedFunctionAddImport
       parentRoute: typeof ProtectedImport
     }
+    '/_protected/function/edit': {
+      id: '/_protected/function/edit'
+      path: '/function/edit'
+      fullPath: '/function/edit'
+      preLoaderRoute: typeof ProtectedFunctionEditImport
+      parentRoute: typeof ProtectedImport
+    }
     '/_protected/item/$item_id': {
       id: '/_protected/item/$item_id'
       path: '/item/$item_id'
@@ -296,6 +310,7 @@ interface ProtectedRouteChildren {
   ProtectedCoastingAddRoute: typeof ProtectedCoastingAddRoute
   ProtectedFoodCategoryIdRoute: typeof ProtectedFoodCategoryIdRoute
   ProtectedFunctionAddRoute: typeof ProtectedFunctionAddRoute
+  ProtectedFunctionEditRoute: typeof ProtectedFunctionEditRoute
   ProtectedItemItemidRoute: typeof ProtectedItemItemidRoute
   ProtectedItemAddRoute: typeof ProtectedItemAddRoute
   ProtectedPackagePackageidRoute: typeof ProtectedPackagePackageidRoute
@@ -316,6 +331,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedCoastingAddRoute: ProtectedCoastingAddRoute,
   ProtectedFoodCategoryIdRoute: ProtectedFoodCategoryIdRoute,
   ProtectedFunctionAddRoute: ProtectedFunctionAddRoute,
+  ProtectedFunctionEditRoute: ProtectedFunctionEditRoute,
   ProtectedItemItemidRoute: ProtectedItemItemidRoute,
   ProtectedItemAddRoute: ProtectedItemAddRoute,
   ProtectedPackagePackageidRoute: ProtectedPackagePackageidRoute,
@@ -342,6 +358,7 @@ export interface FileRoutesByFullPath {
   '/coasting/add': typeof ProtectedCoastingAddRoute
   '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/function/add': typeof ProtectedFunctionAddRoute
+  '/function/edit': typeof ProtectedFunctionEditRoute
   '/item/$item_id': typeof ProtectedItemItemidRoute
   '/item/add': typeof ProtectedItemAddRoute
   '/package/$package_id': typeof ProtectedPackagePackageidRoute
@@ -363,6 +380,7 @@ export interface FileRoutesByTo {
   '/coasting/add': typeof ProtectedCoastingAddRoute
   '/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/function/add': typeof ProtectedFunctionAddRoute
+  '/function/edit': typeof ProtectedFunctionEditRoute
   '/item/$item_id': typeof ProtectedItemItemidRoute
   '/item/add': typeof ProtectedItemAddRoute
   '/package/$package_id': typeof ProtectedPackagePackageidRoute
@@ -386,6 +404,7 @@ export interface FileRoutesById {
   '/_protected/coasting/add': typeof ProtectedCoastingAddRoute
   '/_protected/food/$category-id': typeof ProtectedFoodCategoryIdRoute
   '/_protected/function/add': typeof ProtectedFunctionAddRoute
+  '/_protected/function/edit': typeof ProtectedFunctionEditRoute
   '/_protected/item/$item_id': typeof ProtectedItemItemidRoute
   '/_protected/item/add': typeof ProtectedItemAddRoute
   '/_protected/package/$package_id': typeof ProtectedPackagePackageidRoute
@@ -410,6 +429,7 @@ export interface FileRouteTypes {
     | '/coasting/add'
     | '/food/$category-id'
     | '/function/add'
+    | '/function/edit'
     | '/item/$item_id'
     | '/item/add'
     | '/package/$package_id'
@@ -430,6 +450,7 @@ export interface FileRouteTypes {
     | '/coasting/add'
     | '/food/$category-id'
     | '/function/add'
+    | '/function/edit'
     | '/item/$item_id'
     | '/item/add'
     | '/package/$package_id'
@@ -451,6 +472,7 @@ export interface FileRouteTypes {
     | '/_protected/coasting/add'
     | '/_protected/food/$category-id'
     | '/_protected/function/add'
+    | '/_protected/function/edit'
     | '/_protected/item/$item_id'
     | '/_protected/item/add'
     | '/_protected/package/$package_id'
@@ -498,6 +520,7 @@ export const routeTree = rootRoute
         "/_protected/coasting/add",
         "/_protected/food/$category-id",
         "/_protected/function/add",
+        "/_protected/function/edit",
         "/_protected/item/$item_id",
         "/_protected/item/add",
         "/_protected/package/$package_id",
@@ -539,6 +562,10 @@ export const routeTree = rootRoute
     },
     "/_protected/function/add": {
       "filePath": "_protected/function/add.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/function/edit": {
+      "filePath": "_protected/function/edit.jsx",
       "parent": "/_protected"
     },
     "/_protected/item/$item_id": {

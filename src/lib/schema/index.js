@@ -82,3 +82,8 @@ export const addEditCoastingSchema = z.object({
   bom_boys: z.number({ invalid_type_error: 'Bombay boys count must be a number' }).optional(),
   packed_bottle: z.number({ invalid_type_error: 'Packed bottles count must be a number' }).optional(),
 })
+
+export const addEditFunctionSchema = z.object({
+  client_id: z.number({ required_error: 'Party selection is required' }),
+  venue: z.string({ required_error: 'Venue is required' }).min(1, 'Please enter a valid venue address'),
+})

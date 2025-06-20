@@ -38,6 +38,10 @@ export const ADD_COASTING = 'addCosting'
 export const UPDATE_COASTING = 'updateCosting'
 export const CONVERT_TO_ORDER = 'convertToOrder'
 
+export const GET_FUNCTIONS = 'getFunction'
+export const ADD_FUNCTION = 'addFunction'
+export const UPDATE_FUNCTION = 'updateFunction'
+
 export const GET_LIST_OF_ITEM_OF_PACKAGE = 'getListOfItemOfPackage'
 
 export const PRINT_CROCKERY = 'printCrockery'

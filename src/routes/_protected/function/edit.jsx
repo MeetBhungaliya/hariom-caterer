@@ -8,40 +8,42 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { METHODS, pagination } from '@/constants/common';
-import { ADD_FUNCTION, GET_FUNCTIONS } from '@/constants/endpoints';
+import { GET_FUNCTIONS, UPDATE_FUNCTION } from '@/constants/endpoints';
 import { useAuthStore } from '@/hooks/use-auth';
+import { fetchApi } from '@/lib/api';
 import { addEditFunctionSchema } from '@/lib/schema';
+import { asyncResponseToaster } from '@/lib/toasts';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useRouterState } from '@tanstack/react-router';
 import { BadgeIndianRupee, Calendar, IndianRupee, MapPinHouse, NotebookPen, Plus, Trash2, UserRound, UsersRound } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { Route as FunctionRoute } from './index';
-import { asyncResponseToaster } from '@/lib/toasts';
-import { fetchApi } from '@/lib/api';
 
-export const Route = createFileRoute('/_protected/function/add')({
+export const Route = createFileRoute('/_protected/function/edit')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
   const navigate = Route.useNavigate()
+  const { location } = useRouterState()
   const queryClient = useQueryClient()
 
   const defaultValues = useMemo(() => ({
-    client_id: null,
-    venue: "",
-    data: [
+    function_id: location.state.function_id,
+    client_id: location.state.client_id || null,
+    venue: location.state.venue || "",
+    data: location.state.function_detail || [
       { date: null, function: "", person: "", rate: "", amount: 0 },
       { date: null, function: "", person: "", rate: "", amount: 0 },
       { date: null, function: "", person: "", rate: "", amount: 0 },
       { date: null, function: "", person: "", rate: "", amount: 0 },
       { date: null, function: "", person: "", rate: "", amount: 0 },
     ],
-    pro: { count: 0, rate: 0, total: 0 },
-    bom_boys: { count: 0, rate: 0, total: 0 },
-    bottle: { count: 0, rate: 0, total: 0 },
-    decoration: { count: 0, rate: 0, total: 0 },
+    pro: location.state.pro || { count: 0, rate: 0, total: 0 },
+    bom_boys: location.state.bom_boys || { count: 0, rate: 0, total: 0 },
+    bottle: location.state.bottle || { count: 0, rate: 0, total: 0 },
+    decoration: location.state.decoration || { count: 0, rate: 0, total: 0 },
   }), [])
 
   const { Field, handleSubmit, Subscribe, store, setFieldValue, getFieldValue, reset } = useForm({
@@ -66,15 +68,31 @@ function RouteComponent() {
 
   const partiesOption = queryClient.ensureQueryData(getAllPartyOption())
 
-  const addFunctionMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_FUNCTION, method: METHODS.POST, data }),
+  const updatedFunctionMutation = useMutation({
+    mutationFn: async data => fetchApi({ url: UPDATE_FUNCTION, method: METHODS.PUT, data }),
   })
 
   async function onSubmit({ value }) {
-    const filterdData = value.data.filter(item => item.date && item.function && item.person && item.rate)
-    const payload = { ...value, data: filterdData, total_amount: getTotalCost() }
+    const deleted_fdm_ids = [];
 
-    const result = await asyncResponseToaster(() => addFunctionMutation.mutateAsync(payload))
+    const currentItems = new Set(value.data.map((item) => item.fdm_id));
+    const previousItems = Array.from(
+      new Set(location.state.function_detail.map((item) => item.fdm_id))
+    );
+
+    location.state.function_detail.forEach((item) => {
+      if (!item.fdm_id) { }
+      const isInValue = currentItems.has(item.fdm_id);
+      if (!isInValue) deleted_fdm_ids.push(item.fdm_id);
+    });
+
+    const filterdData = value.data.filter(
+      (item) => !previousItems.includes(item.fdm_id)
+    ).filter(item => item.date && item.function && item.person && item.rate);
+
+    const payload = { ...value, data: filterdData, deleted_fdm_ids, total_amount: getTotalCost() }
+
+    const result = await asyncResponseToaster(() => updatedFunctionMutation.mutateAsync(payload))
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       queryClient.invalidateQueries({ queryKey: GET_FUNCTIONS })
@@ -106,7 +124,7 @@ function RouteComponent() {
                 }}
                 disabled={!isDirty}
               >
-                Add
+                Update
               </Button>
             )}
           />
