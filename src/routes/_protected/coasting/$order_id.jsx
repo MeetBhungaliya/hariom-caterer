@@ -140,7 +140,7 @@ function RouteComponent() {
     return null
 
   return (
-    <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
+    <div className="h-full flex flex-col gap-y-6 overflow-hidden">
       <div className="bg-white p-4 rounded-xl flex items-center justify-end gap-x-4">
         <Switch
           className="size-auto w-16 h-7 [&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
@@ -148,15 +148,15 @@ function RouteComponent() {
           onCheckedChange={showPrice.toggle}
         />
         <Subscribe
-          selector={state => state.isDirty}
-          children={isDirty => (
+          selector={(state) => state.isDirty}
+          children={(isDirty) => (
             <Button
               type="button"
               className="w-full max-w-[160px] py-2 text-base bg-sky-600 text-white"
               onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                handleSubmit()
+                e.preventDefault();
+                e.stopPropagation();
+                handleSubmit();
               }}
               disabled={!isDirty}
             >
@@ -165,11 +165,11 @@ function RouteComponent() {
           )}
         />
       </div>
-      <div className='h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden'>
-        <div className='grid grid-cols-3 gap-4'>
+      <div className="h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden">
+        <div className="grid grid-cols-3 gap-4">
           <Field
             name="client_id"
-            children={field => (
+            children={(field) => (
               <ControlledSearchableSelect
                 id="client_id"
                 label="Select party"
@@ -177,7 +177,12 @@ function RouteComponent() {
                 prefix={<UserRound className="size-5" />}
                 options={partiesOption}
                 searchPlaceholder="Search party"
-                prepareOption={data => data.map(data => ({ value: data.client_id, label: data.name }))}
+                prepareOption={(data) =>
+                  data.map((data) => ({
+                    value: data.client_id,
+                    label: `${data.name} (${data.phone})`,
+                  }))
+                }
                 updateTriggerer={field.state.value || isLoading}
               />
             )}
@@ -186,11 +191,13 @@ function RouteComponent() {
             name="package_id"
             listeners={{
               onChange: async (e) => {
-                const packageItem = (((await packagesOption).result.list ?? []).find(item => item.package_id === e.value)?.package_item)
-                setFieldValue('item', packageItem)
-              }
+                const packageItem = (
+                  (await packagesOption).result.list ?? []
+                ).find((item) => item.package_id === e.value)?.package_item;
+                setFieldValue("item", packageItem);
+              },
             }}
-            children={field => (
+            children={(field) => (
               <ControlledSearchableSelect
                 id="package_id"
                 label="Select package"
@@ -198,14 +205,19 @@ function RouteComponent() {
                 prefix={<Package className="size-5" />}
                 options={packagesOption}
                 searchPlaceholder="Search party"
-                prepareOption={data => data.map(data => ({ value: data.package_id, label: data.name }))}
+                prepareOption={(data) =>
+                  data.map((data) => ({
+                    value: data.package_id,
+                    label: data.name,
+                  }))
+                }
                 updateTriggerer={field.state.value || isLoading}
               />
             )}
           />
           <Field
             name="date"
-            children={field => (
+            children={(field) => (
               <ControlledDatepicker
                 id="date"
                 label="Select date"
@@ -216,9 +228,9 @@ function RouteComponent() {
           />
           <Field
             name="person"
-            children={field => (
+            children={(field) => (
               <ControlledInput
-                type='number'
+                type="number"
                 id="person"
                 label="Person"
                 field={field}
@@ -228,9 +240,9 @@ function RouteComponent() {
           />
           <Field
             name="jain_counter"
-            children={field => (
+            children={(field) => (
               <ControlledInput
-                type='number'
+                type="number"
                 id="jain_counter"
                 label="Jain counter"
                 field={field}
@@ -241,15 +253,22 @@ function RouteComponent() {
           <Field
             name="time"
             children={(field) => {
-              const errorMsg = field.state.meta.errors?.[0]?.message
+              const errorMsg = field.state.meta.errors?.[0]?.message;
               return (
-                <Select defaultValue={field.state.value} onValueChange={field.handleChange}>
-                  <SelectTrigger icon
-                    className={cn("w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
-                      errorMsg ? "border-red-500 data-[placeholder]:text-red-500" : "data-[placeholder]:text-gray-500 border-gray-300"
+                <Select
+                  defaultValue={field.state.value}
+                  onValueChange={field.handleChange}
+                >
+                  <SelectTrigger
+                    icon
+                    className={cn(
+                      "w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
+                      errorMsg
+                        ? "border-red-500 data-[placeholder]:text-red-500"
+                        : "data-[placeholder]:text-gray-500 border-gray-300"
                     )}
                   >
-                    <div className='h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white'>
+                    <div className="h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white">
                       <Timer />
                     </div>
                     <SelectValue placeholder="Select time" />
@@ -262,12 +281,12 @@ function RouteComponent() {
                     ))}
                   </SelectContent>
                 </Select>
-              )
+              );
             }}
           />
           <Field
             name="venue"
-            children={field => (
+            children={(field) => (
               <ControlledInput
                 id="venue"
                 label="Venue"
@@ -279,12 +298,12 @@ function RouteComponent() {
         </div>
         <Field name="item" mode="array">
           {(field) => {
-            const value = field.state.value ?? []
+            const value = field.state.value ?? [];
 
             const groupWithCount = value.reduce((acc, item, index) => {
-              const existing = acc.find(e => e.pim_id === item.pim_id);
+              const existing = acc.find((e) => e.pim_id === item.pim_id);
               if (existing) {
-                existing.count += 1
+                existing.count += 1;
               } else {
                 acc.push({ ...item, count: 1 });
               }
@@ -292,10 +311,10 @@ function RouteComponent() {
               return acc;
             }, []);
 
-            return groupWithCount && groupWithCount.length
-              ? <>
+            return groupWithCount && groupWithCount.length ? (
+              <>
                 <Separator />
-                <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {groupWithCount.map((item, i) => {
                     return (
                       <CoastingItem
@@ -307,107 +326,126 @@ function RouteComponent() {
                         Subscribe={Subscribe}
                         store={store}
                         showPrice={showPrice}
-                      />)
+                      />
+                    );
                   })}
                 </div>
                 <Separator />
               </>
-              : null
+            ) : null;
           }}
         </Field>
-        <div className='flex items-center justify-between'>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-x-2'>
+        <div className="flex items-center justify-between">
+          <div className="space-y-4">
+            <div className="flex items-center gap-x-2">
               <Label>Pro</Label>
               <Field
                 name="pro"
-                children={field => {
-                  const MAX = 999
+                children={(field) => {
+                  const MAX = 999;
                   return (
                     <Input
                       type="number"
                       className="w-full max-w-10 px-1 text-center"
                       value={field.state.value}
-                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('pro', getFieldValue('pro')) : field.handleChange(e.target.valueAsNumber)}
+                      onChange={(e) =>
+                        e.target.valueAsNumber > MAX
+                          ? setFieldValue("pro", getFieldValue("pro"))
+                          : field.handleChange(e.target.valueAsNumber)
+                      }
                       onKeyPress={(e) => {
                         if (!/[0-9]/.test(e.key)) {
-                          e.preventDefault()
+                          e.preventDefault();
                         }
                       }}
                     />
-                  )
+                  );
                 }}
               />
-              <span className='text-sm'>Extra</span>
+              <span className="text-sm">Extra</span>
             </div>
-            <div className='flex items-center gap-x-2'>
+            <div className="flex items-center gap-x-2">
               <Label>Bom. Boys</Label>
               <Field
                 name="bom_boys"
-                children={field => {
-                  const MAX = 999
+                children={(field) => {
+                  const MAX = 999;
                   return (
                     <Input
                       type="number"
                       className="w-full max-w-10 px-1 text-center"
                       value={field.state.value}
-                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('bom_boys', getFieldValue('bom_boys')) : field.handleChange(e.target.valueAsNumber)}
+                      onChange={(e) =>
+                        e.target.valueAsNumber > MAX
+                          ? setFieldValue("bom_boys", getFieldValue("bom_boys"))
+                          : field.handleChange(e.target.valueAsNumber)
+                      }
                       onKeyPress={(e) => {
                         if (!/[0-9]/.test(e.key)) {
-                          e.preventDefault()
+                          e.preventDefault();
                         }
                       }}
                     />
-                  )
+                  );
                 }}
               />
-              <span className='text-sm'>Extra</span>
+              <span className="text-sm">Extra</span>
             </div>
-            <div className='flex items-center gap-x-2'>
+            <div className="flex items-center gap-x-2">
               <Label>Packed Bottles</Label>
               <Field
                 name="packed_bottle"
-                children={field => {
-                  const MAX = 99999
+                children={(field) => {
+                  const MAX = 99999;
                   return (
                     <Input
                       type="number"
                       className="w-full max-w-14 px-1 text-center"
                       value={field.state.value ?? ""}
-                      onChange={e => e.target.valueAsNumber > MAX ? setFieldValue('packed_bottle', getFieldValue('packed_bottle')) : field.handleChange(e.target.valueAsNumber)}
+                      onChange={(e) =>
+                        e.target.valueAsNumber > MAX
+                          ? setFieldValue(
+                              "packed_bottle",
+                              getFieldValue("packed_bottle")
+                            )
+                          : field.handleChange(e.target.valueAsNumber)
+                      }
                       onKeyPress={(e) => {
                         if (!/[0-9]/.test(e.key)) {
-                          e.preventDefault()
+                          e.preventDefault();
                         }
                       }}
                     />
-                  )
+                  );
                 }}
               />
-              <span className='text-sm'>Extra</span>
+              <span className="text-sm">Extra</span>
             </div>
           </div>
-          <div className='space-y-4'>
+          <div className="space-y-4">
             <Field
               name="per_plate_cost"
-              children={field => (
+              children={(field) => (
                 <ControlledInput
-                  type='number'
+                  type="number"
                   id="per_plate_cost"
                   label="Per Plate Cost"
                   field={field}
                   value={getTotalCost() || ""}
                   prefix={<IndianRupee className="size-5" />}
                   disabled={true}
-                  containerClassName={cn("transition-opacity", showPrice.value ? "opacity-100" : "opacity-0")}
+                  containerClassName={cn(
+                    "transition-opacity",
+                    showPrice.value ? "opacity-100" : "opacity-0"
+                  )}
                 />
               )}
             />
             <Field
               name="selling_price"
-              children={field => (
+              children={(field) => (
                 <ControlledInput
-                  type='number'
+                  type="number"
                   id="selling_price"
                   label="Selling Price"
                   field={field}
@@ -419,5 +457,5 @@ function RouteComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }

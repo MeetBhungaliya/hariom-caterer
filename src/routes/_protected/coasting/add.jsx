@@ -97,7 +97,7 @@ function RouteComponent() {
   }
 
   return (
-    <div id='test' className="h-full flex flex-col gap-y-6 overflow-hidden">
+    <div id="test" className="h-full flex flex-col gap-y-6 overflow-hidden">
       <div className="bg-white p-4 rounded-xl flex items-center justify-end gap-x-4">
         <Switch
           className="size-auto w-16 h-7 [&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
@@ -137,7 +137,7 @@ function RouteComponent() {
                 prepareOption={(data) =>
                   data.map((data) => ({
                     value: data.client_id,
-                    label: data.name,
+                    label: `${data.name} (${data.phone})`,
                   }))
                 }
                 updateTriggerer={field.state.value || isLoading}
@@ -259,7 +259,7 @@ function RouteComponent() {
                 prefix={<Package className="size-5" />}
                 options={packagesOption}
                 searchPlaceholder="Search party"
-                prepareOption={(data) =>{
+                prepareOption={(data) => {
                   const options = data.map((data) => ({
                     value: data.package_id,
                     label: data.name,

@@ -126,7 +126,7 @@ function RouteComponent() {
                   prepareOption={(data) =>
                     data.map((data) => ({
                       value: data.client_id,
-                      label: data.name,
+                      label: `${data.name} (${data.phone})`,
                     }))
                   }
                   updateTriggerer={field.state.value || isLoading}
@@ -170,6 +170,8 @@ function RouteComponent() {
                               label="Select date"
                               field={field}
                               prefix={<Calendar className="size-5" />}
+                              className="w-max"
+                              align='start'
                             />
                           )}
                         />
@@ -259,7 +261,7 @@ function RouteComponent() {
                     <Field
                       name="pro.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -359,7 +361,7 @@ function RouteComponent() {
                     <Field
                       name="bottle.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -459,7 +461,7 @@ function RouteComponent() {
                     <Field
                       name="bom_boys.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -560,7 +562,7 @@ function RouteComponent() {
                     <Field
                       name="decoration.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
