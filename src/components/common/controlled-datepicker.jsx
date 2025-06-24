@@ -14,8 +14,9 @@ const ControlledDatepicker = ({
   label,
   field,
   extendContent,
-  align="center",
+  align = "center",
   className,
+  icon = true,
 }) => {
   const errorMsg = field.state.meta.errors?.[0]?.message;
 
@@ -35,12 +36,15 @@ const ControlledDatepicker = ({
             date
               ? "text-text-1 border-sky-600 hover:text-text-1"
               : "text-gray-500 border-border hover:text-gray-500",
-            "data-[invalid=true]:!text-red-500 data-[invalid=true]:!border-red-400 data-[invalid=true]:!ring-red-200"
+            "data-[invalid=true]:!text-red-500 data-[invalid=true]:!border-red-400 data-[invalid=true]:!ring-red-200",
+            !icon && "px-4"
           )}
         >
-          <div className="h-full aspect-square bg-sky-600 flex items-center justify-center rounded-l-lg">
-            <CalendarDaysIcon className="text-white size-5" />
-          </div>
+          {icon && (
+            <div className="h-full aspect-square bg-sky-600 flex items-center justify-center rounded-l-lg">
+              <CalendarDaysIcon className="text-white size-5" />
+            </div>
+          )}
           {date ? format(date, "PPP") : <span>{label}</span>}
         </Button>
       </PopoverTrigger>

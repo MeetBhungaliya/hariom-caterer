@@ -198,7 +198,7 @@ function RouteComponent() {
                               id={`data[${index}].date`}
                               label="Select date"
                               field={field}
-                              prefix={<Calendar className="size-5" />}
+                              icon={false}
                             />
                           )}
                         />
@@ -209,7 +209,6 @@ function RouteComponent() {
                               id={`data[${index}].function`}
                               label="Function name"
                               field={field}
-                              prefix={<NotebookPen className="size-5" />}
                             />
                           )}
                         />
@@ -234,7 +233,6 @@ function RouteComponent() {
                               label="Person"
                               type="number"
                               field={field}
-                              prefix={<UsersRound className="size-5" />}
                             />
                           )}
                         />
@@ -260,7 +258,6 @@ function RouteComponent() {
                               label="Rate"
                               type="number"
                               field={field}
-                              prefix={<BadgeIndianRupee className="size-5" />}
                             />
                           )}
                         />
@@ -273,7 +270,6 @@ function RouteComponent() {
                               label="Total amount"
                               field={field}
                               value={field.state.value || ""}
-                              prefix={<IndianRupee className="size-5" />}
                               disabled={true}
                             />
                           )}
