@@ -1,72 +1,96 @@
-import { getOrderItemList, getOrdersList } from '@/api/query-option'
-import { getAllPackageOption, getAllPartyOption } from '@/api/select-options'
-import { CoastingItem } from '@/components/coasting-item'
-import ControlledDatepicker from '@/components/common/controlled-datepicker'
-import { ControlledInput } from '@/components/common/controlled-input'
-import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
-import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
-import { GET_ORDERS, UPDATE_COASTING } from '@/constants/endpoints'
-import { useAuthStore } from '@/hooks/use-auth'
-import { fetchApi } from '@/lib/api'
-import { addEditCoastingSchema } from '@/lib/schema'
-import { asyncResponseToaster } from '@/lib/toasts'
-import { cn } from '@/lib/utils'
-import { useForm, useStore } from '@tanstack/react-form'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute, useRouterState } from '@tanstack/react-router'
-import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
-import { useCallback, useEffect } from 'react'
-import { Route as OrderRoute } from './index'
-import { STATUS_OPTIONS } from '@/lib/schema/common'
-import { useBoolean } from 'usehooks-ts'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
-import moment from 'moment'
+import { getOrderItemList, getOrdersList } from "@/api/query-option";
+import { getAllPackageOption, getAllPartyOption } from "@/api/select-options";
+import { CoastingItem } from "@/components/coasting-item";
+import ControlledDatepicker from "@/components/common/controlled-datepicker";
+import { ControlledInput } from "@/components/common/controlled-input";
+import { ControlledSearchableSelect } from "@/components/common/controlled-searchable-select";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { METHODS, pagination, TIME_OPTIONS } from "@/constants/common";
+import { GET_ORDERS, UPDATE_COASTING } from "@/constants/endpoints";
+import { useAuthStore } from "@/hooks/use-auth";
+import { fetchApi } from "@/lib/api";
+import { addEditCoastingSchema } from "@/lib/schema";
+import { asyncResponseToaster } from "@/lib/toasts";
+import { cn } from "@/lib/utils";
+import { useForm, useStore } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useRouterState } from "@tanstack/react-router";
+import {
+  Calendar,
+  EthernetPort,
+  IndianRupee,
+  MapPinHouse,
+  Package,
+  Timer,
+  UserRound,
+  Users,
+} from "lucide-react";
+import { useCallback, useEffect } from "react";
+import { Route as OrderRoute } from "./index";
+import { STATUS_OPTIONS } from "@/lib/schema/common";
+import { useBoolean } from "usehooks-ts";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import moment from "moment";
 
-export const Route = createFileRoute('/_protected/coasting/$order_id')({
+export const Route = createFileRoute("/_protected/coasting/$order_id")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const navigate = Route.useNavigate()
-  const { location } = useRouterState()
-  const order_id = Route.useParams({ select: params => params.order_id })
+  const navigate = Route.useNavigate();
+  const { location } = useRouterState();
+  const order_id = Route.useParams({ select: (params) => params.order_id });
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
-  const showPrice = useBoolean(true)
+  const showPrice = useBoolean(true);
 
-  const orderItemsList = useQuery(getOrderItemList({ order_id }))
+  const orderItemsList = useQuery(getOrderItemList({ order_id }));
 
   useEffect(() => {
-    const items = orderItemsList.data.result.items || []
+    const items = orderItemsList.data.result.items || [];
 
-    const packageItems = []
+    const packageItems = [];
 
-    items.forEach(item => {
-      item.order_item.forEach(orderItem => {
+    items.forEach((item) => {
+      item.order_item.forEach((orderItem) => {
         packageItems.push({
           item_id: orderItem.item_id,
           pim_id: orderItem.pim_id,
           oim_id: orderItem.oim_id,
           price: orderItem.price,
           name: item.name,
-        })
-      })
-    })
-    setFieldValue('item', packageItems)
+        });
+      });
+    });
+    setFieldValue("item", packageItems);
   }, [orderItemsList.isFetching]);
 
   const updateCoastingMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: UPDATE_COASTING, method: METHODS.PUT, data }),
-  })
+    mutationFn: async (data) =>
+      fetchApi({ url: UPDATE_COASTING, method: METHODS.PUT, data }),
+  });
 
-  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset, store } = useForm({
+  const {
+    Field,
+    handleSubmit,
+    Subscribe,
+    setFieldValue,
+    getFieldValue,
+    reset,
+    store,
+  } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCoastingSchema },
     defaultValues: {
@@ -85,31 +109,40 @@ function RouteComponent() {
       bom_boys: location.state.bom_boys,
       packed_bottle: location.state.packed_bottle,
     },
-  })
+  });
 
-  const items = useStore(store, state => state.values.item)
+  const items = useStore(store, (state) => state.values.item);
 
   const getTotalCost = useCallback(() => {
-    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0)
-  }, [JSON.stringify(items)])
-
-  useEffect(() => {
-    setFieldValue('per_plate_cost', getTotalCost())
+    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0);
   }, [JSON.stringify(items)]);
 
-  const isLoading = useAuthStore(state => state.isLoading)
+  useEffect(() => {
+    setFieldValue("per_plate_cost", getTotalCost());
 
-  const partiesOption = queryClient.ensureQueryData(getAllPartyOption())
-  const packagesOption = queryClient.ensureQueryData(getAllPackageOption())
+    const extraItemTotal = items
+      ?.filter((value) => value.name === "Extra Item")
+      ?.reduce((acc, curr) => (acc += curr.price ?? 0), 0);
+
+    packagesOption.then((res) => {
+      const packageItem = (res.result.list ?? []).find(
+        (item) => item.package_id === getFieldValue("package_id")
+      );
+      setFieldValue("selling_price", (packageItem.price ?? 0) + extraItemTotal);
+    });
+  }, [JSON.stringify(items)]);
+
+  const isLoading = useAuthStore((state) => state.isLoading);
+
+  const partiesOption = queryClient.ensureQueryData(getAllPartyOption());
+  const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
 
   async function onSubmit({ value }) {
-
-    const item = value.item.map(item => ({
+    const item = value.item.map((item) => ({
       pim_id: Number(item.pim_id),
       item_id: Number(item.item_id),
-      ...(item.oim_id ? { oim_id: Number(item.oim_id) } : {})
-    }))
-
+      ...(item.oim_id ? { oim_id: Number(item.oim_id) } : {}),
+    }));
 
     const payload = {
       ...value,
@@ -118,26 +151,27 @@ function RouteComponent() {
       pro: value.pro ?? 0,
       bom_boys: value.bom_boys ?? 0,
       packed_bottle: value.packed_bottle ?? 0,
-    }
+    };
 
-    const result = await asyncResponseToaster(() => updateCoastingMutation.mutateAsync(payload))
+    const result = await asyncResponseToaster(() =>
+      updateCoastingMutation.mutateAsync(payload)
+    );
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
-      queryClient.invalidateQueries({ queryKey: GET_ORDERS })
-      queryClient.refetchQueries(getOrdersList)
-      onClose()
+      queryClient.invalidateQueries({ queryKey: GET_ORDERS });
+      queryClient.refetchQueries(getOrdersList);
+      onClose();
     }
   }
 
   function onClose() {
     setTimeout(() => {
-      navigate({ to: OrderRoute.fullPath, search: pagination })
-      reset()
-    }, 150)
+      navigate({ to: OrderRoute.fullPath, search: pagination });
+      reset();
+    }, 150);
   }
 
-  if (orderItemsList.isError)
-    return null
+  if (orderItemsList.isError) return null;
 
   return (
     <div className="h-full flex flex-col gap-y-6 overflow-hidden">

@@ -1,75 +1,110 @@
-import { getAllPackageOption, getAllPartyOption } from '@/api/select-options'
-import { CoastingItem } from '@/components/coasting-item'
-import ControlledDatepicker from '@/components/common/controlled-datepicker'
-import { ControlledInput } from '@/components/common/controlled-input'
-import { ControlledSearchableSelect } from '@/components/common/controlled-searchable-select'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
-import { METHODS, pagination, TIME_OPTIONS } from '@/constants/common'
-import { ADD_COASTING, GET_ORDERS } from '@/constants/endpoints'
-import { useAuthStore } from '@/hooks/use-auth'
-import { fetchApi } from '@/lib/api'
-import { addEditCoastingSchema } from '@/lib/schema'
-import { asyncResponseToaster } from '@/lib/toasts'
-import { cn, printPDF } from '@/lib/utils'
-import { useForm, useStore } from '@tanstack/react-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { Calendar, EthernetPort, IndianRupee, MapPinHouse, Package, Timer, UserRound, Users } from 'lucide-react'
-import moment from 'moment'
-import { useCallback, useEffect } from 'react'
-import { useBoolean } from 'usehooks-ts'
-import { Route as OrderRoute } from './index'
+import { getAllPackageOption, getAllPartyOption } from "@/api/select-options";
+import { CoastingItem } from "@/components/coasting-item";
+import ControlledDatepicker from "@/components/common/controlled-datepicker";
+import { ControlledInput } from "@/components/common/controlled-input";
+import { ControlledSearchableSelect } from "@/components/common/controlled-searchable-select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { METHODS, pagination, TIME_OPTIONS } from "@/constants/common";
+import { ADD_COASTING, GET_ORDERS } from "@/constants/endpoints";
+import { useAuthStore } from "@/hooks/use-auth";
+import { fetchApi } from "@/lib/api";
+import { addEditCoastingSchema } from "@/lib/schema";
+import { asyncResponseToaster } from "@/lib/toasts";
+import { cn, printPDF } from "@/lib/utils";
+import { useForm, useStore } from "@tanstack/react-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  Calendar,
+  EthernetPort,
+  IndianRupee,
+  MapPinHouse,
+  Package,
+  Timer,
+  UserRound,
+  Users,
+} from "lucide-react";
+import moment from "moment";
+import { useCallback, useEffect } from "react";
+import { useBoolean } from "usehooks-ts";
+import { Route as OrderRoute } from "./index";
 
-export const Route = createFileRoute('/_protected/coasting/add')({
+export const Route = createFileRoute("/_protected/coasting/add")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const navigate = Route.useNavigate()
-  const queryClient = useQueryClient()
+  const navigate = Route.useNavigate();
+  const queryClient = useQueryClient();
 
-  const showPrice = useBoolean(true)
+  const showPrice = useBoolean(true);
 
   const addCoastingMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
-  })
+    mutationFn: async (data) =>
+      fetchApi({ url: ADD_COASTING, method: METHODS.POST, data }),
+  });
 
-  const { Field, handleSubmit, Subscribe, setFieldValue, getFieldValue, reset, store } = useForm({
+  const {
+    Field,
+    handleSubmit,
+    Subscribe,
+    setFieldValue,
+    getFieldValue,
+    reset,
+    store,
+  } = useForm({
     onSubmit,
     validators: { onSubmit: addEditCoastingSchema },
-  })
+  });
 
-  const items = useStore(store, state => state.values.item)
+  const items = useStore(store, (state) => state.values.item);
 
   const getTotalCost = useCallback(() => {
-    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0)
-  }, [JSON.stringify(items)])
-
-  useEffect(() => {
-    setFieldValue('per_plate_cost', getTotalCost())
+    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0);
   }, [JSON.stringify(items)]);
 
-  const isLoading = useAuthStore(state => state.isLoading)
+  useEffect(() => {
+    setFieldValue("per_plate_cost", getTotalCost());
 
-  const partiesOption = queryClient.ensureQueryData(getAllPartyOption())
-  const packagesOption = queryClient.ensureQueryData(getAllPackageOption())
+    const extraItemTotal = items
+      ?.filter((value) => value.name === "Extra Item")
+      ?.reduce((acc, curr) => (acc += curr.price ?? 0), 0);
+
+    packagesOption.then((res) => {
+      const packageItem = (res.result.list ?? []).find(
+        (item) => item.package_id === getFieldValue("package_id")
+      );
+      setFieldValue("selling_price", (packageItem.price ?? 0) + extraItemTotal);
+    });
+  }, [JSON.stringify(items)]);
+
+  const isLoading = useAuthStore((state) => state.isLoading);
+
+  const partiesOption = queryClient.ensureQueryData(getAllPartyOption());
+  const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
 
   async function onSubmit({ value }) {
-
-    if(value.package_id === 0.69){
-      value.package_id = null
+    if (value.package_id === 0.69) {
+      value.package_id = null;
     }
 
-    const item = value.item.map(item => ({
-      pim_id: item.pim_id ?? null,
-      item_id: Number(item.item_id),
-    }))
-      .filter(item => item.item_id)
+    const item = value.item
+      .map((item) => ({
+        pim_id: item.pim_id ?? null,
+        item_id: Number(item.item_id),
+      }))
+      .filter((item) => item.item_id);
 
     const payload = {
       ...value,
@@ -78,22 +113,24 @@ function RouteComponent() {
       pro: value.pro ?? 0,
       bom_boys: value.bom_boys ?? 0,
       packed_bottle: value.packed_bottle ?? 0,
-    }
+    };
 
-    const result = await asyncResponseToaster(() => addCoastingMutation.mutateAsync(payload))
+    const result = await asyncResponseToaster(() =>
+      addCoastingMutation.mutateAsync(payload)
+    );
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
-      printPDF(result.value.result.url)
-      queryClient.invalidateQueries({ queryKey: GET_ORDERS })
-      onClose()
+      printPDF(result.value.result.url);
+      queryClient.invalidateQueries({ queryKey: GET_ORDERS });
+      onClose();
     }
   }
 
   function onClose() {
     setTimeout(() => {
-      navigate({ to: OrderRoute.fullPath, search: pagination })
-      reset()
-    }, 150)
+      navigate({ to: OrderRoute.fullPath, search: pagination });
+      reset();
+    }, 150);
   }
 
   return (
@@ -230,17 +267,20 @@ function RouteComponent() {
               onChange: async (e) => {
                 if (!e.value) return setFieldValue("item", null);
 
-                const packageItem =
-                  ((await packagesOption).result.list ?? []).find(
-                    (item) => item.package_id === e.value
-                  )?.package_item ?? [];
+                const packageOptionList =
+                  (await packagesOption).result.list ?? [];
+
+                const packageItem = packageOptionList.find(
+                  (item) => item.package_id === e.value
+                );
+
                 const extraItem = {
                   pim_id: null,
                   name: "Extra Item",
                   deleteAble: true,
                 };
                 setFieldValue("item", [
-                  ...packageItem
+                  ...(packageItem?.package_item ?? [])
                     .map((item) =>
                       Array.from({ length: item.quantity }).map(() => ({
                         ...item,
@@ -249,6 +289,7 @@ function RouteComponent() {
                     .flat(),
                   extraItem,
                 ]);
+                setFieldValue("selling_price", packageItem?.price);
               },
             }}
             children={(field) => (
