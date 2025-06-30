@@ -23,20 +23,20 @@ const index = () => {
   return (
     <Popover modal open={logoutModal.value} onOpenChange={logoutModal.setValue}>
       <PopoverTrigger className="relative cursor-pointer">
-        <UserRound className="size-7 stroke-text-1 stroke-[1.5px]" />
+        <UserRound className="size-6 md:size-7 stroke-text-1 stroke-[1.5px]" />
       </PopoverTrigger>
       <PopoverContent
         overlay
         align="end"
-        className="w-[256px] p-5 space-y-6 rounded-xl"
+        className="w-[180px] md:w-[256px] p-3.5 md:p-5 space-y-4 md:space-y-6 rounded-xl"
       >
         <div className="flex flex-col gap-y-1">
-          <h4 className="text-text-1 font-medium">{user?.name}</h4>
-          <span className="text-sm text-text-1 opacity-40">{user?.email}</span>
+          <h4 className="text-text-1 font-medium text-sm md:text-base">{user?.name}</h4>
+          <span className="text-xs md:text-sm text-text-1 opacity-40">{user?.email}</span>
         </div>
         <Button
           type="button"
-          className="w-full pl-4 justify-between text-sm text-white border border-sky-600 rounded-full bg-sky-600 hover:text-sky-600 hover:bg-transparent"
+          className="w-full pl-4 justify-between text-xs md:text-sm text-white border border-sky-600 rounded-full bg-sky-600 hover:text-sky-600 hover:bg-transparent"
           onClick={onLogout}
         >
           Logout

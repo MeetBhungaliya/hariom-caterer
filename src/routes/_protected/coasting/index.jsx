@@ -160,11 +160,11 @@ function RouteComponent() {
   return (
     <>
       <div className="h-full flex flex-col gap-y-5">
-        <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+        <div className="bg-white p-4 rounded-xl flex flex-col sm:flex-row justify-end gap-2 md:gap-4">
           <searchForm.Field
             name="search"
             listeners={{ onChange: ({ value }) => setValue(value) }}
-            children={field => (
+            children={(field) => (
               <ControlledInput
                 id="search"
                 label="Search"
@@ -174,31 +174,46 @@ function RouteComponent() {
               />
             )}
           />
-          <Select defaultValue={status} onValueChange={(value) => navigate({ search: { status: value } })}>
-            <SelectTrigger icon className="w-full max-w-[140px] !h-full gap-3 p-0 pl-4 text-sm md:text-base justify-start font-medium rounded-lg data-[placeholder]:text-gray-500 border-gray-300">
-              <SelectValue placeholder="Select time" />
-            </SelectTrigger>
-            <SelectContent align="middle" className="min-w-20">
-              {STATUS_OPTIONS.map((item, key) => (
-                <SelectItem key={key} value={item.value}>
-                  {item.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <IconButton icon={<HandCoins className="size-5" />} label="Add Coasting" onClick={() => navigate({ to: AddCoastingRoute.fullPath })} />
+          <div className="w-full flex items-center justify-end gap-x-2 md:gap-x-4">
+              <Select
+                defaultValue={status}
+                onValueChange={(value) => navigate({ search: { status: value } })}
+              >
+                <SelectTrigger
+                  icon
+                  className="w-full max-w-sm md:max-w-[200px] !h-full gap-3 p-0 pl-4 text-sm md:text-base justify-start font-medium rounded-lg data-[placeholder]:text-gray-500 border-gray-300"
+                >
+                  <SelectValue placeholder="Select time" />
+                </SelectTrigger>
+                <SelectContent align="middle" className="min-w-20">
+                  {STATUS_OPTIONS.map((item, key) => (
+                    <SelectItem key={key} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            <IconButton
+              icon={<HandCoins className="size-5" />}
+              label="Add Coasting"
+              onClick={() => navigate({ to: AddCoastingRoute.fullPath })}
+            />
+          </div>
         </div>
 
-        {ordersList.data.result.list.length || isLoading || ordersList.fetchStatus === 'fetching' ?
+        {ordersList.data.result.list.length ||
+        isLoading ||
+        ordersList.fetchStatus === "fetching" ? (
           <Table
             columns={columns}
             data={ordersList.data.result.list}
-            isLoading={isLoading || ordersList.fetchStatus === 'fetching'}
+            isLoading={isLoading || ordersList.fetchStatus === "fetching"}
             totalRecords={ordersList.data.result.totalRecords}
           />
-          : <NoData />
-        }
+        ) : (
+          <NoData />
+        )}
       </div>
     </>
-  )
+  );
 }

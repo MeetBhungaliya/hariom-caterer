@@ -24,7 +24,7 @@ function RouteComponent() {
       <Sidebar />
       <SidebarInset style={{ width: 'calc(100dvw - var(--sidebar-width))' }} className="h-full bg-sidebar outline-hidden">
         <Header />
-        <div className="p-4 h-full flex flex-col overflow-hidden">
+        <div className="p-2 md:p-4 h-full flex flex-col overflow-hidden">
           <Outlet />
         </div>
       </SidebarInset>

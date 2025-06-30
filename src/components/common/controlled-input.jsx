@@ -5,9 +5,18 @@ import { Textarea } from '../ui/textarea'
 import { useEventListener } from 'usehooks-ts'
 import { useRef } from 'react'
 
-function ControlledInput({ id, label,containerClassName, className, prefix, field, type = 'text', textarea, ...props }) {
+function ControlledInput({
+  id,
+  label,
+  containerClassName,
+  className,
+  prefix,
+  field,
+  type = 'text',
+  textarea,
+  ...props
+}) {
   const errorMsg = field.state.meta.errors?.[0]?.message
-
   const inputRef = useRef()
 
   useEventListener(
@@ -26,8 +35,8 @@ function ControlledInput({ id, label,containerClassName, className, prefix, fiel
           data-invalid={Boolean(errorMsg)}
           placeholder=" "
           className={cn(
-            'min-h-[100px] max-h-[200px] peer w-full py-3 px-4 rounded-lg',
-            'text-sm md:text-base font-medium',
+            'min-h-[100px] max-h-[200px] peer w-full py-[11.5px] px-3 rounded-lg',
+            'text-xs sm:text-sm md:text-base font-medium',
             'border-gray-300 hover:border-sky-600',
             'focus-visible:border-sky-600 focus-visible:ring-1 focus-visible:ring-sky-600',
             'dark:border-gray-600 dark:hover:border-sky-600',
@@ -43,7 +52,7 @@ function ControlledInput({ id, label,containerClassName, className, prefix, fiel
           htmlFor={id}
           className={cn(
             'absolute z-10 px-2 left-3',
-            'text-sm md:text-base text-gray-500 dark:text-gray-400',
+            'text-xs sm:text-sm md:text-base text-gray-500 dark:text-gray-400',
             'bg-background dark:bg-gray-900',
             'origin-[0] transform transition-all duration-200',
             'top-1 -translate-y-4 scale-85',
@@ -66,8 +75,8 @@ function ControlledInput({ id, label,containerClassName, className, prefix, fiel
       {prefix && (
         <div
           className={cn(
-            'h-full absolute left-0 top-0',
-            'aspect-square flex items-center justify-center',
+            'h-full absolute top-0 left-0 hidden lg:flex',
+            'aspect-square items-center justify-center',
             'rounded-l-[10px] bg-sky-600 backdrop-blur-sm',
             'text-white dark:text-white',
           )}
@@ -91,15 +100,15 @@ function ControlledInput({ id, label,containerClassName, className, prefix, fiel
         autoComplete="on"
         placeholder=" "
         className={cn(
-          'peer w-full py-3 px-4 rounded-lg',
-          'text-sm md:text-base font-medium',
+          'h-full peer w-full py-[11.5px] px-3 rounded-lg',
+          'text-xs sm:text-sm md:text-base font-medium',
           'border-gray-300 hover:border-sky-600',
           'focus:border-sky-600 focus:ring-1 focus:ring-sky-600',
           'dark:border-gray-600 dark:hover:border-sky-600',
           'dark:focus:border-sky-600 dark:focus:ring-sky-800',
           'data-[invalid=true]:text-red-500 data-[invalid=true]:border-red-400 data-[invalid=true]:ring-red-200',
           'transition-colors duration-200',
-          prefix && 'pl-[3.5rem]',
+          prefix && 'lg:pl-[3.5rem]',
           className,
         )}
         id={id}
@@ -109,7 +118,7 @@ function ControlledInput({ id, label,containerClassName, className, prefix, fiel
         htmlFor={id}
         className={cn(
           'absolute z-10 px-2',
-          'text-sm md:text-base text-gray-500 dark:text-gray-400',
+          'text-xs sm:text-sm md:text-base text-gray-500 dark:text-gray-400',
           'bg-background dark:bg-gray-900',
           'origin-[0] transform transition-all duration-200',
           'top-1 -translate-y-4 scale-85',
@@ -118,7 +127,7 @@ function ControlledInput({ id, label,containerClassName, className, prefix, fiel
           'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100',
           'peer-data-[invalid=true]:text-red-500',
           'rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4',
-          prefix ? 'left-13' : 'left-3',
+          prefix ? 'lg:left-13 left-3' : 'left-3',
           'cursor-text',
         )}
       >

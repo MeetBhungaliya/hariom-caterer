@@ -33,9 +33,9 @@ function Sidebar({ props }) {
 
   return (
     <SidebarComponent {...props} collapsible="icon">
-      <SidebarHeader className="h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
-        <h2 className="text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-400 inline-block text-transparent bg-clip-text">
-          {/* {sidebarState.open ? 'Hariom' : 'H'} */}
+      <SidebarHeader className="h-14 md:h-16 flex items-center justify-center border-b overflow-hidden bg-white shadow">
+        <h2 className="text-xl md:text-2xl text-center font-black whitespace-nowrap text-ellipsis bg-gradient-to-r from-blue-600 via-sky-600 to-indigo-400 inline-block text-transparent bg-clip-text">
+          {sidebarState.open ? 'Hariom' : 'H'}
         </h2>
       </SidebarHeader>
       <SidebarContent>
@@ -45,9 +45,9 @@ function Sidebar({ props }) {
           src={SIDEBAR_INDICATOR}
           alt="indicator"
         />
-        <SidebarGroup className="p-4">
+        <SidebarGroup className="p-2 md:p-4">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-2">
+            <SidebarMenu className="gap-1 md:gap-2">
               {navLinks().map((item) => {
                 return (
                   <SidebarMenuItem key={item.title}>
@@ -59,12 +59,17 @@ function Sidebar({ props }) {
                         activeProps={{
                           className: 'bg-sky-600 text-white bg-sky-600 text-white hover:bg-sky-600 hover:text-white active:bg-sky-600 active:text-white',
                         }}
-                        className="h-max py-3 px-4 flex items-center gap-x-4 text-text-1 hover:bg-bg-1 active:bg-bg-1 transition-colors"
+                        className="h-max py-2.5 md:py-3 px-2 md:px-4 flex items-center gap-x-2 md:gap-x-4 text-text-1 hover:bg-bg-1 active:bg-bg-1 transition-colors"
+                        onClick={()=>{
+                          if (sidebarState.isMobile && sidebarState.open) {
+                            sidebarState.toggleSidebar();
+                          }
+                        }}
                       >
-                        <div className="min-w-6 min-h-6 text-current [&>svg]:stroke-[1.40px]">
+                        <div className="[&>svg]:size-5 [&>svg]:min-w-5 [&>svg]:min-h-5 md:[&>svg]:size-6 md:[&>svg]:min-w-6 md:[&>svg]:min-h-6 text-current [&>svg]:stroke-[1.40px]">
                           <item.icon />
                         </div>
-                        <span className="text-[17px] text-current">{item.title}</span>
+                        <span className="text-[15px] md:text-[17px] text-current">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>

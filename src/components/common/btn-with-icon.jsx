@@ -16,7 +16,7 @@ function IconButton({ label, icon, className, iconEnd = false, ...props }) {
       />
       <div className="relative z-10 h-full flex gap-x-2 items-center font-semibold">
         {!iconEnd
-          && <div className="h-full p-3 bg-sky-600 grid place-items-center text-white">
+          && <div className="h-full p-2 md:p-3 bg-sky-600 grid place-items-center text-white">
             {icon}
           </div>
         }
@@ -25,6 +25,7 @@ function IconButton({ label, icon, className, iconEnd = false, ...props }) {
             inline-block truncate
             whitespace-nowrap overflow-hidden text-ellipsis
             transition-colors duration-200 group-hover:text-white
+            text-sm md:text-base
           "
         >
           {label}

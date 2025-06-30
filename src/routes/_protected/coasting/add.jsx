@@ -204,16 +204,38 @@ function RouteComponent() {
                   <SelectTrigger
                     icon
                     className={cn(
-                      "w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
+                      "py-2.5 px-3 rounded-lg relative",
+                      "w-full !h-full gap-3 text-sm md:text-base justify-start font-medium",
                       errorMsg
                         ? "border-red-500 data-[placeholder]:text-red-500"
                         : "data-[placeholder]:text-gray-500 border-gray-300"
                     )}
                   >
-                    <div className="h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white">
+                    <div
+                      className={cn(
+                        "h-full absolute top-0 left-0 hidden lg:flex",
+                        "aspect-square items-center justify-center",
+                        "rounded-l-[10px] bg-sky-600 backdrop-blur-sm",
+                        "text-white dark:text-white"
+                      )}
+                    >
                       <Timer />
                     </div>
-                    <SelectValue placeholder="Select time" />
+
+                    <span
+                      className={cn(
+                        "truncate text-xs sm:text-sm md:text-base",
+                        "lg:ml-[3rem]",
+                        errorMsg
+                          ? "text-red-500"
+                          : field.state.value
+                            ? "text-text-1"
+                            : "text-gray-500"
+                      )}
+                    >
+                      {field.state.value ?? "Select time"}
+                    </span>
+                    {/* <SelectValue placeholder="Select time" /> */}
                   </SelectTrigger>
                   <SelectContent align="middle" className="min-w-20">
                     {TIME_OPTIONS.map((item, key) => (

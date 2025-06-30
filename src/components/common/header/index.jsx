@@ -33,11 +33,11 @@ function Header() {
   })
 
   return (
-    <header className="flex h-16 shrink-0 justify-between items-center gap-x-4 border-b px-4 bg-white shadow">
-      <nav className="flex items-center gap-x-4">
+    <header className="flex h-14 md:h-16 shrink-0 justify-between items-center gap-x-4 border-b px-2 md:px-4 bg-white shadow">
+      <nav className="flex items-center gap-x-2 md:gap-x-4">
         <SidebarTrigger
           className={cn(
-            "h-auto w-auto p-2 border hover:bg-sky-600 hover:[&_svg]:stroke-white [&_svg]:transition-all",
+            "h-auto w-auto p-1.5 md:p-2 border [&_svg]:size-4 md:[&_svg]:size-5 hover:bg-sky-600 hover:[&_svg]:stroke-white [&_svg]:transition-all",
             sidebarState.open ? "[&_svg]:rotate-0" : "[&_svg]:rotate-180"
           )}
         />
@@ -51,7 +51,7 @@ function Header() {
                       .split("/")
                       .slice(0, -1)
                       .join("/")}
-                    className="text-xl font-medium hover:underline"
+                    className="text-lg md:text-xl font-medium hover:underline"
                   >
                     Foods
                   </BreadcrumbLink>
@@ -62,13 +62,13 @@ function Header() {
 
             {subCategoryRoute?.params?.["category-id"] ? (
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-xl font-medium text-text-1">
+                <BreadcrumbPage className="text-lg md:text-xl font-medium text-text-1">
                   {subCategoryRoute?.search?.name || "Subcategory"}
                 </BreadcrumbPage>
               </BreadcrumbItem>
             ) : (
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-xl font-medium text-text-1">
+                <BreadcrumbPage className="ttext-lg md:text-xl font-medium text-text-1">
                   {items?.title}
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -83,7 +83,7 @@ function Header() {
                       .split("/")
                       .slice(0, -1)
                       .join("/")}
-                    className="text-xl font-medium hover:underline"
+                    className="text-lg md:text-xl font-medium hover:underline"
                   >
                     Items
                   </BreadcrumbLink>
@@ -94,7 +94,7 @@ function Header() {
 
             {addItemRoute && (
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-xl font-medium text-text-1">
+                <BreadcrumbPage className="text-lg md:text-xl font-medium text-text-1">
                   Add Item
                 </BreadcrumbPage>
               </BreadcrumbItem>
@@ -102,7 +102,7 @@ function Header() {
 
             {updateItemRoute && (
               <BreadcrumbItem>
-                <BreadcrumbPage className="text-xl font-medium text-text-1">
+                <BreadcrumbPage className="text-lg md:text-xl font-medium text-text-1">
                   Update Item
                 </BreadcrumbPage>
               </BreadcrumbItem>

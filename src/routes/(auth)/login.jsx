@@ -56,25 +56,25 @@ function RouteComponent() {
   return (
     <div className="h-dvh p-6 flex bg-[url('/assets/images/loginbg.png')] bg-cover">
       <div className="flex-1" />
-      <div className="flex-1 flex justify-center items-center">
-        <div className="h-max w-full max-w-xl p-10 flex flex-col items-center justify-center bg-white rounded-3xl shadow-[16px_16px_32px_#acacac,_-16px_-16px_32px_#ffffff]">
-          <div className="space-y-3 text-center mb-20">
-            <h2 className="text-4xl font-bold">Welcome</h2>
-            <p className="text-base font-medium">
+      <div className="flex-[100%] md:flex-[60%] lg:flex-1 flex justify-center items-center">
+        <div className="h-max w-full max-w-xl p-6 md:p-10 flex flex-col items-center justify-center bg-white rounded-3xl shadow-[16px_16px_32px_#acacac,_-16px_-16px_32px_#ffffff]">
+          <div className="space-y-3 text-center mb-10 sm:mb-16 lg:mb-20">
+            <h2 className="text-3xl md:text-4xl font-bold">Welcome</h2>
+            <p className="text-sm md:text-base font-medium">
               Please login to admin dashboard.
             </p>
           </div>
           <form
-            className="w-full max-w-lg space-y-6"
+            className="w-full max-w-lg space-y-4 md:space-y-6"
             onSubmit={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              handleSubmit()
+              e.preventDefault();
+              e.stopPropagation();
+              handleSubmit();
             }}
           >
             <Field
               name="email"
-              children={field => (
+              children={(field) => (
                 <ControlledInput
                   id="email"
                   label="Email or username"
@@ -85,7 +85,7 @@ function RouteComponent() {
             />
             <Field
               name="password"
-              children={field => (
+              children={(field) => (
                 <ControlledPasswordInput
                   id="password"
                   label="Password"
@@ -93,10 +93,10 @@ function RouteComponent() {
                 />
               )}
             />
-            <div className="mt-20">
+            <div className="mt-10 sm:mt-16 lg:mt-20">
               <Subscribe
-                selector={state => state.isDirty}
-                children={isDirty => (
+                selector={(state) => state.isDirty}
+                children={(isDirty) => (
                   <Button
                     type="submit"
                     className="w-full rounded-xl font-semibold tracking-wide bg-sky-600 text-white"
@@ -111,5 +111,5 @@ function RouteComponent() {
         </div>
       </div>
     </div>
-  )
+  );
 }

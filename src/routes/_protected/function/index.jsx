@@ -101,7 +101,7 @@ function RouteComponent() {
                 const res = await printFunctionMutation.mutateAsync(
                   props.row.original.function_id
                 );
-                printPDF(res.result.url);
+                printPDF(res.result.pdf_url);
               }}
             >
               Print Function

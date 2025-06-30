@@ -171,7 +171,7 @@ function RouteComponent() {
                               field={field}
                               className="w-max"
                               align='start'
-                              icon={false}
+                              noIcon
                             />
                           )}
                         />
@@ -230,7 +230,6 @@ function RouteComponent() {
                               label="Total amount"
                               field={field}
                               value={field.state.value || ""}
-                              disabled={true}
                             />
                           )}
                         />

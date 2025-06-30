@@ -7,16 +7,15 @@ import { Button } from "../ui/button";
 
 function ControlledPasswordInput({ id, label, className, field, ...props }) {
   const errorMsg = field.state.meta.errors?.[0]?.message;
-
   const [isShowPassword, setIsShowPassword] = useState(false);
+
   return (
     <div className="relative w-full">
       <div
         className={cn(
-          "h-full absolute left-0 top-0",
-          "aspect-square flex items-center justify-center",
-          "rounded-l-[10px] bg-sky-100/80 backdrop-blur-sm",
-          "bg-sky-600 dark:bg-sky-600 text-white"
+          "h-full absolute left-0 top-0 hidden lg:flex",
+          "aspect-square items-center justify-center",
+          "rounded-l-[10px] bg-sky-600 text-white backdrop-blur-sm"
         )}
       >
         <LockKeyhole />
@@ -30,27 +29,29 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
         type={isShowPassword ? "text" : "password"}
         autoComplete="current-password"
         className={cn(
-          "peer w-full py-3 px-4 rounded-[10px]",
-          "text-sm md:text-base font-medium",
+          "peer w-full py-2.5 px-3 rounded-[10px]",
+          "text-xs sm:text-sm md:text-base font-medium",
           "border-gray-300 hover:border-sky-600",
           "focus:border-sky-600 focus:ring-1 focus:ring-sky-600",
           "dark:border-gray-600 dark:hover:border-sky-600",
           "dark:focus:border-sky-600 dark:focus:ring-sky-800",
           "data-[invalid=true]:text-red-500 data-[invalid=true]:border-red-400 data-[invalid=true]:ring-red-200",
           "transition-colors duration-200",
-          "pl-[3.5rem] pr-[3.5rem]",
+          "pr-[3.5rem]",
+          "lg:pl-[3.5rem]",
           className
         )}
         id={id}
         {...props}
       />
+
       <Button
         type="button"
         className={cn(
           "h-full absolute right-0 top-0 border-none",
           "aspect-square flex items-center justify-center",
-          "rounded-r-[10px] rounded-l-none bg-transparent hover:bg-sky-100/80 backdrop-blur-sm",
-          "bg-sky-600 dark:bg-sky-600 text-white"
+          "rounded-r-[10px] rounded-l-none bg-sky-600 text-white hover:bg-sky-700",
+          "backdrop-blur-sm"
         )}
         onClick={() => setIsShowPassword(!isShowPassword)}
       >
@@ -64,7 +65,7 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
         htmlFor={id}
         className={cn(
           "absolute z-10 px-2",
-          "text-sm md:text-base text-gray-500 dark:text-gray-400",
+          "text-xs sm:text-sm md:text-base text-gray-500 dark:text-gray-400",
           "bg-background dark:bg-gray-900",
           "origin-[0] transform transition-all duration-200",
           "top-1 -translate-y-4 scale-85",
@@ -73,7 +74,7 @@ function ControlledPasswordInput({ id, label, className, field, ...props }) {
           "peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:scale-100",
           "peer-data-[invalid=true]:text-red-500",
           "rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4",
-          "left-13",
+          "left-3 lg:left-13",
           "cursor-text"
         )}
       >

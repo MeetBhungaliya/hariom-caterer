@@ -87,33 +87,33 @@ function RouteComponent() {
   if (dashboardData.isError) return null;
 
   return (
-    <div className="h-full flex flex-col gap-y-6">
-      <div className="grid grid-cols-4 gap-x-6">
-        <div className="p-4 bg-white rounded-xl">
-          <div className="w-max p-2.5 rounded-full bg-[#F9A82633]">
-            <BookMarked className="size-6 text-[#F9A826]" />
+    <div className="h-full flex flex-col gap-y-2 md:gap-y-4 lg:gap-y-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-2 md:gap-x-4 lg:gap-x-6">
+        <div className="p-2 md:p-3 lg:p-4 bg-white rounded-lg md:rounded-xl">
+          <div className="w-max p-2 md:p-2.5 rounded-full bg-[#F9A82633]">
+            <BookMarked className="size-4 md:size-5 lg:size-6 text-[#F9A826]" />
           </div>
-          <div className="mt-4 pl-1">
-            <p className="text-gray-500">Today's Order</p>
+          <div className="mt-2 md:mt-4 pl-1">
+            <p className="text-sm md:text-base text-gray-500">Today's Order</p>
             {dashboardData.isFetching ? (
-              <p className="h-8 bg-gray-200 animate-pulse rounded-sm" />
+              <p className="h-7 md:h-8 bg-gray-200 animate-pulse rounded-sm" />
             ) : (
-              <p className="text-2xl font-medium">
+              <p className="text-xl md:text-2xl font-medium">
                 {dashboardData.data.result.order.length}
               </p>
             )}
           </div>
         </div>
-        <div className="p-4 bg-white rounded-xl">
-          <div className="w-max p-2.5 rounded-full bg-[#7486C333]">
-            <ClipboardList className="size-6 text-[#7486C3]" />
+        <div className="p-2 md:p-3 lg:p-4 bg-white rounded-lg md:rounded-xl">
+          <div className="w-max p-2 md:p-2.5 rounded-full bg-[#7486C333]">
+            <ClipboardList className="size-4 md:size-5 lg:size-6 text-[#7486C3]" />
           </div>
           <div className="mt-4 pl-1">
-            <p className="text-gray-500">Total Items</p>
+            <p className="text-sm md:text-base text-gray-500">Total Items</p>
             {dashboardData.isFetching ? (
-              <p className="h-8 bg-gray-200 animate-pulse rounded-sm" />
+              <p className="h-7 md:h-8 bg-gray-200 animate-pulse rounded-sm" />
             ) : (
-              <p className="text-2xl font-medium">
+              <p className="text-xl md:text-2xl font-medium">
                 {dashboardData.data.result.total_items}
               </p>
             )}
