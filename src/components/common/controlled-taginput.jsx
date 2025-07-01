@@ -40,8 +40,8 @@ function ControlledTagInput({ id, label, className, prefix, field, enableAutocom
         autoComplete: {
           popoverContent: "-translate-x-2"
         },
-        input: "h-full w-full min-w-[140px] max-w-[50%] px-0 py-1 focus-visible:outline-none text-sm md:text-base text-text-1 placeholder:text-gray-500 font-medium shadow-none",
-        inlineTagsContainer: cn("min-h-[50px] max-h-[200px] px-4 overflow-y-auto rounded-[10px]",
+        input: "h-full w-full min-w-[140px] max-w-[50%] px-0 md:py-1 focus-visible:outline-none text-xs sm:text-sm md:text-base text-text-1 placeholder:text-gray-500 font-medium shadow-none",
+        inlineTagsContainer: cn("min-h-[41px] sm:min-h-[50px] max-h-[200px] px-4 overflow-y-auto rounded-[10px]",
           Boolean(errorMsg) ? "text-red-500 border-red-400 ring-red-200" : "border-gray-300",
         )
       }}

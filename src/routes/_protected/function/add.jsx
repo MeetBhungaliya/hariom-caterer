@@ -10,15 +10,15 @@ import { Separator } from '@/components/ui/separator';
 import { METHODS, pagination } from '@/constants/common';
 import { ADD_FUNCTION, GET_FUNCTIONS } from '@/constants/endpoints';
 import { useAuthStore } from '@/hooks/use-auth';
+import { fetchApi } from '@/lib/api';
 import { addEditFunctionSchema } from '@/lib/schema';
+import { asyncResponseToaster } from '@/lib/toasts';
 import { useForm, useStore } from '@tanstack/react-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { BadgeIndianRupee, Calendar, IndianRupee, MapPinHouse, NotebookPen, Plus, Trash2, UserRound, UsersRound } from 'lucide-react';
+import { IndianRupee, MapPinHouse, Plus, Trash2, UserRound } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 import { Route as FunctionRoute } from './index';
-import { asyncResponseToaster } from '@/lib/toasts';
-import { fetchApi } from '@/lib/api';
 
 export const Route = createFileRoute('/_protected/function/add')({
   component: RouteComponent,
@@ -91,8 +91,8 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-6 overflow-hidden">
-        <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+      <div className="h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden">
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4 gap-x-4">
           <Subscribe
             selector={(state) => state.isDirty}
             children={(isDirty) => (
@@ -111,7 +111,7 @@ function RouteComponent() {
             )}
           />
         </div>
-        <div className="h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-y-auto">
+        <div className="h-full p-3 md:p-6 flex flex-col gap-y-3 md:gap-y-6 bg-white rounded-lg md:rounded-xl overflow-y-auto">
           <div className="grid grid-cols-3 gap-4">
             <Field
               name="client_id"
@@ -160,24 +160,23 @@ function RouteComponent() {
               <div className='flex flex-col gap-y-2'>
                 {data.map((_, index) => {
                   return (
-                    <div key={index} className='flex items-center gap-x-2'>
-                      <div className='w-full py-1 grid grid-cols-5 gap-4'>
+                    <div key={index} className="flex items-center gap-x-2">
+                      <div className="w-full py-1 grid grid-cols-5 gap-4">
                         <Field
                           name={`data[${index}].date`}
                           children={(field) => (
-                            <ControlledDatepicker
+                            <ControlledInput
                               id={`data[${index}].date`}
                               label="Select date"
                               field={field}
-                              className="w-max"
-                              align='start'
-                              noIcon
+                              type="date"
+                              className={!field.state.value && "text-gray-500"}
                             />
                           )}
                         />
                         <Field
                           name={`data[${index}].function`}
-                          children={field => (
+                          children={(field) => (
                             <ControlledInput
                               id={`data[${index}].function`}
                               label="Function name"
@@ -189,12 +188,18 @@ function RouteComponent() {
                           name={`data[${index}].person`}
                           listeners={{
                             onChange: (e) => {
-                              if (getFieldValue(`data[${index}].rate`) && e.value) {
-                                setFieldValue(`data[${index}].amount`, getFieldValue(`data[${index}].rate`) * e.value)
+                              if (
+                                getFieldValue(`data[${index}].rate`) &&
+                                e.value
+                              ) {
+                                setFieldValue(
+                                  `data[${index}].amount`,
+                                  getFieldValue(`data[${index}].rate`) * e.value
+                                );
                               }
-                            }
+                            },
                           }}
-                          children={field => (
+                          children={(field) => (
                             <ControlledInput
                               id={`data[${index}].person`}
                               label="Person"
@@ -207,12 +212,19 @@ function RouteComponent() {
                           name={`data[${index}].rate`}
                           listeners={{
                             onChange: (e) => {
-                              if (getFieldValue(`data[${index}].person`) && e.value) {
-                                setFieldValue(`data[${index}].amount`, getFieldValue(`data[${index}].person`) * e.value)
+                              if (
+                                getFieldValue(`data[${index}].person`) &&
+                                e.value
+                              ) {
+                                setFieldValue(
+                                  `data[${index}].amount`,
+                                  getFieldValue(`data[${index}].person`) *
+                                    e.value
+                                );
                               }
-                            }
+                            },
                           }}
-                          children={field => (
+                          children={(field) => (
                             <ControlledInput
                               id={`data[${index}].rate`}
                               label="Rate"
@@ -234,14 +246,20 @@ function RouteComponent() {
                           )}
                         />
                       </div>
-                      <Button type='button'
-                        className='p-3.5 border border-border-1 hover:bg-red-500 hover:border-red-500'
-                        onClick={() => setFieldValue("data", getFieldValue("data").filter((_, i) => i !== index))}
+                      <Button
+                        type="button"
+                        className="p-3.5 border border-border-1 hover:bg-red-500 hover:border-red-500"
+                        onClick={() =>
+                          setFieldValue(
+                            "data",
+                            getFieldValue("data").filter((_, i) => i !== index)
+                          )
+                        }
                       >
-                        <Trash2 className='size-5' />
+                        <Trash2 className="size-5" />
                       </Button>
                     </div>
-                  )
+                  );
                 })}
               </div>
             </ScrollArea>

@@ -79,8 +79,8 @@ function RouteComponent() {
   if (packageItemList.isError) return null;
 
   return (
-    <div className="h-full flex flex-col gap-y-6 overflow-hidden">
-      <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+    <div className="h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden">
+      <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4 gap-x-4">
         <Subscribe
           selector={(state) => state.isDirty}
           children={(isDirty) => (
@@ -99,7 +99,7 @@ function RouteComponent() {
           )}
         />
       </div>
-      <div className="h-full flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden">
+      <div className="h-full flex flex-col gap-y-3 md:gap-y-6 bg-white rounded-xl overflow-hidden">
         <div className="p-6 pb-0 flex gap-x-3">
           <Field
             name="name"
@@ -142,7 +142,7 @@ function RouteComponent() {
           />
         </div>
         <ScrollArea className="px-3 pb-4 overflow-hidden">
-          <div className="w-full px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-auto">
+          <div className="w-full px-3 pb-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 overflow-auto">
             {itemFields.map((item, index) => {
               return (
                 <Subscribe

@@ -34,7 +34,7 @@ const ControlledDatepicker = ({
           className={cn(
             "py-2.5 px-3 rounded-lg",
             "w-full gap-3 border !border-gray-300 justify-start rounded-lg relative",
-            "text-xs sm:text-sm md:text-base",
+            "text-xs sm:text-sm md:text-base bg-transparent hover:bg-transparent",
             date
               ? "text-text-1 border-sky-600 hover:text-text-1"
               : "text-gray-500 border-border hover:text-gray-500",

@@ -109,8 +109,8 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-6 overflow-hidden">
-        <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+     <div className="h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden">
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4 gap-x-4">
           <Subscribe
             selector={(state) => state.isDirty}
             children={(isDirty) => (
@@ -124,12 +124,12 @@ function RouteComponent() {
                 }}
                 disabled={!isDirty}
               >
-                Update
+                Add
               </Button>
             )}
           />
         </div>
-        <div className="h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-y-auto">
+        <div className="h-full p-3 md:p-6 flex flex-col gap-y-3 md:gap-y-6 bg-white rounded-lg md:rounded-xl overflow-y-auto">
           <div className="grid grid-cols-3 gap-4">
             <Field
               name="client_id"
@@ -163,30 +163,19 @@ function RouteComponent() {
               )}
             />
             <Button
-              type="button"
-              variant="outline"
-              className="max-w-[180px] p-1.5 text-base bg-sky-600 rounded-lg border-transparent text-white hover:text-sky-600"
-              onClick={() => {
-                setFieldValue("data", [
-                  ...getFieldValue("data"),
-                  {
-                    data: null,
-                    function: "",
-                    person: "",
-                    rate: "",
-                    amount: "",
-                  },
-                ]);
-              }}
+              type='button'
+              variant='outline'
+              className='max-w-[180px] p-1.5 text-base bg-sky-600 rounded-lg border-transparent text-white hover:text-sky-600'
+              onClick={() => { setFieldValue("data", [...getFieldValue("data"), { data: null, function: "", person: "", rate: "", amount: "" }]) }}
             >
-              <Plus className="size-4 stroke-3" />
+              <Plus className='size-4 stroke-3' />
               Add Function
             </Button>
           </div>
-          <div className="flex flex-col gap-y-4">
+          <div className='flex flex-col gap-y-4'>
             <Separator />
             <ScrollArea className="h-[322px] pr-4">
-              <div className="flex flex-col gap-y-2">
+              <div className='flex flex-col gap-y-2'>
                 {data.map((_, index) => {
                   return (
                     <div key={index} className="flex items-center gap-x-2">
@@ -194,11 +183,12 @@ function RouteComponent() {
                         <Field
                           name={`data[${index}].date`}
                           children={(field) => (
-                            <ControlledDatepicker
+                            <ControlledInput
                               id={`data[${index}].date`}
                               label="Select date"
                               field={field}
-                              icon={false}
+                              type="date"
+                              className={!field.state.value && "text-gray-500"}
                             />
                           )}
                         />
@@ -270,7 +260,6 @@ function RouteComponent() {
                               label="Total amount"
                               field={field}
                               value={field.state.value || ""}
-                              disabled={true}
                             />
                           )}
                         />
@@ -294,16 +283,16 @@ function RouteComponent() {
             </ScrollArea>
             <Separator />
           </div>
-          <div className="flex justify-between items-center gap-4">
+          <div className='flex justify-between items-center gap-4'>
             <div className="flex flex-col gap-4">
               <div className="space-y-4">
                 <div className="flex items-center gap-x-2">
                   <Label>Pro</Label>
-                  <div className="flex items-center gap-x-2">
+                  <div className='flex items-center gap-x-2'>
                     <Field
                       name="pro.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -312,18 +301,11 @@ function RouteComponent() {
                             placeholder="Count"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "pro.count",
-                                  getFieldValue("pro.count")
-                                );
+                                setFieldValue("pro.count", getFieldValue("pro.count"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`pro.rate`)) {
-                                  setFieldValue(
-                                    `pro.total`,
-                                    getFieldValue(`pro.rate`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`pro.total`, getFieldValue(`pro.rate`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -349,18 +331,11 @@ function RouteComponent() {
                             placeholder="Rate"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "pro.rate",
-                                  getFieldValue("pro.rate")
-                                );
+                                setFieldValue("pro.rate", getFieldValue("pro.rate"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`pro.count`)) {
-                                  setFieldValue(
-                                    `pro.total`,
-                                    getFieldValue(`pro.count`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`pro.total`, getFieldValue(`pro.count`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -375,12 +350,9 @@ function RouteComponent() {
                     />
                     =
                     <Subscribe
-                      selector={(state) => [
-                        state.values.pro.count,
-                        state.values.pro.rate,
-                      ]}
+                      selector={state => [state.values.pro.count, state.values.pro.rate]}
                       children={([count, rate]) => {
-                        const total = count * rate;
+                        const total = count * rate
                         return (
                           <Field
                             name="pro.total"
@@ -390,18 +362,13 @@ function RouteComponent() {
                                 <Input
                                   type="number"
                                   className="w-full max-w-20 px-1 text-center"
-                                  value={total ?? field.state.value ?? ""}
+                                  value={(total ?? field.state.value) ?? ""}
                                   placeholder="Total"
                                   disabled
                                   onChange={(e) =>
                                     e.target.valueAsNumber > MAX
-                                      ? setFieldValue(
-                                          "pro.total",
-                                          getFieldValue("pro.total")
-                                        )
-                                      : field.handleChange(
-                                          e.target.valueAsNumber
-                                        )
+                                      ? setFieldValue("pro.total", getFieldValue("pro.total"))
+                                      : field.handleChange(e.target.valueAsNumber)
                                   }
                                   onKeyPress={(e) => {
                                     if (!/[0-9]/.test(e.key)) {
@@ -412,7 +379,7 @@ function RouteComponent() {
                               );
                             }}
                           />
-                        );
+                        )
                       }}
                     />
                   </div>
@@ -421,11 +388,11 @@ function RouteComponent() {
               <div className="space-y-4">
                 <div className="flex items-center gap-x-2">
                   <Label>Bottle</Label>
-                  <div className="flex items-center gap-x-2">
+                  <div className='flex items-center gap-x-2'>
                     <Field
                       name="bottle.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -434,18 +401,11 @@ function RouteComponent() {
                             placeholder="Count"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "bottle.count",
-                                  getFieldValue("bottle.count")
-                                );
+                                setFieldValue("bottle.count", getFieldValue("bottle.count"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`bottle.rate`)) {
-                                  setFieldValue(
-                                    `bottle.total`,
-                                    getFieldValue(`bottle.rate`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`bottle.total`, getFieldValue(`bottle.rate`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -471,18 +431,11 @@ function RouteComponent() {
                             placeholder="Rate"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "bottle.rate",
-                                  getFieldValue("bottle.rate")
-                                );
+                                setFieldValue("bottle.rate", getFieldValue("bottle.rate"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`bottle.count`)) {
-                                  setFieldValue(
-                                    `bottle.total`,
-                                    getFieldValue(`bottle.count`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`bottle.total`, getFieldValue(`bottle.count`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -497,12 +450,9 @@ function RouteComponent() {
                     />
                     =
                     <Subscribe
-                      selector={(state) => [
-                        state.values.bottle.count,
-                        state.values.bottle.rate,
-                      ]}
+                      selector={state => [state.values.bottle.count, state.values.bottle.rate]}
                       children={([count, rate]) => {
-                        const total = count * rate;
+                        const total = count * rate
                         return (
                           <Field
                             name="bottle.total"
@@ -512,18 +462,13 @@ function RouteComponent() {
                                 <Input
                                   type="number"
                                   className="w-full max-w-20 px-1 text-center"
-                                  value={total ?? field.state.value ?? ""}
+                                  value={(total ?? field.state.value) ?? ""}
                                   placeholder="Total"
                                   disabled
                                   onChange={(e) =>
                                     e.target.valueAsNumber > MAX
-                                      ? setFieldValue(
-                                          "bottle.total",
-                                          getFieldValue("bottle.total")
-                                        )
-                                      : field.handleChange(
-                                          e.target.valueAsNumber
-                                        )
+                                      ? setFieldValue("bottle.total", getFieldValue("bottle.total"))
+                                      : field.handleChange(e.target.valueAsNumber)
                                   }
                                   onKeyPress={(e) => {
                                     if (!/[0-9]/.test(e.key)) {
@@ -534,7 +479,7 @@ function RouteComponent() {
                               );
                             }}
                           />
-                        );
+                        )
                       }}
                     />
                   </div>
@@ -543,11 +488,11 @@ function RouteComponent() {
               <div className="space-y-4">
                 <div className="flex items-center gap-x-2">
                   <Label>Bom. Boys</Label>
-                  <div className="flex items-center gap-x-2">
+                  <div className='flex items-center gap-x-2'>
                     <Field
                       name="bom_boys.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -556,18 +501,11 @@ function RouteComponent() {
                             placeholder="Count"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "bom_boys.count",
-                                  getFieldValue("bom_boys.count")
-                                );
+                                setFieldValue("bom_boys.count", getFieldValue("bom_boys.count"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`bom_boys.rate`)) {
-                                  setFieldValue(
-                                    `bom_boys.total`,
-                                    getFieldValue(`bom_boys.rate`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`bom_boys.total`, getFieldValue(`bom_boys.rate`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -593,18 +531,11 @@ function RouteComponent() {
                             placeholder="Rate"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "bom_boys.rate",
-                                  getFieldValue("bom_boys.rate")
-                                );
+                                setFieldValue("bom_boys.rate", getFieldValue("bom_boys.rate"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`bom_boys.count`)) {
-                                  setFieldValue(
-                                    `bom_boys.total`,
-                                    getFieldValue(`bom_boys.count`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`bom_boys.total`, getFieldValue(`bom_boys.count`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -619,12 +550,9 @@ function RouteComponent() {
                     />
                     =
                     <Subscribe
-                      selector={(state) => [
-                        state.values.bom_boys.count,
-                        state.values.bom_boys.rate,
-                      ]}
+                      selector={state => [state.values.bom_boys.count, state.values.bom_boys.rate]}
                       children={([count, rate]) => {
-                        const total = count * rate;
+                        const total = count * rate
                         return (
                           <Field
                             name="bom_boys.total"
@@ -634,18 +562,13 @@ function RouteComponent() {
                                 <Input
                                   type="number"
                                   className="w-full max-w-20 px-1 text-center"
-                                  value={total ?? field.state.value ?? ""}
+                                  value={(total ?? field.state.value) ?? ""}
                                   placeholder="Total"
                                   disabled
                                   onChange={(e) =>
                                     e.target.valueAsNumber > MAX
-                                      ? setFieldValue(
-                                          "bom_boys.total",
-                                          getFieldValue("bom_boys.total")
-                                        )
-                                      : field.handleChange(
-                                          e.target.valueAsNumber
-                                        )
+                                      ? setFieldValue("bom_boys.total", getFieldValue("bom_boys.total"))
+                                      : field.handleChange(e.target.valueAsNumber)
                                   }
                                   onKeyPress={(e) => {
                                     if (!/[0-9]/.test(e.key)) {
@@ -656,20 +579,21 @@ function RouteComponent() {
                               );
                             }}
                           />
-                        );
+                        )
                       }}
                     />
+
                   </div>
                 </div>
               </div>
               <div className="space-y-4">
                 <div className="flex items-center gap-x-2">
                   <Label>Decoration</Label>
-                  <div className="flex items-center gap-x-2">
+                  <div className='flex items-center gap-x-2'>
                     <Field
                       name="decoration.count"
                       children={(field) => {
-                        const MAX = 999;
+                        const MAX = 99999;
                         return (
                           <Input
                             type="number"
@@ -678,18 +602,11 @@ function RouteComponent() {
                             placeholder="Count"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "decoration.count",
-                                  getFieldValue("decoration.count")
-                                );
+                                setFieldValue("decoration.count", getFieldValue("decoration.count"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`decoration.rate`)) {
-                                  setFieldValue(
-                                    `decoration.total`,
-                                    getFieldValue(`decoration.rate`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`decoration.total`, getFieldValue(`decoration.rate`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -715,18 +632,11 @@ function RouteComponent() {
                             placeholder="Rate"
                             onChange={(e) => {
                               if (e.target.valueAsNumber > MAX) {
-                                setFieldValue(
-                                  "decoration.rate",
-                                  getFieldValue("decoration.rate")
-                                );
+                                setFieldValue("decoration.rate", getFieldValue("decoration.rate"))
                               } else {
-                                field.handleChange(e.target.valueAsNumber);
+                                field.handleChange(e.target.valueAsNumber)
                                 if (getFieldValue(`decoration.count`)) {
-                                  setFieldValue(
-                                    `decoration.total`,
-                                    getFieldValue(`decoration.count`) *
-                                      e.target.valueAsNumber
-                                  );
+                                  setFieldValue(`decoration.total`, getFieldValue(`decoration.count`) * e.target.valueAsNumber)
                                 }
                               }
                             }}
@@ -741,12 +651,9 @@ function RouteComponent() {
                     />
                     =
                     <Subscribe
-                      selector={(state) => [
-                        state.values.decoration.count,
-                        state.values.decoration.rate,
-                      ]}
+                      selector={state => [state.values.decoration.count, state.values.decoration.rate]}
                       children={([count, rate]) => {
-                        const total = count * rate;
+                        const total = count * rate
                         return (
                           <Field
                             name="decoration.total"
@@ -756,18 +663,13 @@ function RouteComponent() {
                                 <Input
                                   type="number"
                                   className="w-full max-w-20 px-1 text-center"
-                                  value={total ?? field.state.value ?? ""}
+                                  value={(total ?? field.state.value) ?? ""}
                                   placeholder="Total"
                                   disabled
                                   onChange={(e) =>
                                     e.target.valueAsNumber > MAX
-                                      ? setFieldValue(
-                                          "decoration.total",
-                                          getFieldValue("decoration.total")
-                                        )
-                                      : field.handleChange(
-                                          e.target.valueAsNumber
-                                        )
+                                      ? setFieldValue("decoration.total", getFieldValue("decoration.total"))
+                                      : field.handleChange(e.target.valueAsNumber)
                                   }
                                   onKeyPress={(e) => {
                                     if (!/[0-9]/.test(e.key)) {
@@ -778,7 +680,7 @@ function RouteComponent() {
                               );
                             }}
                           />
-                        );
+                        )
                       }}
                     />
                   </div>

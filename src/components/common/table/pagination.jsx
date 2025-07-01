@@ -32,11 +32,11 @@ function Pagination({ totalRecords }) {
   }, [totalPages, page])
 
   return (
-    <div className="flex flex-row items-center justify-between p-4 rounded-xl bg-white">
+    <div className="p-2 md:p-4 flex flex-row items-center justify-between rounded-lg md:rounded-xl bg-white">
       <div className="flex w-max items-center gap-x-[10px]">
         <p className="text-text-3 hidden text-sm whitespace-nowrap sm:text-base lg:block">Rows per page :</p>
         <Select value={limit} onValueChange={value => navigate({ to: '.', search: { page, limit: value, ...rest } })}>
-          <SelectTrigger className="border-border-1 w-10 justify-center gap-x-0 rounded-lg bg-transparent px-2 py-1.5 focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="border-border-1 w-10 justify-center gap-x-0 rounded-lg bg-transparent px-1.5 sm:px-2 py-1 sm:py-1.5 focus:ring-0 focus:ring-offset-0">
             <SelectValue placeholder={limit} className="text-text-2 text-sm" />
           </SelectTrigger>
           <SelectContent align="middle" className="min-w-20">
@@ -66,7 +66,7 @@ function Pagination({ totalRecords }) {
       <PaginationComponent>
         <PaginationContent className="gap-2">
           <PaginationItem>
-            <PaginationPrevious className="min-h-10 py-0 has-[>svg]:px-[7px] md:has-[>svg]:px-4 size-auto" to="." search={{ page: page - 1, limit, ...rest }} disabled={!helpers.canGoToPrevStep} />
+            <PaginationPrevious className="sm:min-h-10 py-0 has-[>svg]:px-[7px] md:has-[>svg]:px-4 size-8 sm:!size-auto" to="." search={{ page: page - 1, limit, ...rest }} disabled={!helpers.canGoToPrevStep} />
           </PaginationItem>
           {!helpers.canGoToNextStep && helpers.canGoToPrevStep && Boolean(page - 2) && page - 2 <= totalPages && (
             <PaginationItem>
@@ -94,7 +94,7 @@ function Pagination({ totalRecords }) {
             </PaginationItem>
           )}
           <PaginationItem>
-            <PaginationNext className="min-h-10 py-0 has-[>svg]:px-2 md:has-[>svg]:px-4 size-auto" to="." search={{ page: page + 1, limit, ...rest }} disabled={!helpers.canGoToNextStep} />
+            <PaginationNext className="sm:min-h-10 py-0 has-[>svg]:px-2 md:has-[>svg]:px-4 size-8 sm:!size-auto" to="." search={{ page: page + 1, limit, ...rest }} disabled={!helpers.canGoToNextStep} />
           </PaginationItem>
         </PaginationContent>
       </PaginationComponent>

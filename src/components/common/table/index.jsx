@@ -22,7 +22,7 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="h-full flex flex-col overflow-hidden">
-        <div className={cn('h-full bg-white flex flex-col overflow-hidden', isSubTable ? 'border rounded-lg' : 'p-5 pr-3 pt-2 rounded-xl',
+        <div className={cn('h-full bg-white flex flex-col overflow-hidden', isSubTable ? 'border rounded-lg' : 'pl-3 md:pl-5 pr-3 py-2 rounded-xl',
         )}
         >
           <ScrollArea className={isSubTable ? 'h-[200px]' : 'h-full pb-2 pr-2'} type="always">
@@ -35,7 +35,7 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
                         <TableHead
                           key={header.id}
                           colSpan={header.colSpan}
-                          className={cn("h-auto p-3 font-semibold text-base",
+                          className={cn("h-auto p-2 md:p-3 font-semibold text-sm md:text-base",
                             header.id.endsWith("align-center") ? "text-center" : ""
                           )}
                           style={header.getSize() === 150 ? { width: '100%' } : { minWidth: `${header.getSize()}px` }}
@@ -77,7 +77,7 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
                               return (
                                 <TableCell
                                   key={cell.id}
-                                  className={cn("px-3",
+                                  className={cn("px-2 md:px-3 text-xs md:text-sm",
                                     cell.id.endsWith("align-center") ? "text-center" : ""
                                   )}
                                   style={cell.column.getSize() === 150 ? { width: '100%' } : { minWidth: `${cell.column.getSize()}px` }}
@@ -114,7 +114,7 @@ function Table({ data, columns, isLoading, totalRecords, pagination = true, expa
         {pagination
           && (
             <>
-              <div className="mt-3 h-2 bg-bg-1" />
+              <div className="mt-2 sm:mt-3 h-2 bg-bg-1" />
               <Pagination totalRecords={totalRecords} />
             </>
           )}

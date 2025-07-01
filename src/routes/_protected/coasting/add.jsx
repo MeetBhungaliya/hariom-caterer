@@ -134,10 +134,10 @@ function RouteComponent() {
   }
 
   return (
-    <div id="test" className="h-full flex flex-col gap-y-6 overflow-hidden">
-      <div className="bg-white p-4 rounded-xl flex items-center justify-end gap-x-4">
+    <div className="h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden">
+      <div className="bg-white p-3 md:p-4 rounded-lg md:rounded-xl flex items-center justify-end gap-x-2 md:gap-x-4">
         <Switch
-          className="size-auto w-16 h-7 [&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
+          className="size-auto w-14 md:w-16 h-6 md:h-7 [&>*:first-child]:size-4 md:[&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 md:[&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[35px] md:[&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
           checked={showPrice.value}
           onCheckedChange={showPrice.toggle}
         />
@@ -146,7 +146,7 @@ function RouteComponent() {
           children={(isDirty) => (
             <Button
               type="button"
-              className="w-full max-w-[160px] py-2 text-base bg-sky-600 text-white"
+              className="w-full max-w-[120px] md:max-w-[160px] py-2 text-sm md:text-base bg-sky-600 text-white"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -159,8 +159,8 @@ function RouteComponent() {
           )}
         />
       </div>
-      <div className="h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-y-auto">
-        <div className="grid grid-cols-3 gap-4">
+      <div className="h-full p-3 md:p-6 flex flex-col gap-y-3 md:gap-y-6 bg-white rounded-lg md:rounded-xl overflow-y-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           <Field
             name="client_id"
             children={(field) => (
@@ -189,6 +189,8 @@ function RouteComponent() {
                 label="Select date"
                 field={field}
                 prefix={<Calendar className="size-5" />}
+                className="w-max"
+                align="start"
               />
             )}
           />
@@ -204,7 +206,7 @@ function RouteComponent() {
                   <SelectTrigger
                     icon
                     className={cn(
-                      "py-2.5 px-3 rounded-lg relative",
+                      "py-2.5 px-3 rounded-lg relative cursor-pointer",
                       "w-full !h-full gap-3 text-sm md:text-base justify-start font-medium",
                       errorMsg
                         ? "border-red-500 data-[placeholder]:text-red-500"
@@ -235,7 +237,6 @@ function RouteComponent() {
                     >
                       {field.state.value ?? "Select time"}
                     </span>
-                    {/* <SelectValue placeholder="Select time" /> */}
                   </SelectTrigger>
                   <SelectContent align="middle" className="min-w-20">
                     {TIME_OPTIONS.map((item, key) => (
@@ -353,7 +354,7 @@ function RouteComponent() {
             return groupWithCount && groupWithCount.length ? (
               <>
                 <Separator />
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
                   {groupWithCount.map((item, i) => {
                     return (
                       <CoastingItem
@@ -375,9 +376,9 @@ function RouteComponent() {
           }}
         </Field>
         <div className="flex items-center justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center gap-x-2">
-              <Label>Pro</Label>
+          <div className="space-y-2 md:space-y-4">
+            <div className="flex items-center gap-x-1 sm:gap-x-2">
+              <Label className="text-xs sm:text-sm">Pro</Label>
               <Field
                 name="pro"
                 children={(field) => {
@@ -385,7 +386,7 @@ function RouteComponent() {
                   return (
                     <Input
                       type="number"
-                      className="w-full max-w-10 px-1 text-center"
+                      className="w-full max-w-10 px-1 text-center text-sm md:text-base"
                       value={field.state.value}
                       onChange={(e) =>
                         e.target.valueAsNumber > MAX
@@ -401,10 +402,10 @@ function RouteComponent() {
                   );
                 }}
               />
-              <span className="text-sm">Extra</span>
+              <span className="text-xs sm:text-sm">Extra</span>
             </div>
-            <div className="flex items-center gap-x-2">
-              <Label>Bom. Boys</Label>
+            <div className="flex items-center gap-x-1 sm:gap-x-2">
+              <Label className="text-xs sm:text-sm">Bom. Boys</Label>
               <Field
                 name="bom_boys"
                 children={(field) => {
@@ -412,7 +413,7 @@ function RouteComponent() {
                   return (
                     <Input
                       type="number"
-                      className="w-full max-w-10 px-1 text-center"
+                      className="w-full max-w-10 px-1 text-center text-sm md:text-base"
                       value={field.state.value}
                       onChange={(e) =>
                         e.target.valueAsNumber > MAX
@@ -428,10 +429,10 @@ function RouteComponent() {
                   );
                 }}
               />
-              <span className="text-sm">Extra</span>
+              <span className="text-xs sm:text-sm">Extra</span>
             </div>
-            <div className="flex items-center gap-x-2">
-              <Label>Packed Bottles</Label>
+            <div className="flex items-center gap-x-1 sm:gap-x-2">
+              <Label className="text-xs sm:text-sm">Packed Bottles</Label>
               <Field
                 name="packed_bottle"
                 children={(field) => {
@@ -458,7 +459,7 @@ function RouteComponent() {
                   );
                 }}
               />
-              <span className="text-sm">Extra</span>
+              <span className="text-xs sm:text-sm">Extra</span>
             </div>
           </div>
           <div className="space-y-4">

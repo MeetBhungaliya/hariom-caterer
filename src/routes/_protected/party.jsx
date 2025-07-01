@@ -60,7 +60,7 @@ function RouteComponent() {
           partyModal.setTrue()
         }}
         >
-          <Edit className="size-4" />
+          <Edit className="size-3.5 md:size-4" />
         </Button>
       ),
       size: 62,
@@ -72,8 +72,8 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-5">
-        <div className="bg-white p-4 rounded-xl flex justify-end">
+      <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4">
           <IconButton icon={<UserRound className="size-5" />} label="Add Party" onClick={partyModal.setTrue} />
         </div>
         {partyList.data.result.list.length || isLoading || partyList.fetchStatus === 'fetching' ?

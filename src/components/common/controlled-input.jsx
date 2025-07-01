@@ -75,7 +75,7 @@ function ControlledInput({
       {prefix && (
         <div
           className={cn(
-            'h-full absolute top-0 left-0 hidden lg:flex',
+            'h-[calc(100%-2px)] absolute top-[1px] left-0 hidden lg:flex',
             'aspect-square items-center justify-center',
             'rounded-l-[10px] bg-sky-600 backdrop-blur-sm',
             'text-white dark:text-white',

@@ -75,8 +75,8 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
         <Label className='text-sm md:text-base font-medium'>
           {item.name}
         </Label>
-        <div className='flex gap-x-4 items-center'>
-          <span>
+        <div className='flex gap-x-3 md:gap-x-4 items-center'>
+          <span className='text-sm md:text-base'>
             {getGroupedItems.filter(e => e.item_id).length}
             &nbsp;
             of
@@ -86,10 +86,10 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
           <Button
             type='button'
             variant='outline'
-            className='p-1.5 bg-sky-600 rounded-sm border-transparent text-white hover:text-sky-600'
+            className='p-[5px] md:p-1.5 bg-sky-600 rounded-[4px] md:rounded-sm border-transparent text-white hover:text-sky-600'
             onClick={handleAddItem}
           >
-            <Plus className='size-4 stroke-3' />
+            <Plus className='size-3 md:size-4 stroke-3' />
           </Button>
         </div>
       </div>
@@ -99,7 +99,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
             ? getGroupedItems.some(i => !i.item_id) ? "border-red-500" : "border-border-1"
             : "border-border-1")}
         >
-          <div className="px-4 border-r flex items-center">
+          <div className="px-3 md:px-4 border-r flex items-center">
             <span className='text-sm md:text-base font-medium'>
               {item?.count}
             </span>
@@ -115,7 +115,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                   </div>
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
-                : <p className='py-2.5 pl-2'>Select {item.name}</p>
+                : <p className='py-2 md:py-2.5 pl-2'>Select {item.name}</p>
               }
             </div>
             {selectedItems?.price

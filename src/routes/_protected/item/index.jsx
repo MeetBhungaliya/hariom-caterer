@@ -44,7 +44,7 @@ function RouteComponent() {
             )}
             onClick={row.getToggleExpandedHandler()}
           >
-            <CornerUpRight className="size-4" />
+            <CornerUpRight className="size-3.5 md:size-4" />
           </Button>
         )
       },
@@ -85,9 +85,9 @@ function RouteComponent() {
     {
       id: 'actions',
       cell: (props) => (
-        <div className="flex gap-x-4 justify-end">
+        <div className="flex gap-x-2 md:gap-x-4 justify-end">
           <Link to={UpdateItemRoute.fullPath} params={{ item_id: props.row.original.item_id }} state={props.row.original} search={{ page, limit }} className={buttonVariants()}>
-            <Edit className="size-4" />
+            <Edit className="size-3.5 md:size-4" />
           </Link>
         </div >
       ),
@@ -100,8 +100,8 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-5">
-        <div className="bg-white p-4 rounded-xl flex justify-end">
+      <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4">
           <searchForm.Field
             name="search"
             listeners={{ onChange: ({ value }) => setValue(value) }}

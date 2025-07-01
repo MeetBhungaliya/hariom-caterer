@@ -174,10 +174,10 @@ function RouteComponent() {
   if (orderItemsList.isError) return null;
 
   return (
-    <div className="h-full flex flex-col gap-y-6 overflow-hidden">
-      <div className="bg-white p-4 rounded-xl flex items-center justify-end gap-x-4">
+    <div className="h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden">
+      <div className="bg-white p-3 md:p-4 rounded-lg md:rounded-xl flex items-center justify-end gap-x-2 md:gap-x-4">
         <Switch
-          className="size-auto w-16 h-7 [&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
+          className="size-auto w-14 md:w-16 h-6 md:h-7 [&>*:first-child]:size-4 md:[&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 md:[&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[35px] md:[&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
           checked={showPrice.value}
           onCheckedChange={showPrice.toggle}
         />
@@ -186,7 +186,7 @@ function RouteComponent() {
           children={(isDirty) => (
             <Button
               type="button"
-              className="w-full max-w-[160px] py-2 text-base bg-sky-600 text-white"
+              className="w-full max-w-[120px] md:max-w-[160px] py-2 text-sm md:text-base bg-sky-600 text-white"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -194,13 +194,13 @@ function RouteComponent() {
               }}
               disabled={!isDirty}
             >
-              Update
+              Add
             </Button>
           )}
         />
       </div>
-      <div className="h-full p-6 flex flex-col gap-y-6 bg-white rounded-xl overflow-hidden">
-        <div className="grid grid-cols-3 gap-4">
+      <div className="h-full p-3 md:p-6 flex flex-col gap-y-3 md:gap-y-6 bg-white rounded-lg md:rounded-xl overflow-y-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
           <Field
             name="client_id"
             children={(field) => (
@@ -222,34 +222,6 @@ function RouteComponent() {
             )}
           />
           <Field
-            name="package_id"
-            listeners={{
-              onChange: async (e) => {
-                const packageItem = (
-                  (await packagesOption).result.list ?? []
-                ).find((item) => item.package_id === e.value)?.package_item;
-                setFieldValue("item", packageItem);
-              },
-            }}
-            children={(field) => (
-              <ControlledSearchableSelect
-                id="package_id"
-                label="Select package"
-                field={field}
-                prefix={<Package className="size-5" />}
-                options={packagesOption}
-                searchPlaceholder="Search party"
-                prepareOption={(data) =>
-                  data.map((data) => ({
-                    value: data.package_id,
-                    label: data.name,
-                  }))
-                }
-                updateTriggerer={field.state.value || isLoading}
-              />
-            )}
-          />
-          <Field
             name="date"
             children={(field) => (
               <ControlledDatepicker
@@ -257,8 +229,65 @@ function RouteComponent() {
                 label="Select date"
                 field={field}
                 prefix={<Calendar className="size-5" />}
+                className="w-max"
+                align="start"
               />
             )}
+          />
+          <Field
+            name="time"
+            children={(field) => {
+              const errorMsg = field.state.meta.errors?.[0]?.message;
+              return (
+                <Select
+                  defaultValue={field.state.value}
+                  onValueChange={field.handleChange}
+                >
+                  <SelectTrigger
+                    icon
+                    className={cn(
+                      "py-2.5 px-3 rounded-lg relative cursor-pointer",
+                      "w-full !h-full gap-3 text-sm md:text-base justify-start font-medium",
+                      errorMsg
+                        ? "border-red-500 data-[placeholder]:text-red-500"
+                        : "data-[placeholder]:text-gray-500 border-gray-300"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "h-full absolute top-0 left-0 hidden lg:flex",
+                        "aspect-square items-center justify-center",
+                        "rounded-l-[10px] bg-sky-600 backdrop-blur-sm",
+                        "text-white dark:text-white"
+                      )}
+                    >
+                      <Timer />
+                    </div>
+
+                    <span
+                      className={cn(
+                        "truncate text-xs sm:text-sm md:text-base",
+                        "lg:ml-[3rem]",
+                        errorMsg
+                          ? "text-red-500"
+                          : field.state.value
+                            ? "text-text-1"
+                            : "text-gray-500"
+                      )}
+                    >
+                      {field.state.value ?? "Select time"}
+                    </span>
+                  </SelectTrigger>
+                  <SelectContent align="middle" className="min-w-20">
+                    {TIME_OPTIONS.map((item, key) => (
+                      <SelectItem key={key} value={item.value}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
           />
           <Field
             name="person"
@@ -285,40 +314,6 @@ function RouteComponent() {
             )}
           />
           <Field
-            name="time"
-            children={(field) => {
-              const errorMsg = field.state.meta.errors?.[0]?.message;
-              return (
-                <Select
-                  defaultValue={field.state.value}
-                  onValueChange={field.handleChange}
-                >
-                  <SelectTrigger
-                    icon
-                    className={cn(
-                      "w-full !h-full gap-3 p-0 text-sm md:text-base justify-start font-medium rounded-lg",
-                      errorMsg
-                        ? "border-red-500 data-[placeholder]:text-red-500"
-                        : "data-[placeholder]:text-gray-500 border-gray-300"
-                    )}
-                  >
-                    <div className="h-full aspect-square flex items-center justify-center rounded-l-lg bg-sky-600 text-white">
-                      <Timer />
-                    </div>
-                    <SelectValue placeholder="Select time" />
-                  </SelectTrigger>
-                  <SelectContent align="middle" className="min-w-20">
-                    {TIME_OPTIONS.map((item, key) => (
-                      <SelectItem key={key} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          />
-          <Field
             name="venue"
             children={(field) => (
               <ControlledInput
@@ -326,6 +321,57 @@ function RouteComponent() {
                 label="Venue"
                 field={field}
                 prefix={<MapPinHouse className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="package_id"
+            listeners={{
+              onChange: async (e) => {
+                if (!e.value) return setFieldValue("item", null);
+
+                const packageOptionList =
+                  (await packagesOption).result.list ?? [];
+
+                const packageItem = packageOptionList.find(
+                  (item) => item.package_id === e.value
+                );
+
+                const extraItem = {
+                  pim_id: null,
+                  name: "Extra Item",
+                  deleteAble: true,
+                };
+                setFieldValue("item", [
+                  ...(packageItem?.package_item ?? [])
+                    .map((item) =>
+                      Array.from({ length: item.quantity }).map(() => ({
+                        ...item,
+                      }))
+                    )
+                    .flat(),
+                  extraItem,
+                ]);
+                setFieldValue("selling_price", packageItem?.price);
+              },
+            }}
+            children={(field) => (
+              <ControlledSearchableSelect
+                id="package_id"
+                label="Select package"
+                field={field}
+                prefix={<Package className="size-5" />}
+                options={packagesOption}
+                searchPlaceholder="Search party"
+                prepareOption={(data) => {
+                  const options = data.map((data) => ({
+                    value: data.package_id,
+                    label: data.name,
+                  }));
+                  options.push({ value: 0.69, label: "Custom Package" });
+                  return options;
+                }}
+                updateTriggerer={field.state.value || isLoading}
               />
             )}
           />
@@ -348,7 +394,7 @@ function RouteComponent() {
             return groupWithCount && groupWithCount.length ? (
               <>
                 <Separator />
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
                   {groupWithCount.map((item, i) => {
                     return (
                       <CoastingItem
@@ -370,9 +416,9 @@ function RouteComponent() {
           }}
         </Field>
         <div className="flex items-center justify-between">
-          <div className="space-y-4">
-            <div className="flex items-center gap-x-2">
-              <Label>Pro</Label>
+          <div className="space-y-2 md:space-y-4">
+            <div className="flex items-center gap-x-1 sm:gap-x-2">
+              <Label className="text-xs sm:text-sm">Pro</Label>
               <Field
                 name="pro"
                 children={(field) => {
@@ -380,7 +426,7 @@ function RouteComponent() {
                   return (
                     <Input
                       type="number"
-                      className="w-full max-w-10 px-1 text-center"
+                      className="w-full max-w-10 px-1 text-center text-sm md:text-base"
                       value={field.state.value}
                       onChange={(e) =>
                         e.target.valueAsNumber > MAX
@@ -396,10 +442,10 @@ function RouteComponent() {
                   );
                 }}
               />
-              <span className="text-sm">Extra</span>
+              <span className="text-xs sm:text-sm">Extra</span>
             </div>
-            <div className="flex items-center gap-x-2">
-              <Label>Bom. Boys</Label>
+            <div className="flex items-center gap-x-1 sm:gap-x-2">
+              <Label className="text-xs sm:text-sm">Bom. Boys</Label>
               <Field
                 name="bom_boys"
                 children={(field) => {
@@ -407,7 +453,7 @@ function RouteComponent() {
                   return (
                     <Input
                       type="number"
-                      className="w-full max-w-10 px-1 text-center"
+                      className="w-full max-w-10 px-1 text-center text-sm md:text-base"
                       value={field.state.value}
                       onChange={(e) =>
                         e.target.valueAsNumber > MAX
@@ -423,10 +469,10 @@ function RouteComponent() {
                   );
                 }}
               />
-              <span className="text-sm">Extra</span>
+              <span className="text-xs sm:text-sm">Extra</span>
             </div>
-            <div className="flex items-center gap-x-2">
-              <Label>Packed Bottles</Label>
+            <div className="flex items-center gap-x-1 sm:gap-x-2">
+              <Label className="text-xs sm:text-sm">Packed Bottles</Label>
               <Field
                 name="packed_bottle"
                 children={(field) => {
@@ -453,7 +499,7 @@ function RouteComponent() {
                   );
                 }}
               />
-              <span className="text-sm">Extra</span>
+              <span className="text-xs sm:text-sm">Extra</span>
             </div>
           </div>
           <div className="space-y-4">

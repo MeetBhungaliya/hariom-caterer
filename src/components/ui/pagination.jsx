@@ -56,7 +56,7 @@ function PaginationLink({
       className={cn(buttonVariants({
         variant: isActive ? 'outline' : 'ghost',
         size,
-      }), 'size-10 text-[15px] text-text-1 font-medium border border-border hover:bg-sky-600 hover:text-white shadow-none', 'data-[active=true]:bg-sky-600 data-[active=true]:text-white data-[active=true]:border-sky-600', className)}
+      }), 'size-8 sm:size-10 text-[15px] text-text-1 font-medium border border-border hover:bg-sky-600 hover:text-white shadow-none', 'data-[active=true]:bg-sky-600 data-[active=true]:text-white data-[active=true]:border-sky-600', className)}
       {...props}
     />
   )
@@ -74,7 +74,7 @@ function PaginationPrevious({
       {...props}
     >
       <span className="hidden sm:block">Previous</span>
-      <ChevronLeft className="sm:hidden block" />
+      <ChevronLeft className="sm:hidden block " />
     </PaginationLink>
   )
 }
@@ -91,7 +91,7 @@ function PaginationNext({
       {...props}
     >
       <span className="hidden sm:block">Next</span>
-      <ChevronRight className="sm:hidden block" />
+      <ChevronRight className="sm:hidden block " />
     </PaginationLink>
   )
 }

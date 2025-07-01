@@ -155,7 +155,7 @@ function RouteComponent() {
       cell: (props) => {
         const category_id = props.row.original.category_id
         return (
-          <div className="flex gap-x-4 justify-end">
+          <div className="flex gap-x-2 md:gap-x-4 justify-end">
             <Button className="text-red-600 hover:border-red-600 hover:bg-red-600 hover:text-white"
               onClick={() => setUpdateItemCrockery(prev => prev.filter(data => data.crockery_id !== props.row.original.crockery_id))}
               disabled={Boolean(category_id)}
@@ -171,8 +171,8 @@ function RouteComponent() {
 
   return (
     <>
-      <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
-        <div className="bg-white p-4 rounded-xl flex justify-end gap-x-4">
+      <div className='h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden'>
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4 gap-x-4">
           <Subscribe
             selector={state => state.isDirty}
             children={isDirty => (
@@ -200,7 +200,7 @@ function RouteComponent() {
             }}
           />
         </div>
-        <div className='h-full flex flex-col gap-y-6 overflow-hidden'>
+        <div className='h-full flex flex-col gap-y-3 md:gap-y-6 overflow-hidden'>
           <div className='h-full px-1 bg-white rounded-xl overflow-hidden'>
             <ScrollArea className='h-full py-6 px-5 flex flex-col overflow-hidden'>
               <form
@@ -209,9 +209,9 @@ function RouteComponent() {
                   e.stopPropagation()
                   handleSubmit()
                 }}
-                className='h-full flex flex-col gap-y-6'
+                className='h-full flex flex-col gap-y-3 md:gap-y-6'
               >
-                <div className="grid grid-cols-2 gap-x-4 gap-y-6">
+                <div className="grid grid-cols-2 gap-x-2 md:gap-x-4 gap-y-3 md:gap-y-6">
                   <Field
                     name="category_id"
                     listeners={{
@@ -274,8 +274,8 @@ function RouteComponent() {
                     )}
                   />
                 </div>
-                <div className='grid grid-cols-2 gap-x-4'>
-                  <div ref={inputContainerRef} className='h-max flex flex-col gap-y-6'>
+                <div className='grid grid-cols-2 gap-x-2 md:gap-x-4'>
+                  <div ref={inputContainerRef} className='h-max flex flex-col gap-y-3 md:gap-y-6'>
                     <Field
                       name="price"
                       children={field => (

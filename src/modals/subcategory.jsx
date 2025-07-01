@@ -66,7 +66,7 @@ function AddEditSubcategoryModal({ modalState, data, setData }) {
       }}
     >
       <DialogContent className="sm:max-w-md p-0 gap-0">
-        <DialogHeader className="px-6 py-4 bg-bg-1 rounded-t-xl shadow">
+        <DialogHeader className="px-4 md:px-6 py-3 md:py-4 bg-bg-1 rounded-t-xl shadow">
           <DialogTitle className="text-center text-xl font-bold">
             {data ? 'Update' : 'Add'}
             &nbsp;
@@ -97,9 +97,9 @@ function AddEditSubcategoryModal({ modalState, data, setData }) {
             />
           </div>
           <div className="w-full h-[1px] shadow bg-bg-1" />
-          <DialogFooter className="px-6 py-4 gap-x-4">
+          <DialogFooter className="px-4 md:px-6 py-3 md:py-4 gap-x-4">
             <DialogClose asChild>
-              <Button type="button" variant="secondary" className="py-2 text-base border border-transparent hover:border">
+              <Button type="button" variant="secondary" className="py-2 text-sm md:text-base border border-transparent hover:border">
                 Cancel
               </Button>
             </DialogClose>
@@ -108,7 +108,7 @@ function AddEditSubcategoryModal({ modalState, data, setData }) {
               children={isDirty => (
                 <Button
                   type="submit"
-                  className="py-2 text-base bg-sky-600 text-white"
+                  className="py-2 text-sm md:text-base bg-sky-600 text-white"
                   disabled={!isDirty || addSubCategoryMutation.isPending || updateSubCategoryMutation.isPending}
                 >
                   {data ? 'Update' : 'Save'}

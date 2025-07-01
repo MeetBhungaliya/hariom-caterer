@@ -29,7 +29,7 @@ function Header() {
       url = item.url.replace(new RegExp(`${item.active}$`), '')
     }
 
-    return url === pathname
+    return url === pathname || url === `${pathname}/`
   })
 
   return (

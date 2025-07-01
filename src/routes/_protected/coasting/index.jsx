@@ -101,17 +101,17 @@ function RouteComponent() {
       {
         id: "actions",
         cell: (props) => (
-          <div className="flex gap-x-4 justify-end">
+          <div className="flex gap-x-2 md:gap-x-4 justify-end">
             {status === STATUS_OPTIONS.at(1).value ? (
               <>
                 <Button
-                  className="text-sm"
+                  className="text-xs md:text-sm"
                   onClick={() => handleAcceptOrder(props.row.original.order_id)}
                 >
                   Accept Order
                 </Button>
                 <Button
-                  className="text-sm"
+                  className="text-xs md:text-sm"
                   onClick={async () => {
                     const res = await printCrockeryMutation.mutateAsync(
                       props.row.original.order_id
@@ -124,7 +124,7 @@ function RouteComponent() {
               </>
             ) : null}
             <Button
-              className="text-sm"
+              className="text-xs md:text-sm"
               onClick={async () => {
                 const res = await printOrderMutation.mutateAsync(
                   props.row.original.order_id
@@ -135,7 +135,7 @@ function RouteComponent() {
               Print Order
             </Button>
             <Button
-              className="px-[10px]"
+              className="px-[9px] md:px-[10px]"
               onClick={() => {
                 navigate({
                   to: UpdateOrderRoute.fullPath,
@@ -144,7 +144,7 @@ function RouteComponent() {
                 });
               }}
             >
-              <Edit className="size-4" />
+              <Edit className="size-3.5 md:size-4" />
             </Button>
           </div>
         ),
@@ -159,7 +159,7 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="h-full flex flex-col gap-y-5">
+      <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
         <div className="bg-white p-4 rounded-xl flex flex-col sm:flex-row justify-end gap-2 md:gap-4">
           <searchForm.Field
             name="search"
