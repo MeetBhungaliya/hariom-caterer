@@ -64,15 +64,28 @@ function RouteComponent() {
     const packageItems = [];
 
     items.forEach((item) => {
-      item.order_item.forEach((orderItem) => {
+      if (!item.order_item || !item.order_item.length) {
         packageItems.push({
-          item_id: orderItem.item_id,
-          pim_id: orderItem.pim_id,
-          oim_id: orderItem.oim_id,
-          price: orderItem.price,
+          // item_id: orderItem.item_id,
+          pim_id:
+            item.pim_id === null && item.name === "Extra item"
+              ? 0.69
+              : item.pim_id,
+          // oim_id: orderItem.oim_id,
+          // price: orderItem.price,
           name: item.name,
         });
-      });
+      } else {
+        item.order_item.forEach((orderItem) => {
+          packageItems.push({
+            item_id: orderItem.item_id,
+            pim_id: orderItem.pim_id,
+            oim_id: orderItem.oim_id,
+            price: orderItem.price,
+            name: item.name,
+          });
+        });
+      }
     });
     setFieldValue("item", packageItems);
   }, [orderItemsList.isFetching]);
@@ -128,7 +141,10 @@ function RouteComponent() {
       const packageItem = (res.result.list ?? []).find(
         (item) => item.package_id === getFieldValue("package_id")
       );
-      setFieldValue("selling_price", (packageItem.price ?? 0) + extraItemTotal);
+      setFieldValue(
+        "selling_price",
+        (packageItem?.price ?? 0) + extraItemTotal
+      );
     });
   }, [JSON.stringify(items)]);
 
@@ -138,11 +154,27 @@ function RouteComponent() {
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
 
   async function onSubmit({ value }) {
-    const item = value.item.map((item) => ({
-      pim_id: Number(item.pim_id),
-      item_id: Number(item.item_id),
-      ...(item.oim_id ? { oim_id: Number(item.oim_id) } : {}),
-    }));
+    const item = value.item
+      .map((item) => ({
+        pim_id: Number(item.pim_id),
+        item_id: Number(item.item_id),
+        ...(item.oim_id ? { oim_id: Number(item.oim_id) } : {}),
+      }))
+      .filter((item) => item.item_id)
+      .map((item) => {
+        if (item.pim_id === 0.69) {
+          return { ...item, pim_id: null };
+        }
+        return item;
+      });
+
+    // const extraItem = value.item.find(item=> item.pim_id === 0.69)
+    // if(value?.item_id){
+    //   item.push({
+    //     pim_id: null,
+    //     item_id: extraItem.item_id,
+    //   });
+    // }
 
     const payload = {
       ...value,
@@ -363,14 +395,12 @@ function RouteComponent() {
                 prefix={<Package className="size-5" />}
                 options={packagesOption}
                 searchPlaceholder="Search party"
-                prepareOption={(data) => {
-                  const options = data.map((data) => ({
+                prepareOption={(data) =>
+                  data.map((data) => ({
                     value: data.package_id,
                     label: data.name,
-                  }));
-                  options.push({ value: 0.69, label: "Custom Package" });
-                  return options;
-                }}
+                  }))
+                }
                 updateTriggerer={field.state.value || isLoading}
               />
             )}

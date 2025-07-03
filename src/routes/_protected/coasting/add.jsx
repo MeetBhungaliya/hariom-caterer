@@ -85,7 +85,7 @@ function RouteComponent() {
       const packageItem = (res.result.list ?? []).find(
         (item) => item.package_id === getFieldValue("package_id")
       );
-      setFieldValue("selling_price", (packageItem.price ?? 0) + extraItemTotal);
+      setFieldValue("selling_price", (packageItem?.price ?? 0) + extraItemTotal);
     });
   }, [JSON.stringify(items)]);
 
