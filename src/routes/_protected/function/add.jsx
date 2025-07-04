@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Route as FunctionRoute } from "./index";
+import { getFunctionsList } from "@/api/query-option";
 
 export const Route = createFileRoute("/_protected/function/add")({
   component: RouteComponent,
@@ -125,6 +126,7 @@ function RouteComponent() {
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       queryClient.invalidateQueries({ queryKey: GET_FUNCTIONS });
+      queryClient.refetchQueries(getFunctionsList);
       onClose();
     }
   }

@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Route as FunctionRoute } from "./index";
+import { getFunctionsList } from "@/api/query-option";
 
 export const Route = createFileRoute("/_protected/function/edit")({
   component: RouteComponent,
@@ -134,9 +135,14 @@ function RouteComponent() {
       .filter((item) => !previousItems.includes(item.fdm_id))
       .filter((item) => item.date && item.function && item.person && item.rate);
 
+    const previousUpdated = value.data.filter(item => {
+      const prevItem = location.state.function_detail.find((pi) => pi.fdm_id === item.fdm_id)
+      return JSON.stringify(prevItem) !== JSON.stringify(item)
+    })
+
     const payload = {
       ...value,
-      data: filterdData,
+      data: [...previousUpdated, ...filterdData],
       deleted_fdm_ids,
       total_amount: getTotalCost().total,
     };
@@ -147,6 +153,7 @@ function RouteComponent() {
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       queryClient.invalidateQueries({ queryKey: GET_FUNCTIONS });
+      queryClient.refetchQueries(getFunctionsList);
       onClose();
     }
   }
