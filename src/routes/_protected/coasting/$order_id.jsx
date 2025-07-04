@@ -65,16 +65,15 @@ function RouteComponent() {
 
     items.forEach((item) => {
       if (!item.order_item || !item.order_item.length) {
-        packageItems.push({
-          // item_id: orderItem.item_id,
-          pim_id:
-            item.pim_id === null && item.name === "Extra item"
-              ? 0.69
-              : item.pim_id,
-          // oim_id: orderItem.oim_id,
-          // price: orderItem.price,
-          name: item.name,
-        });
+        for (let i = 0; i < item.quantity; i++) {
+          packageItems.push({
+            pim_id:
+              item.pim_id === null && item.name === "Extra item"
+                ? 0.69
+                : item.pim_id,
+            name: item.name,
+          });
+        }
       } else {
         item.order_item.forEach((orderItem) => {
           packageItems.push({
@@ -168,14 +167,6 @@ function RouteComponent() {
         return item;
       });
 
-    // const extraItem = value.item.find(item=> item.pim_id === 0.69)
-    // if(value?.item_id){
-    //   item.push({
-    //     pim_id: null,
-    //     item_id: extraItem.item_id,
-    //   });
-    // }
-
     const payload = {
       ...value,
       item,
@@ -226,7 +217,7 @@ function RouteComponent() {
               }}
               disabled={!isDirty}
             >
-              Add
+              Update
             </Button>
           )}
         />

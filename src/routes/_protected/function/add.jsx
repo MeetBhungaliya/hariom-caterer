@@ -85,12 +85,15 @@ function RouteComponent() {
       0
     );
     const total_amount =
-      toNumber(totalOfData) +
       toNumber(proTotal) +
       toNumber(bottleTotal) +
       toNumber(bomBoysTotal) +
       toNumber(decorationTotal);
-    return total_amount;
+    return {
+      total: toNumber(totalOfData) + total_amount,
+      function: totalOfData,
+      extra: total_amount,
+    };
   }, [
     JSON.stringify(data),
     proTotal,
@@ -113,7 +116,7 @@ function RouteComponent() {
     const payload = {
       ...value,
       data: filterdData,
-      total_amount: getTotalCost(),
+      total_amount: getTotalCost().total,
     };
 
     const result = await asyncResponseToaster(() =>
@@ -813,14 +816,42 @@ function RouteComponent() {
             </div>
             <div className="space-y-4">
               <Field
+                name="function_amount"
+                children={(field) => (
+                  <ControlledInput
+                    type="number"
+                    id="function_amount"
+                    label="Function Total"
+                    field={field}
+                    value={getTotalCost().function || ""}
+                    prefix={<IndianRupee className="size-5" />}
+                    disabled={true}
+                  />
+                )}
+              />
+              <Field
+                name="extra_amount"
+                children={(field) => (
+                  <ControlledInput
+                    type="number"
+                    id="extra_amount"
+                    label="Extra Total"
+                    field={field}
+                    value={getTotalCost().extra || ""}
+                    prefix={<IndianRupee className="size-5" />}
+                    disabled={true}
+                  />
+                )}
+              />
+              <Field
                 name="total_amount"
                 children={(field) => (
                   <ControlledInput
                     type="number"
                     id="total_amount"
-                    label="Total Amount"
+                    label="Final Total"
                     field={field}
-                    value={getTotalCost() || ""}
+                    value={getTotalCost().total || ""}
                     prefix={<IndianRupee className="size-5" />}
                     disabled={true}
                   />
