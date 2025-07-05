@@ -108,7 +108,8 @@ function RouteComponent() {
     defaultValues: {
       order_id: location.state.order_id,
       client_id: location.state.client_id,
-      package_id: location.state.package_id,
+      package_id:
+        location.state.package_id === 0 ? 0.69 : location.state.package_id,
       date: new Date(location.state.date),
       time: location.state.time,
       person: location.state.person,
@@ -140,10 +141,12 @@ function RouteComponent() {
       const packageItem = (res.result.list ?? []).find(
         (item) => item.package_id === getFieldValue("package_id")
       );
-      setFieldValue(
-        "selling_price",
-        (packageItem?.price ?? 0) + extraItemTotal
-      );
+      if(packageItem){
+        setFieldValue(
+          "selling_price",
+          (packageItem?.price ?? 0) + extraItemTotal
+        );
+      }
     });
   }, [JSON.stringify(items)]);
 
@@ -386,12 +389,14 @@ function RouteComponent() {
                 prefix={<Package className="size-5" />}
                 options={packagesOption}
                 searchPlaceholder="Search party"
-                prepareOption={(data) =>
-                  data.map((data) => ({
+                prepareOption={(data) => {
+                  const options = data.map((data) => ({
                     value: data.package_id,
                     label: data.name,
-                  }))
-                }
+                  }));
+                  options.push({ value: 0.69, label: "Custom Package" });
+                  return options;
+                }}
                 updateTriggerer={field.state.value || isLoading}
               />
             )}
