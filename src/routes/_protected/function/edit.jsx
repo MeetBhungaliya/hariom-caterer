@@ -117,14 +117,15 @@ function RouteComponent() {
   });
 
   async function onSubmit({ value }) {
+    const prevFunctionDetails = location.state.function_detail || []
     const deleted_fdm_ids = [];
 
     const currentItems = new Set(value.data.map((item) => item.fdm_id));
     const previousItems = Array.from(
-      new Set(location.state.function_detail.map((item) => item.fdm_id))
+      new Set(prevFunctionDetails.map((item) => item.fdm_id))
     );
 
-    location.state.function_detail.forEach((item) => {
+    prevFunctionDetails.forEach((item) => {
       if (!item.fdm_id) {
       }
       const isInValue = currentItems.has(item.fdm_id);
@@ -136,7 +137,7 @@ function RouteComponent() {
       .filter((item) => item.date && item.function && item.person && item.rate);
 
     const previousUpdated = value.data.filter(item => {
-      const prevItem = location.state.function_detail.find((pi) => pi.fdm_id === item.fdm_id)
+      const prevItem = prevFunctionDetails.find((pi) => pi.fdm_id === item.fdm_id)
       return JSON.stringify(prevItem) !== JSON.stringify(item)
     })
 
