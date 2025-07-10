@@ -1,5 +1,5 @@
+import { getFunctionsList } from "@/api/query-option";
 import { getAllPartyOption } from "@/api/select-options";
-import ControlledDatepicker from "@/components/common/controlled-datepicker";
 import { ControlledInput } from "@/components/common/controlled-input";
 import { ControlledSearchableSelect } from "@/components/common/controlled-searchable-select";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,6 @@ import {
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Route as FunctionRoute } from "./index";
-import { getFunctionsList } from "@/api/query-option";
 
 export const Route = createFileRoute("/_protected/function/add")({
   component: RouteComponent,
@@ -201,7 +200,7 @@ function RouteComponent() {
                 setFieldValue("data", [
                   ...getFieldValue("data"),
                   {
-                    data: null,
+                    date: null,
                     function: "",
                     person: "",
                     rate: "",

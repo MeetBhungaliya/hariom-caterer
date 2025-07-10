@@ -11,6 +11,7 @@ export const GET_CROCKERIES = 'getCrockery'
 export const GET_ITEM_CROCKERIES = 'getItemCrockery'
 export const ADD_CROCKERY = 'addCrockery'
 export const UPDATE_CROCKERY = 'updateCrockery'
+export const DELETE_CROCKERY = 'deleteCrockery'
 
 export const GET_CATEGORIES = 'getCategory'
 export const ADD_CATEGORY = 'addCategory'
@@ -24,6 +25,7 @@ export const GET_ITEMS = 'getItemList'
 export const GET_ITEM_DETAILS = 'getItemDetails'
 export const ADD_ITEM = 'addItem'
 export const UPDATE_ITEM = 'updateItem'
+export const DELETE_ITEM = 'deleteItem'
 
 export const GET_PACKAGES = 'getPackage'
 export const GET_PACKAGE_ITEMS = 'getPackageItem'
@@ -41,6 +43,7 @@ export const CONVERT_TO_ORDER = 'convertToOrder'
 export const GET_FUNCTIONS = 'getFunction'
 export const ADD_FUNCTION = 'addFunction'
 export const UPDATE_FUNCTION = 'updateFunction'
+export const DELETE_FUNCTION = 'deleteFunction'
 
 export const GET_LIST_OF_ITEM_OF_PACKAGE = 'getListOfItemOfPackage'
 

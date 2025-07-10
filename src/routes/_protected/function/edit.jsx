@@ -1,5 +1,5 @@
+import { getFunctionsList } from "@/api/query-option";
 import { getAllPartyOption } from "@/api/select-options";
-import ControlledDatepicker from "@/components/common/controlled-datepicker";
 import { ControlledInput } from "@/components/common/controlled-input";
 import { ControlledSearchableSelect } from "@/components/common/controlled-searchable-select";
 import { Button } from "@/components/ui/button";
@@ -17,19 +17,14 @@ import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useRouterState } from "@tanstack/react-router";
 import {
-  BadgeIndianRupee,
-  Calendar,
   IndianRupee,
   MapPinHouse,
-  NotebookPen,
   Plus,
   Trash2,
   UserRound,
-  UsersRound,
 } from "lucide-react";
 import { useCallback, useMemo } from "react";
 import { Route as FunctionRoute } from "./index";
-import { getFunctionsList } from "@/api/query-option";
 
 export const Route = createFileRoute("/_protected/function/edit")({
   component: RouteComponent,
@@ -117,13 +112,10 @@ function RouteComponent() {
   });
 
   async function onSubmit({ value }) {
-    const prevFunctionDetails = location.state.function_detail || []
+    const prevFunctionDetails = location.state.function_detail || [];
     const deleted_fdm_ids = [];
 
     const currentItems = new Set(value.data.map((item) => item.fdm_id));
-    const previousItems = Array.from(
-      new Set(prevFunctionDetails.map((item) => item.fdm_id))
-    );
 
     prevFunctionDetails.forEach((item) => {
       if (!item.fdm_id) {
@@ -132,18 +124,16 @@ function RouteComponent() {
       if (!isInValue) deleted_fdm_ids.push(item.fdm_id);
     });
 
-    const filterdData = value.data
-      .filter((item) => !previousItems.includes(item.fdm_id))
-      .filter((item) => item.date && item.function && item.person && item.rate);
-
-    const previousUpdated = value.data.filter(item => {
-      const prevItem = prevFunctionDetails.find((pi) => pi.fdm_id === item.fdm_id)
-      return JSON.stringify(prevItem) !== JSON.stringify(item)
-    })
+    const previousUpdated = value.data.filter((item) => {
+      const prevItem = prevFunctionDetails.find(
+        (pi) => pi.fdm_id === item.fdm_id
+      );
+      return JSON.stringify(prevItem) !== JSON.stringify(item);
+    });
 
     const payload = {
       ...value,
-      data: [...previousUpdated, ...filterdData],
+      data: previousUpdated,
       deleted_fdm_ids,
       total_amount: getTotalCost().total,
     };
@@ -229,7 +219,7 @@ function RouteComponent() {
                 setFieldValue("data", [
                   ...getFieldValue("data"),
                   {
-                    data: null,
+                    date: null,
                     function: "",
                     person: "",
                     rate: "",

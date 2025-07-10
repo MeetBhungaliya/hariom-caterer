@@ -111,7 +111,7 @@ function RouteComponent() {
                   Accept Order
                 </Button>
                 <Button
-                  className="text-xs md:text-sm"
+                  className="py-1.5 text-xs md:text-sm"
                   onClick={async () => {
                     const res = await printCrockeryMutation.mutateAsync(
                       props.row.original.order_id
@@ -124,7 +124,7 @@ function RouteComponent() {
               </>
             ) : null}
             <Button
-              className="text-xs md:text-sm"
+              className="py-1.5 text-xs md:text-sm"
               onClick={async () => {
                 const res = await printOrderMutation.mutateAsync(
                   props.row.original.order_id
