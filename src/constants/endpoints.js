@@ -35,6 +35,7 @@ export const UPDATE_PACKAGE_ITEM = 'updatePackageItem'
 export const UPDATE_PACKAGE = 'updatePackage'
 
 export const GET_ORDERS = 'getOrder'
+export const DELETE_ORDERS = 'deleteOrder'
 export const GET_ORDER_ITEMS = 'getOrderItems'
 export const ADD_COASTING = 'addCosting'
 export const UPDATE_COASTING = 'updateCosting'

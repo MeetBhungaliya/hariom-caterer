@@ -5,15 +5,16 @@ import ControlledDatepicker from "@/components/common/controlled-datepicker";
 import { ControlledInput } from "@/components/common/controlled-input";
 import { ControlledSearchableSelect } from "@/components/common/controlled-searchable-select";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { METHODS, pagination, TIME_OPTIONS } from "@/constants/common";
 import { GET_ORDERS, UPDATE_COASTING } from "@/constants/endpoints";
 import { useAuthStore } from "@/hooks/use-auth";
@@ -34,14 +35,10 @@ import {
   UserRound,
   Users,
 } from "lucide-react";
-import { useCallback, useEffect } from "react";
-import { Route as OrderRoute } from "./index";
-import { STATUS_OPTIONS } from "@/lib/schema/common";
-import { useBoolean } from "usehooks-ts";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import moment from "moment";
+import { useCallback, useEffect } from "react";
+import { useBoolean } from "usehooks-ts";
+import { Route as OrderRoute } from "./index";
 
 export const Route = createFileRoute("/_protected/coasting/$order_id")({
   component: RouteComponent,
@@ -141,7 +138,7 @@ function RouteComponent() {
       const packageItem = (res.result.list ?? []).find(
         (item) => item.package_id === getFieldValue("package_id")
       );
-      if(packageItem){
+      if (packageItem) {
         setFieldValue(
           "selling_price",
           (packageItem?.price ?? 0) + extraItemTotal
@@ -156,6 +153,23 @@ function RouteComponent() {
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
 
   async function onSubmit({ value }) {
+    const previousItems = [];
+    const deleted_oim_ids = [];
+    const currentItems = new Set(
+      items.map((item) => item.oim_id).filter(Boolean)
+    );
+
+    orderItemsList.data.result.items.forEach((o) => {
+      o?.order_item?.forEach((i) => previousItems.push(i.oim_id));
+    });
+
+    previousItems.forEach((oim_id) => {
+      if (!oim_id) {
+      }
+      const isInValue = currentItems.has(oim_id);
+      if (!isInValue) deleted_oim_ids.push(oim_id);
+    });
+
     const item = value.item
       .map((item) => ({
         pim_id: Number(item.pim_id),
@@ -177,6 +191,7 @@ function RouteComponent() {
       pro: value.pro ?? 0,
       bom_boys: value.bom_boys ?? 0,
       packed_bottle: value.packed_bottle ?? 0,
+      deleted_oim_ids,
     };
 
     const result = await asyncResponseToaster(() =>
