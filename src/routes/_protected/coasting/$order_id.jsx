@@ -1,21 +1,14 @@
 import { getOrderItemList, getOrdersList } from "@/api/query-option";
 import { getAllPackageOption, getAllPartyOption } from "@/api/select-options";
 import { CoastingItem } from "@/components/coasting-item";
-import ControlledDatepicker from "@/components/common/controlled-datepicker";
 import { ControlledInput } from "@/components/common/controlled-input";
 import { ControlledSearchableSelect } from "@/components/common/controlled-searchable-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { METHODS, pagination, TIME_OPTIONS } from "@/constants/common";
+import { METHODS, pagination } from "@/constants/common";
 import { GET_ORDERS, UPDATE_COASTING } from "@/constants/endpoints";
 import { useAuthStore } from "@/hooks/use-auth";
 import { fetchApi } from "@/lib/api";
@@ -371,7 +364,6 @@ function RouteComponent() {
             name="jain_counter"
             children={(field) => (
               <ControlledInput
-                type="number"
                 id="jain_counter"
                 label="Jain counter"
                 field={field}

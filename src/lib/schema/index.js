@@ -69,7 +69,8 @@ export const coastingItemSchema = z.object({
 export const addEditCoastingSchema = z.object({
   client_id: z.number({ required_error: 'Party selection is required' }),
   package_id: z.number({ required_error: 'Package selection is required' }),
-  date: z.date({ required_error: 'Date is required' }),
+  // date: z.date({ required_error: 'Date is required' }),
+  date: z.string({ required_error: 'Date is required' }).min(1, 'Date is required'),
   person: z.number({ required_error: 'Number of persons is required' }).min(1, 'At least one person must be specified'),
   jain_counter: z.number({ required_error: 'Jain counter is required' }).min(0, 'Jain counter cannot be negative'),
   time: z.string({ required_error: 'Event time is required' }).min(1, 'Please select a valid time slot'),

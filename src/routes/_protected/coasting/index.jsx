@@ -11,6 +11,8 @@ import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { paginationSchema, STATUS_OPTIONS, statusSchema } from '@/lib/schema/common'
 import { asyncResponseToaster } from '@/lib/toasts'
+import { printPDF } from '@/lib/utils'
+import DeleteModal from '@/modals/delete'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -20,8 +22,6 @@ import { useMemo, useState } from 'react'
 import { useDebounceValue } from 'usehooks-ts'
 import { Route as UpdateOrderRoute } from './$order_id'
 import { Route as AddCoastingRoute } from './add'
-import { printPDF } from '@/lib/utils'
-import DeleteModal from '@/modals/delete'
 
 export const Route = createFileRoute('/_protected/coasting/')({
   component: RouteComponent,
@@ -223,7 +223,11 @@ function RouteComponent() {
           <div className="w-full flex items-center justify-end gap-x-2 md:gap-x-4">
             <Select
               defaultValue={status}
-              onValueChange={(value) => navigate({ search: { status: value } })}
+              onValueChange={(value) => {
+                navigate({ search: { status: value } });
+                ordersList.refetch();
+                queryClient.invalidateQueries({ queryKey: value });
+              }}
             >
               <SelectTrigger
                 icon
