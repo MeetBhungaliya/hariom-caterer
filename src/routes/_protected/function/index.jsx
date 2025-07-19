@@ -21,6 +21,7 @@ import { useMemo, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
 import { Route as AddFunctionRoute } from "./add";
 import { Route as EditRoute } from "./edit";
+import NoData from "@/components/common/NoData";
 
 export const Route = createFileRoute("/_protected/function/")({
   component: RouteComponent,

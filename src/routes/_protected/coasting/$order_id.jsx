@@ -107,7 +107,7 @@ function RouteComponent() {
       client_id: location.state.client_id,
       package_id:
         location.state.package_id === 0 ? 0.69 : location.state.package_id,
-      date: new Date(location.state.date),
+      date: location.state.date,
       time: location.state.time,
       person: location.state.person,
       venue: location.state.venue,
@@ -265,6 +265,31 @@ function RouteComponent() {
           <Field
             name="date"
             children={(field) => (
+              <ControlledInput
+                id="date"
+                label="Select date"
+                field={field}
+                type="date"
+                className={!field.state.value && "text-gray-500"}
+                prefix={<Calendar className="size-5" />}
+              />
+            )}
+          />
+          <Field
+            name="time"
+            children={(field) => (
+              <ControlledInput
+                id="time"
+                label="Time"
+                field={field}
+                className={!field.state.value && "text-gray-500"}
+                prefix={<Timer className="size-5" />}
+              />
+            )}
+          />
+          {/* <Field
+            name="date"
+            children={(field) => (
               <ControlledDatepicker
                 id="date"
                 label="Select date"
@@ -329,7 +354,7 @@ function RouteComponent() {
                 </Select>
               );
             }}
-          />
+          /> */}
           <Field
             name="person"
             children={(field) => (

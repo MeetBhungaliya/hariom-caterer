@@ -184,17 +184,29 @@ function RouteComponent() {
           <Field
             name="date"
             children={(field) => (
-              <ControlledDatepicker
+              <ControlledInput
                 id="date"
                 label="Select date"
                 field={field}
+                type="date"
+                className={!field.state.value && "text-gray-500"}
                 prefix={<Calendar className="size-5" />}
-                className="w-max"
-                align="start"
               />
             )}
           />
           <Field
+            name="time"
+            children={(field) => (
+              <ControlledInput
+                id="time"
+                label="Time"
+                field={field}
+                className={!field.state.value && "text-gray-500"}
+                prefix={<Timer className="size-5" />}
+              />
+            )}
+          />
+          {/* <Field
             name="time"
             children={(field) => {
               const errorMsg = field.state.meta.errors?.[0]?.message;
@@ -248,7 +260,7 @@ function RouteComponent() {
                 </Select>
               );
             }}
-          />
+          /> */}
           <Field
             name="person"
             children={(field) => (
