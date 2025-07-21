@@ -108,20 +108,44 @@ function RouteComponent() {
       jain_counter: location.state.jain_counter,
       per_plate_cost: location.state.per_plate_cost,
       selling_price: location.state.selling_price,
-      pro: location.state.pro,
-      bom_boys: location.state.bom_boys,
-      packed_bottle: location.state.packed_bottle,
+      pro: location.state.pro || { count: 0, rate: 0, total: 0 },
+      bom_boys: location.state.bom_boys || { count: 0, rate: 0, total: 0 },
+      bottle: location.state.bottle || { count: 0, rate: 0, total: 0 },
     },
   });
 
+  const isLoading = useAuthStore((state) => state.isLoading);
   const items = useStore(store, (state) => state.values.item);
+  const proTotal = useStore(store, (state) => state.values.pro.total);
+  const bottleTotal = useStore(store, (state) => state.values.bottle.total);
+  const bomBoysTotal = useStore(
+    store,
+    (state) => state.values?.bom_boys?.total
+  );
+
+  const toNumber = (value) => (isNaN(value) ? 0 : Number(value));
 
   const getTotalCost = useCallback(() => {
-    return (items ?? []).reduce((acc, item) => acc + (item.price ?? 0), 0);
-  }, [JSON.stringify(items)]);
+    const totalOfData = (items ?? []).reduce(
+      (acc, item) => acc + (item.price ?? 0),
+      0
+    );
+    const total_amount =
+      toNumber(proTotal) + toNumber(bottleTotal) + toNumber(bomBoysTotal);
+    return {
+      total: toNumber(totalOfData) + total_amount,
+      function: totalOfData,
+      extra: total_amount,
+    };
+  }, [
+    JSON.stringify(items),
+    proTotal,
+    bottleTotal,
+    bomBoysTotal,
+  ]);
 
   useEffect(() => {
-    setFieldValue("per_plate_cost", getTotalCost());
+    setFieldValue("per_plate_cost", getTotalCost().total);
 
     const extraItemTotal = items
       ?.filter((value) => value.name === "Extra Item")
@@ -139,8 +163,6 @@ function RouteComponent() {
       }
     });
   }, [JSON.stringify(items)]);
-
-  const isLoading = useAuthStore((state) => state.isLoading);
 
   const partiesOption = queryClient.ensureQueryData(getAllPartyOption());
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
@@ -181,9 +203,6 @@ function RouteComponent() {
       ...value,
       item,
       date: moment(value.date).format("YYYY-MM-DD"),
-      pro: value.pro ?? 0,
-      bom_boys: value.bom_boys ?? 0,
-      packed_bottle: value.packed_bottle ?? 0,
       deleted_oim_ids,
     };
 
@@ -280,74 +299,6 @@ function RouteComponent() {
               />
             )}
           />
-          {/* <Field
-            name="date"
-            children={(field) => (
-              <ControlledDatepicker
-                id="date"
-                label="Select date"
-                field={field}
-                prefix={<Calendar className="size-5" />}
-                className="w-max"
-                align="start"
-              />
-            )}
-          />
-          <Field
-            name="time"
-            children={(field) => {
-              const errorMsg = field.state.meta.errors?.[0]?.message;
-              return (
-                <Select
-                  defaultValue={field.state.value}
-                  onValueChange={field.handleChange}
-                >
-                  <SelectTrigger
-                    icon
-                    className={cn(
-                      "py-2.5 px-3 rounded-lg relative cursor-pointer",
-                      "w-full !h-full gap-3 text-sm md:text-base justify-start font-medium",
-                      errorMsg
-                        ? "border-red-500 data-[placeholder]:text-red-500"
-                        : "data-[placeholder]:text-gray-500 border-gray-300"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "h-full absolute top-0 left-0 hidden lg:flex",
-                        "aspect-square items-center justify-center",
-                        "rounded-l-[10px] bg-sky-600 backdrop-blur-sm",
-                        "text-white dark:text-white"
-                      )}
-                    >
-                      <Timer />
-                    </div>
-
-                    <span
-                      className={cn(
-                        "truncate text-xs sm:text-sm md:text-base",
-                        "lg:ml-[3rem]",
-                        errorMsg
-                          ? "text-red-500"
-                          : field.state.value
-                            ? "text-text-1"
-                            : "text-gray-500"
-                      )}
-                    >
-                      {field.state.value ?? "Select time"}
-                    </span>
-                  </SelectTrigger>
-                  <SelectContent align="middle" className="min-w-20">
-                    {TIME_OPTIONS.map((item, key) => (
-                      <SelectItem key={key} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          /> */}
           <Field
             name="person"
             children={(field) => (
@@ -475,89 +426,365 @@ function RouteComponent() {
         </Field>
         <div className="flex items-center justify-between">
           <div className="space-y-2 md:space-y-4">
-            <div className="flex items-center gap-x-1 sm:gap-x-2">
-              <Label className="text-xs sm:text-sm">Pro</Label>
-              <Field
-                name="pro"
-                children={(field) => {
-                  const MAX = 999;
-                  return (
-                    <Input
-                      type="number"
-                      className="w-full max-w-10 px-1 text-center text-sm md:text-base"
-                      value={field.state.value}
-                      onChange={(e) =>
-                        e.target.valueAsNumber > MAX
-                          ? setFieldValue("pro", getFieldValue("pro"))
-                          : field.handleChange(e.target.valueAsNumber)
-                      }
-                      onKeyPress={(e) => {
-                        if (!/[0-9]/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
-                  );
-                }}
-              />
-              <span className="text-xs sm:text-sm">Extra</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-x-2">
+                <Label>Pro</Label>
+                <div className="flex items-center gap-x-2">
+                  <Field
+                    name="pro.count"
+                    children={(field) => {
+                      const MAX = 99999;
+                      return (
+                        <Input
+                          type="number"
+                          className="w-full max-w-20 px-1 text-center"
+                          value={field.state.value || ""}
+                          placeholder="Count"
+                          onChange={(e) => {
+                            if (e.target.valueAsNumber > MAX) {
+                              setFieldValue(
+                                "pro.count",
+                                getFieldValue("pro.count")
+                              );
+                            } else {
+                              field.handleChange(e.target.valueAsNumber);
+                              if (getFieldValue(`pro.rate`)) {
+                                setFieldValue(
+                                  `pro.total`,
+                                  getFieldValue(`pro.rate`) *
+                                    e.target.valueAsNumber
+                                );
+                              }
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  *
+                  <Field
+                    name="pro.rate"
+                    children={(field) => {
+                      const MAX = 100000;
+                      return (
+                        <Input
+                          type="number"
+                          className="w-full max-w-20 px-1 text-center"
+                          value={field.state.value || ""}
+                          placeholder="Rate"
+                          onChange={(e) => {
+                            if (e.target.valueAsNumber > MAX) {
+                              setFieldValue(
+                                "pro.rate",
+                                getFieldValue("pro.rate")
+                              );
+                            } else {
+                              field.handleChange(e.target.valueAsNumber);
+                              if (getFieldValue(`pro.count`)) {
+                                setFieldValue(
+                                  `pro.total`,
+                                  getFieldValue(`pro.count`) *
+                                    e.target.valueAsNumber
+                                );
+                              }
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  =
+                  <Subscribe
+                    selector={(state) => [
+                      state.values.pro.count,
+                      state.values.pro.rate,
+                    ]}
+                    children={([count, rate]) => {
+                      const total = count * rate;
+                      return (
+                        <Field
+                          name="pro.total"
+                          children={(field) => {
+                            const MAX = 100000;
+                            return (
+                              <Input
+                                type="number"
+                                className="w-full max-w-20 px-1 text-center"
+                                value={total ?? field.state.value ?? ""}
+                                placeholder="Total"
+                                disabled
+                                onChange={(e) =>
+                                  e.target.valueAsNumber > MAX
+                                    ? setFieldValue(
+                                        "pro.total",
+                                        getFieldValue("pro.total")
+                                      )
+                                    : field.handleChange(e.target.valueAsNumber)
+                                }
+                                onKeyPress={(e) => {
+                                  if (!/[0-9]/.test(e.key)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-x-1 sm:gap-x-2">
-              <Label className="text-xs sm:text-sm">Bom. Boys</Label>
-              <Field
-                name="bom_boys"
-                children={(field) => {
-                  const MAX = 999;
-                  return (
-                    <Input
-                      type="number"
-                      className="w-full max-w-10 px-1 text-center text-sm md:text-base"
-                      value={field.state.value}
-                      onChange={(e) =>
-                        e.target.valueAsNumber > MAX
-                          ? setFieldValue("bom_boys", getFieldValue("bom_boys"))
-                          : field.handleChange(e.target.valueAsNumber)
-                      }
-                      onKeyPress={(e) => {
-                        if (!/[0-9]/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
-                  );
-                }}
-              />
-              <span className="text-xs sm:text-sm">Extra</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-x-2">
+                <Label>Bottle</Label>
+                <div className="flex items-center gap-x-2">
+                  <Field
+                    name="bottle.count"
+                    children={(field) => {
+                      const MAX = 99999;
+                      return (
+                        <Input
+                          type="number"
+                          className="w-full max-w-20 px-1 text-center"
+                          value={field.state.value || ""}
+                          placeholder="Count"
+                          onChange={(e) => {
+                            if (e.target.valueAsNumber > MAX) {
+                              setFieldValue(
+                                "bottle.count",
+                                getFieldValue("bottle.count")
+                              );
+                            } else {
+                              field.handleChange(e.target.valueAsNumber);
+                              if (getFieldValue(`bottle.rate`)) {
+                                setFieldValue(
+                                  `bottle.total`,
+                                  getFieldValue(`bottle.rate`) *
+                                    e.target.valueAsNumber
+                                );
+                              }
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  *
+                  <Field
+                    name="bottle.rate"
+                    children={(field) => {
+                      const MAX = 100000;
+                      return (
+                        <Input
+                          type="number"
+                          className="w-full max-w-20 px-1 text-center"
+                          value={field.state.value || ""}
+                          placeholder="Rate"
+                          onChange={(e) => {
+                            if (e.target.valueAsNumber > MAX) {
+                              setFieldValue(
+                                "bottle.rate",
+                                getFieldValue("bottle.rate")
+                              );
+                            } else {
+                              field.handleChange(e.target.valueAsNumber);
+                              if (getFieldValue(`bottle.count`)) {
+                                setFieldValue(
+                                  `bottle.total`,
+                                  getFieldValue(`bottle.count`) *
+                                    e.target.valueAsNumber
+                                );
+                              }
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  =
+                  <Subscribe
+                    selector={(state) => [
+                      state.values.bottle.count,
+                      state.values.bottle.rate,
+                    ]}
+                    children={([count, rate]) => {
+                      const total = count * rate;
+                      return (
+                        <Field
+                          name="bottle.total"
+                          children={(field) => {
+                            const MAX = 100000;
+                            return (
+                              <Input
+                                type="number"
+                                className="w-full max-w-20 px-1 text-center"
+                                value={total ?? field.state.value ?? ""}
+                                placeholder="Total"
+                                disabled
+                                onChange={(e) =>
+                                  e.target.valueAsNumber > MAX
+                                    ? setFieldValue(
+                                        "bottle.total",
+                                        getFieldValue("bottle.total")
+                                      )
+                                    : field.handleChange(e.target.valueAsNumber)
+                                }
+                                onKeyPress={(e) => {
+                                  if (!/[0-9]/.test(e.key)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-x-1 sm:gap-x-2">
-              <Label className="text-xs sm:text-sm">Packed Bottles</Label>
-              <Field
-                name="packed_bottle"
-                children={(field) => {
-                  const MAX = 99999;
-                  return (
-                    <Input
-                      type="number"
-                      className="w-full max-w-14 px-1 text-center"
-                      value={field.state.value ?? ""}
-                      onChange={(e) =>
-                        e.target.valueAsNumber > MAX
-                          ? setFieldValue(
-                              "packed_bottle",
-                              getFieldValue("packed_bottle")
-                            )
-                          : field.handleChange(e.target.valueAsNumber)
-                      }
-                      onKeyPress={(e) => {
-                        if (!/[0-9]/.test(e.key)) {
-                          e.preventDefault();
-                        }
-                      }}
-                    />
-                  );
-                }}
-              />
-              <span className="text-xs sm:text-sm">Extra</span>
+            <div className="space-y-4">
+              <div className="flex items-center gap-x-2">
+                <Label>Bom. Boys</Label>
+                <div className="flex items-center gap-x-2">
+                  <Field
+                    name="bom_boys.count"
+                    children={(field) => {
+                      const MAX = 99999;
+                      return (
+                        <Input
+                          type="number"
+                          className="w-full max-w-20 px-1 text-center"
+                          value={field.state.value || ""}
+                          placeholder="Count"
+                          onChange={(e) => {
+                            if (e.target.valueAsNumber > MAX) {
+                              setFieldValue(
+                                "bom_boys.count",
+                                getFieldValue("bom_boys.count")
+                              );
+                            } else {
+                              field.handleChange(e.target.valueAsNumber);
+                              if (getFieldValue(`bom_boys.rate`)) {
+                                setFieldValue(
+                                  `bom_boys.total`,
+                                  getFieldValue(`bom_boys.rate`) *
+                                    e.target.valueAsNumber
+                                );
+                              }
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  *
+                  <Field
+                    name="bom_boys.rate"
+                    children={(field) => {
+                      const MAX = 100000;
+                      return (
+                        <Input
+                          type="number"
+                          className="w-full max-w-20 px-1 text-center"
+                          value={field.state.value || ""}
+                          placeholder="Rate"
+                          onChange={(e) => {
+                            if (e.target.valueAsNumber > MAX) {
+                              setFieldValue(
+                                "bom_boys.rate",
+                                getFieldValue("bom_boys.rate")
+                              );
+                            } else {
+                              field.handleChange(e.target.valueAsNumber);
+                              if (getFieldValue(`bom_boys.count`)) {
+                                setFieldValue(
+                                  `bom_boys.total`,
+                                  getFieldValue(`bom_boys.count`) *
+                                    e.target.valueAsNumber
+                                );
+                              }
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (!/[0-9]/.test(e.key)) {
+                              e.preventDefault();
+                            }
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                  =
+                  <Subscribe
+                    selector={(state) => [
+                      state.values.bom_boys.count,
+                      state.values.bom_boys.rate,
+                    ]}
+                    children={([count, rate]) => {
+                      const total = count * rate;
+                      return (
+                        <Field
+                          name="bom_boys.total"
+                          children={(field) => {
+                            const MAX = 100000;
+                            return (
+                              <Input
+                                type="number"
+                                className="w-full max-w-20 px-1 text-center"
+                                value={total ?? field.state.value ?? ""}
+                                placeholder="Total"
+                                disabled
+                                onChange={(e) =>
+                                  e.target.valueAsNumber > MAX
+                                    ? setFieldValue(
+                                        "bom_boys.total",
+                                        getFieldValue("bom_boys.total")
+                                      )
+                                    : field.handleChange(e.target.valueAsNumber)
+                                }
+                                onKeyPress={(e) => {
+                                  if (!/[0-9]/.test(e.key)) {
+                                    e.preventDefault();
+                                  }
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                      );
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div className="space-y-4">
@@ -569,7 +796,7 @@ function RouteComponent() {
                   id="per_plate_cost"
                   label="Per Plate Cost"
                   field={field}
-                  value={getTotalCost() || ""}
+                  value={getTotalCost().total || ""}
                   prefix={<IndianRupee className="size-5" />}
                   disabled={true}
                   containerClassName={cn(

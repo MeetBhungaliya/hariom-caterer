@@ -16,10 +16,12 @@ export const DELETE_CROCKERY = 'deleteCrockery'
 export const GET_CATEGORIES = 'getCategory'
 export const ADD_CATEGORY = 'addCategory'
 export const UPDATE_CATEGORY = 'updateCategory'
+export const DELETE_CATEGORY = 'deleteCategory'
 
 export const GET_SUBCATEGORIES = 'getSubCategory'
 export const ADD_SUBCATEGORY = 'addSubCategory'
 export const UPDATE_SUBCATEGORY = 'updateSubCategory'
+export const DELETE_SUBCATEGORY = 'deleteSubCategory'
 
 export const GET_ITEMS = 'getItemList'
 export const GET_ITEM_DETAILS = 'getItemDetails'
