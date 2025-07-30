@@ -1,65 +1,86 @@
-import { getOrdersList } from '@/api/query-option'
-import { IconButton } from '@/components/common/btn-with-icon'
-import { ControlledInput } from '@/components/common/controlled-input'
-import NoData from '@/components/common/NoData'
-import { Table } from '@/components/common/table'
-import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { METHODS } from '@/constants/common'
-import { CONVERT_TO_ORDER, DELETE_ORDERS, GET_ORDERS, PRINT_CROCKERY, PRINT_ORDER } from '@/constants/endpoints'
-import { useAuthStore } from '@/hooks/use-auth'
-import { fetchApi } from '@/lib/api'
-import { paginationSchema, STATUS_OPTIONS, statusSchema } from '@/lib/schema/common'
-import { asyncResponseToaster } from '@/lib/toasts'
-import { printPDF } from '@/lib/utils'
-import DeleteModal from '@/modals/delete'
-import { useForm } from '@tanstack/react-form'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { Edit, HandCoins, Search, Trash2 } from 'lucide-react'
-import moment from 'moment'
-import { useMemo, useState } from 'react'
-import { useDebounceValue } from 'usehooks-ts'
-import { Route as UpdateOrderRoute } from './$order_id'
-import { Route as AddCoastingRoute } from './add'
+import { getOrdersList } from "@/api/query-option";
+import { IconButton } from "@/components/common/btn-with-icon";
+import { ControlledInput } from "@/components/common/controlled-input";
+import NoData from "@/components/common/NoData";
+import { Table } from "@/components/common/table";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { METHODS } from "@/constants/common";
+import {
+  CONVERT_TO_ORDER,
+  DELETE_ORDERS,
+  GET_ORDERS,
+  PRINT_CROCKERY,
+  PRINT_ORDER,
+} from "@/constants/endpoints";
+import { useAuthStore } from "@/hooks/use-auth";
+import { fetchApi } from "@/lib/api";
+import {
+  paginationSchema,
+  STATUS_OPTIONS,
+  statusSchema,
+} from "@/lib/schema/common";
+import { asyncResponseToaster } from "@/lib/toasts";
+import { printPDF } from "@/lib/utils";
+import DeleteModal from "@/modals/delete";
+import { useForm } from "@tanstack/react-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { Edit, HandCoins, Search, Trash2 } from "lucide-react";
+import moment from "moment";
+import { useMemo, useState } from "react";
+import { useDebounceValue } from "usehooks-ts";
+import { Route as UpdateOrderRoute } from "./$order_id";
+import { Route as AddCoastingRoute } from "./add";
 
-export const Route = createFileRoute('/_protected/coasting/')({
+export const Route = createFileRoute("/_protected/coasting/")({
   component: RouteComponent,
-  validateSearch: search => {
-    const schema = statusSchema.merge(paginationSchema)
-    return schema.parse(search)
+  validateSearch: (search) => {
+    const schema = statusSchema.merge(paginationSchema);
+    return schema.parse(search);
   },
-})
+});
 
 function RouteComponent() {
-  const navigate = Route.useNavigate()
-  const queryClient = useQueryClient()
+  const navigate = Route.useNavigate();
+  const queryClient = useQueryClient();
 
   const [deleteOrder, setDeleteOrder] = useState({
     open: false,
     data: null,
   });
 
-  const { page, limit, status } = Route.useSearch()
+  const { page, limit, status } = Route.useSearch();
 
-  const isLoading = useAuthStore(state => state.isLoading)
+  const isLoading = useAuthStore((state) => state.isLoading);
 
-  const searchForm = useForm()
-  const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500)
+  const searchForm = useForm();
+  const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500);
 
-  const ordersList = useQuery(getOrdersList({ page, limit, search: debouncedSearchedValue, status }))
+  const ordersList = useQuery(
+    getOrdersList({ page, limit, search: debouncedSearchedValue, status })
+  );
 
   const updateOrderStatusMutation = useMutation({
-    mutationFn: async data => fetchApi({ url: CONVERT_TO_ORDER, method: METHODS.PUT, data }),
-  })
+    mutationFn: async (data) =>
+      fetchApi({ url: CONVERT_TO_ORDER, method: METHODS.PUT, data }),
+  });
 
   const printCrockeryMutation = useMutation({
-    mutationFn: async order_id => fetchApi({ url: `${PRINT_CROCKERY}?order_id=${order_id}`}),
-  })
+    mutationFn: async (order_id) =>
+      fetchApi({ url: `${PRINT_CROCKERY}?order_id=${order_id}` }),
+  });
 
   const printOrderMutation = useMutation({
-    mutationFn: async order_id => fetchApi({ url: `${PRINT_ORDER}?order_id=${order_id}`}),
-  })
+    mutationFn: async (order_id) =>
+      fetchApi({ url: `${PRINT_ORDER}?order_id=${order_id}` }),
+  });
 
   const handleAcceptOrder = async (order_id) => {
     const result = await asyncResponseToaster(() =>
@@ -71,31 +92,33 @@ function RouteComponent() {
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
       ordersList.refetch();
-      queryClient.invalidateQueries({ queryKey: GET_ORDERS });
+      queryClient.invalidateQueries({
+        queryKey: GET_ORDERS,
+      });
     }
-  }
+  };
 
   const deleteItemMutation = useMutation({
-      mutationFn: async (order_id) =>
-        fetchApi({
-          url: `${DELETE_ORDERS}?order_id=${order_id}`,
-          method: METHODS.DELETE,
-        }),
-    });
-  
-    const onDeleteOrder = async (order_id) => {
-      const result = await asyncResponseToaster(() =>
-        deleteItemMutation.mutateAsync(order_id)
-      );
-  
-      if (result.success && result.value && result.value.ResponseCode === 1) {
-        ordersList.refetch();
-        setDeleteOrder((prev) => ({ ...prev, open: false }));
-        setTimeout(() => {
-          setDeleteOrder((prev) => ({ ...prev, data: null }));
-        }, 150);
-      }
-    };
+    mutationFn: async (order_id) =>
+      fetchApi({
+        url: `${DELETE_ORDERS}?order_id=${order_id}`,
+        method: METHODS.DELETE,
+      }),
+  });
+
+  const onDeleteOrder = async (order_id) => {
+    const result = await asyncResponseToaster(() =>
+      deleteItemMutation.mutateAsync(order_id)
+    );
+
+    if (result.success && result.value && result.value.ResponseCode === 1) {
+      ordersList.refetch();
+      setDeleteOrder((prev) => ({ ...prev, open: false }));
+      setTimeout(() => {
+        setDeleteOrder((prev) => ({ ...prev, data: null }));
+      }, 150);
+    }
+  };
 
   const columns = useMemo(
     () => [
@@ -200,8 +223,7 @@ function RouteComponent() {
     [status]
   );
 
-  if (ordersList.isError)
-    return null
+  if (ordersList.isError) return null;
 
   return (
     <>
@@ -225,8 +247,7 @@ function RouteComponent() {
               defaultValue={status}
               onValueChange={(value) => {
                 navigate({ search: { status: value } });
-                ordersList.refetch();
-                queryClient.invalidateQueries({ queryKey: value });
+                setTimeout(() => ordersList.refetch(), 150);
               }}
             >
               <SelectTrigger

@@ -110,14 +110,21 @@ function RouteComponent() {
       selling_price: location.state.selling_price,
       pro: location.state.pro || { count: 0, rate: 0, total: 0 },
       bom_boys: location.state.bom_boys || { count: 0, rate: 0, total: 0 },
-      bottle: location.state.bottle || { count: 0, rate: 0, total: 0 },
+      packed_bottle: location.state.packed_bottle || {
+        count: 0,
+        rate: 0,
+        total: 0,
+      },
     },
   });
 
   const isLoading = useAuthStore((state) => state.isLoading);
   const items = useStore(store, (state) => state.values.item);
   const proTotal = useStore(store, (state) => state.values.pro.total);
-  const bottleTotal = useStore(store, (state) => state.values.bottle.total);
+  const bottleTotal = useStore(
+    store,
+    (state) => state.values.packed_bottle.total
+  );
   const bomBoysTotal = useStore(
     store,
     (state) => state.values?.bom_boys?.total
@@ -137,31 +144,26 @@ function RouteComponent() {
       function: totalOfData,
       extra: total_amount,
     };
-  }, [
-    JSON.stringify(items),
-    proTotal,
-    bottleTotal,
-    bomBoysTotal,
-  ]);
+  }, [JSON.stringify(items), proTotal, bottleTotal, bomBoysTotal]);
 
   useEffect(() => {
     setFieldValue("per_plate_cost", getTotalCost().total);
 
-    const extraItemTotal = items
-      ?.filter((value) => value.name === "Extra Item")
-      ?.reduce((acc, curr) => (acc += curr.price ?? 0), 0);
+    // const extraItemTotal = items
+    //   ?.filter((value) => value.name === "Extra Item")
+    //   ?.reduce((acc, curr) => (acc += curr.price ?? 0), 0);
 
-    packagesOption.then((res) => {
-      const packageItem = (res.result.list ?? []).find(
-        (item) => item.package_id === getFieldValue("package_id")
-      );
-      if (packageItem) {
-        setFieldValue(
-          "selling_price",
-          (packageItem?.price ?? 0) + extraItemTotal
-        );
-      }
-    });
+    // packagesOption.then((res) => {
+    //   const packageItem = (res.result.list ?? []).find(
+    //     (item) => item.package_id === getFieldValue("package_id")
+    //   );
+    //   if (packageItem) {
+    //     setFieldValue(
+    //       "selling_price",
+    //       (packageItem?.price ?? 0) + extraItemTotal
+    //     );
+    //   }
+    // });
   }, [JSON.stringify(items)]);
 
   const partiesOption = queryClient.ensureQueryData(getAllPartyOption());
@@ -204,6 +206,7 @@ function RouteComponent() {
       item,
       date: moment(value.date).format("YYYY-MM-DD"),
       deleted_oim_ids,
+      extra_cost: getTotalCost()?.extra,
     };
 
     const result = await asyncResponseToaster(() =>
@@ -361,7 +364,7 @@ function RouteComponent() {
                     .flat(),
                   extraItem,
                 ]);
-                setFieldValue("selling_price", packageItem?.price);
+                // setFieldValue("selling_price", packageItem?.price);
               },
             }}
             children={(field) => (
@@ -551,7 +554,7 @@ function RouteComponent() {
                 <Label>Bottle</Label>
                 <div className="flex items-center gap-x-2">
                   <Field
-                    name="bottle.count"
+                    name="packed_bottle.count"
                     children={(field) => {
                       const MAX = 99999;
                       return (
@@ -563,15 +566,15 @@ function RouteComponent() {
                           onChange={(e) => {
                             if (e.target.valueAsNumber > MAX) {
                               setFieldValue(
-                                "bottle.count",
-                                getFieldValue("bottle.count")
+                                "packed_bottle.count",
+                                getFieldValue("packed_bottle.count")
                               );
                             } else {
                               field.handleChange(e.target.valueAsNumber);
-                              if (getFieldValue(`bottle.rate`)) {
+                              if (getFieldValue(`packed_bottle.rate`)) {
                                 setFieldValue(
-                                  `bottle.total`,
-                                  getFieldValue(`bottle.rate`) *
+                                  `packed_bottle.total`,
+                                  getFieldValue(`packed_bottle.rate`) *
                                     e.target.valueAsNumber
                                 );
                               }
@@ -588,7 +591,7 @@ function RouteComponent() {
                   />
                   *
                   <Field
-                    name="bottle.rate"
+                    name="packed_bottle.rate"
                     children={(field) => {
                       const MAX = 100000;
                       return (
@@ -600,15 +603,15 @@ function RouteComponent() {
                           onChange={(e) => {
                             if (e.target.valueAsNumber > MAX) {
                               setFieldValue(
-                                "bottle.rate",
-                                getFieldValue("bottle.rate")
+                                "packed_bottle.rate",
+                                getFieldValue("packed_bottle.rate")
                               );
                             } else {
                               field.handleChange(e.target.valueAsNumber);
-                              if (getFieldValue(`bottle.count`)) {
+                              if (getFieldValue(`packed_bottle.count`)) {
                                 setFieldValue(
-                                  `bottle.total`,
-                                  getFieldValue(`bottle.count`) *
+                                  `packed_bottle.total`,
+                                  getFieldValue(`packed_bottle.count`) *
                                     e.target.valueAsNumber
                                 );
                               }
@@ -626,14 +629,14 @@ function RouteComponent() {
                   =
                   <Subscribe
                     selector={(state) => [
-                      state.values.bottle.count,
-                      state.values.bottle.rate,
+                      state.values.packed_bottle.count,
+                      state.values.packed_bottle.rate,
                     ]}
                     children={([count, rate]) => {
                       const total = count * rate;
                       return (
                         <Field
-                          name="bottle.total"
+                          name="packed_bottle.total"
                           children={(field) => {
                             const MAX = 100000;
                             return (
@@ -646,8 +649,8 @@ function RouteComponent() {
                                 onChange={(e) =>
                                   e.target.valueAsNumber > MAX
                                     ? setFieldValue(
-                                        "bottle.total",
-                                        getFieldValue("bottle.total")
+                                        "packed_bottle.total",
+                                        getFieldValue("packed_bottle.total")
                                       )
                                     : field.handleChange(e.target.valueAsNumber)
                                 }
@@ -788,6 +791,20 @@ function RouteComponent() {
             </div>
           </div>
           <div className="space-y-4">
+            <Field
+              name="extra_amount"
+              children={(field) => (
+                <ControlledInput
+                  type="number"
+                  id="extra_amount"
+                  label="Extra Total"
+                  field={field}
+                  value={getTotalCost().extra || ""}
+                  prefix={<IndianRupee className="size-5" />}
+                  disabled={true}
+                />
+              )}
+            />
             <Field
               name="per_plate_cost"
               children={(field) => (
