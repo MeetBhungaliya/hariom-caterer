@@ -141,7 +141,7 @@ function RouteComponent() {
       toNumber(proTotal) + toNumber(bottleTotal) + toNumber(bomBoysTotal);
     return {
       total: toNumber(totalOfData) + total_amount,
-      function: totalOfData,
+      package_total: totalOfData,
       extra: total_amount,
     };
   }, [JSON.stringify(items), proTotal, bottleTotal, bomBoysTotal]);
@@ -813,7 +813,7 @@ function RouteComponent() {
                   id="per_plate_cost"
                   label="Per Plate Cost"
                   field={field}
-                  value={getTotalCost().total || ""}
+                  value={getTotalCost().package_total || ""}
                   prefix={<IndianRupee className="size-5" />}
                   disabled={true}
                   containerClassName={cn(
