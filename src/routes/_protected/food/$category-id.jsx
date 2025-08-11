@@ -95,7 +95,7 @@ function RouteComponent() {
                   open: true,
                   data: {
                     name: props.row.original.name,
-                    category_id: props.row.original.category_id,
+                    scm_id: props.row.original.scm_id,
                   },
                 })
               }
@@ -162,7 +162,7 @@ function RouteComponent() {
         name="Subcategory"
         title={deleteCategory?.data?.name}
         onClose={() => setDeleteCategory({ open: false, data: null })}
-        onSucess={() => onCategoryItem(deleteCategory.data.category_id)}
+        onSucess={() => onCategoryItem(deleteCategory.data.scm_id)}
         isLoading={deleteCategoryMutation.isPending}
       />
     </>
