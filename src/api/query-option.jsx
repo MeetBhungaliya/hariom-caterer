@@ -66,9 +66,9 @@ export function getSubCategoryList({ page, limit, search, category_id }) {
   });
 }
 
-export function getItemList({ page, limit, search, category_id }) {
+export function getItemList({ page, limit, search }) {
   return queryOptions({
-    queryKey: [GET_ITEMS, page, limit, search, category_id],
+    queryKey: [GET_ITEMS, page, limit, search],
     queryFn: async () =>
       fetchApi({
         url: `${GET_ITEMS}?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}`,
@@ -83,6 +83,22 @@ export function getItemDetails({ item_id }) {
     queryFn: async () =>
       fetchApi({ url: `${GET_ITEM_DETAILS}?item_id=${item_id}` }),
     placeholderData: { result: { crockery: [] } },
+  });
+}
+
+export function getItemsBySubcategory({
+  page = 1,
+  limit = 10000,
+  search,
+  scm_id,
+}) {
+  return queryOptions({
+    queryKey: [GET_ITEMS, page, limit, search, scm_id],
+    queryFn: async () =>
+      fetchApi({
+        url: `${GET_ITEMS}?page=${page}&limit=${limit}&scm_id=${scm_id}`,
+      }),
+    placeholderData: { result: { list: [], totalRecords: null } },
   });
 }
 

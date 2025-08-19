@@ -3,18 +3,20 @@ import { IconButton } from '@/components/common/btn-with-icon'
 import { ControlledInput } from '@/components/common/controlled-input'
 import NoData from '@/components/common/NoData'
 import { Table } from '@/components/common/table'
+import { SubComponent } from '@/components/sub-food-item-component'
 import { Button } from '@/components/ui/button'
 import { METHODS } from '@/constants/common'
 import { DELETE_SUBCATEGORY } from '@/constants/endpoints'
 import { useAuthStore } from '@/hooks/use-auth'
 import { fetchApi } from '@/lib/api'
 import { asyncResponseToaster } from '@/lib/toasts'
+import { cn } from '@/lib/utils'
 import DeleteModal from '@/modals/delete'
 import AddEditSubcategoryModal from '@/modals/subcategory'
 import { useForm } from '@tanstack/react-form'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { ClipboardList, Edit, Search, Trash2 } from 'lucide-react'
+import { ClipboardList, CornerUpRight, Edit, Search, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useBoolean, useDebounceValue } from 'usehooks-ts'
 
@@ -63,6 +65,25 @@ function RouteComponent() {
 
   const columns = useMemo(
     () => [
+      {
+        id: "view-items",
+        cell: ({ row }) => {
+          return (
+            <Button
+              className={cn(
+                "text-base bg-transparent shadow-none border",
+                row.getIsExpanded()
+                  ? "border-sky-600 hover:border-sky-600 bg-sky-600 text-white [&_svg]:-scale-y-[1]"
+                  : "text-sky-600 hover:text-white"
+              )}
+              onClick={row.getToggleExpandedHandler()}
+            >
+              <CornerUpRight className="size-3.5 md:size-4" />
+            </Button>
+          );
+        },
+        size: 60,
+      },
       {
         header: "Subcategory Id",
         cell: (props) => props.row.index + 1 + (page - 1) * limit,
@@ -144,6 +165,8 @@ function RouteComponent() {
             data={subCategoryList.data.result.list}
             isLoading={isLoading || subCategoryList.fetchStatus === "fetching"}
             totalRecords={subCategoryList.data.result.totalRecords}
+            SubComponent={SubComponent}
+            expandableRows={true}
           />
         ) : (
           <NoData />
