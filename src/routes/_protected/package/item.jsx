@@ -9,7 +9,7 @@ import { AddEditPackageItem } from "@/modals/package-item";
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Edit, PackagePlus, Search, Trash2 } from "lucide-react";
+import { Edit, PackagePlus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
 
