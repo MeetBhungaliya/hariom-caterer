@@ -34,6 +34,7 @@ export const GET_PACKAGE_ITEMS = 'getPackageItem'
 export const ADD_PACKAGE = 'addPackage'
 export const ADD_PACKAGE_ITEM = 'addPackageItem'
 export const UPDATE_PACKAGE_ITEM = 'updatePackageItem'
+export const DELETE_PACKAGE_ITEM = 'deletePackageItem'
 export const UPDATE_PACKAGE = 'updatePackage'
 export const DELETE_PACKAGE = 'deletePackage'
 

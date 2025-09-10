@@ -114,7 +114,7 @@ function AddEditPackageItem({ modalState, data, setData }) {
                 <ControlledInput
                   id="name"
                   label="Package Item name"
-                  field={field}
+                  field={field} 
                   prefix={<UserPen className="size-5" />}
                 />
               )}
