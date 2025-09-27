@@ -21,6 +21,7 @@ import { Route as ProtectedItemIndexImport } from './routes/_protected/item/inde
 import { Route as ProtectedFunctionIndexImport } from './routes/_protected/function/index'
 import { Route as ProtectedFoodIndexImport } from './routes/_protected/food/index'
 import { Route as ProtectedCoastingIndexImport } from './routes/_protected/coasting/index'
+import { Route as ProtectedAttendanceIndexImport } from './routes/_protected/attendance/index'
 import { Route as ProtectedPackageItemImport } from './routes/_protected/package/item'
 import { Route as ProtectedPackageAddImport } from './routes/_protected/package/add'
 import { Route as ProtectedPackagePackageidImport } from './routes/_protected/package/$package_id'
@@ -31,6 +32,7 @@ import { Route as ProtectedFunctionAddImport } from './routes/_protected/functio
 import { Route as ProtectedFoodCategoryIdImport } from './routes/_protected/food/$category-id'
 import { Route as ProtectedCoastingAddImport } from './routes/_protected/coasting/add'
 import { Route as ProtectedCoastingOrderidImport } from './routes/_protected/coasting/$order_id'
+import { Route as ProtectedAttendanceEmployeeIndexImport } from './routes/_protected/attendance/employee/index'
 
 // Create/Update Routes
 
@@ -93,6 +95,12 @@ const ProtectedCoastingIndexRoute = ProtectedCoastingIndexImport.update({
   getParentRoute: () => ProtectedRoute,
 } as any)
 
+const ProtectedAttendanceIndexRoute = ProtectedAttendanceIndexImport.update({
+  id: '/attendance/',
+  path: '/attendance/',
+  getParentRoute: () => ProtectedRoute,
+} as any)
+
 const ProtectedPackageItemRoute = ProtectedPackageItemImport.update({
   id: '/package/item',
   path: '/package/item',
@@ -152,6 +160,13 @@ const ProtectedCoastingOrderidRoute = ProtectedCoastingOrderidImport.update({
   path: '/coasting/$order_id',
   getParentRoute: () => ProtectedRoute,
 } as any)
+
+const ProtectedAttendanceEmployeeIndexRoute =
+  ProtectedAttendanceEmployeeIndexImport.update({
+    id: '/attendance/employee/',
+    path: '/attendance/employee/',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -262,6 +277,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedPackageItemImport
       parentRoute: typeof ProtectedImport
     }
+    '/_protected/attendance/': {
+      id: '/_protected/attendance/'
+      path: '/attendance'
+      fullPath: '/attendance'
+      preLoaderRoute: typeof ProtectedAttendanceIndexImport
+      parentRoute: typeof ProtectedImport
+    }
     '/_protected/coasting/': {
       id: '/_protected/coasting/'
       path: '/coasting'
@@ -297,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedPackageIndexImport
       parentRoute: typeof ProtectedImport
     }
+    '/_protected/attendance/employee/': {
+      id: '/_protected/attendance/employee/'
+      path: '/attendance/employee'
+      fullPath: '/attendance/employee'
+      preLoaderRoute: typeof ProtectedAttendanceEmployeeIndexImport
+      parentRoute: typeof ProtectedImport
+    }
   }
 }
 
@@ -316,11 +345,13 @@ interface ProtectedRouteChildren {
   ProtectedPackagePackageidRoute: typeof ProtectedPackagePackageidRoute
   ProtectedPackageAddRoute: typeof ProtectedPackageAddRoute
   ProtectedPackageItemRoute: typeof ProtectedPackageItemRoute
+  ProtectedAttendanceIndexRoute: typeof ProtectedAttendanceIndexRoute
   ProtectedCoastingIndexRoute: typeof ProtectedCoastingIndexRoute
   ProtectedFoodIndexRoute: typeof ProtectedFoodIndexRoute
   ProtectedFunctionIndexRoute: typeof ProtectedFunctionIndexRoute
   ProtectedItemIndexRoute: typeof ProtectedItemIndexRoute
   ProtectedPackageIndexRoute: typeof ProtectedPackageIndexRoute
+  ProtectedAttendanceEmployeeIndexRoute: typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
@@ -337,11 +368,13 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedPackagePackageidRoute: ProtectedPackagePackageidRoute,
   ProtectedPackageAddRoute: ProtectedPackageAddRoute,
   ProtectedPackageItemRoute: ProtectedPackageItemRoute,
+  ProtectedAttendanceIndexRoute: ProtectedAttendanceIndexRoute,
   ProtectedCoastingIndexRoute: ProtectedCoastingIndexRoute,
   ProtectedFoodIndexRoute: ProtectedFoodIndexRoute,
   ProtectedFunctionIndexRoute: ProtectedFunctionIndexRoute,
   ProtectedItemIndexRoute: ProtectedItemIndexRoute,
   ProtectedPackageIndexRoute: ProtectedPackageIndexRoute,
+  ProtectedAttendanceEmployeeIndexRoute: ProtectedAttendanceEmployeeIndexRoute,
 }
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
@@ -364,11 +397,13 @@ export interface FileRoutesByFullPath {
   '/package/$package_id': typeof ProtectedPackagePackageidRoute
   '/package/add': typeof ProtectedPackageAddRoute
   '/package/item': typeof ProtectedPackageItemRoute
+  '/attendance': typeof ProtectedAttendanceIndexRoute
   '/coasting': typeof ProtectedCoastingIndexRoute
   '/food': typeof ProtectedFoodIndexRoute
   '/function': typeof ProtectedFunctionIndexRoute
   '/item': typeof ProtectedItemIndexRoute
   '/package': typeof ProtectedPackageIndexRoute
+  '/attendance/employee': typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -386,11 +421,13 @@ export interface FileRoutesByTo {
   '/package/$package_id': typeof ProtectedPackagePackageidRoute
   '/package/add': typeof ProtectedPackageAddRoute
   '/package/item': typeof ProtectedPackageItemRoute
+  '/attendance': typeof ProtectedAttendanceIndexRoute
   '/coasting': typeof ProtectedCoastingIndexRoute
   '/food': typeof ProtectedFoodIndexRoute
   '/function': typeof ProtectedFunctionIndexRoute
   '/item': typeof ProtectedItemIndexRoute
   '/package': typeof ProtectedPackageIndexRoute
+  '/attendance/employee': typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
 export interface FileRoutesById {
@@ -410,11 +447,13 @@ export interface FileRoutesById {
   '/_protected/package/$package_id': typeof ProtectedPackagePackageidRoute
   '/_protected/package/add': typeof ProtectedPackageAddRoute
   '/_protected/package/item': typeof ProtectedPackageItemRoute
+  '/_protected/attendance/': typeof ProtectedAttendanceIndexRoute
   '/_protected/coasting/': typeof ProtectedCoastingIndexRoute
   '/_protected/food/': typeof ProtectedFoodIndexRoute
   '/_protected/function/': typeof ProtectedFunctionIndexRoute
   '/_protected/item/': typeof ProtectedItemIndexRoute
   '/_protected/package/': typeof ProtectedPackageIndexRoute
+  '/_protected/attendance/employee/': typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -435,11 +474,13 @@ export interface FileRouteTypes {
     | '/package/$package_id'
     | '/package/add'
     | '/package/item'
+    | '/attendance'
     | '/coasting'
     | '/food'
     | '/function'
     | '/item'
     | '/package'
+    | '/attendance/employee'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -456,11 +497,13 @@ export interface FileRouteTypes {
     | '/package/$package_id'
     | '/package/add'
     | '/package/item'
+    | '/attendance'
     | '/coasting'
     | '/food'
     | '/function'
     | '/item'
     | '/package'
+    | '/attendance/employee'
   id:
     | '__root__'
     | '/_protected'
@@ -478,11 +521,13 @@ export interface FileRouteTypes {
     | '/_protected/package/$package_id'
     | '/_protected/package/add'
     | '/_protected/package/item'
+    | '/_protected/attendance/'
     | '/_protected/coasting/'
     | '/_protected/food/'
     | '/_protected/function/'
     | '/_protected/item/'
     | '/_protected/package/'
+    | '/_protected/attendance/employee/'
   fileRoutesById: FileRoutesById
 }
 
@@ -526,11 +571,13 @@ export const routeTree = rootRoute
         "/_protected/package/$package_id",
         "/_protected/package/add",
         "/_protected/package/item",
+        "/_protected/attendance/",
         "/_protected/coasting/",
         "/_protected/food/",
         "/_protected/function/",
         "/_protected/item/",
-        "/_protected/package/"
+        "/_protected/package/",
+        "/_protected/attendance/employee/"
       ]
     },
     "/(auth)/login": {
@@ -588,6 +635,10 @@ export const routeTree = rootRoute
       "filePath": "_protected/package/item.jsx",
       "parent": "/_protected"
     },
+    "/_protected/attendance/": {
+      "filePath": "_protected/attendance/index.jsx",
+      "parent": "/_protected"
+    },
     "/_protected/coasting/": {
       "filePath": "_protected/coasting/index.jsx",
       "parent": "/_protected"
@@ -606,6 +657,10 @@ export const routeTree = rootRoute
     },
     "/_protected/package/": {
       "filePath": "_protected/package/index.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/attendance/employee/": {
+      "filePath": "_protected/attendance/employee/index.jsx",
       "parent": "/_protected"
     }
   }

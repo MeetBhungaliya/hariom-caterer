@@ -88,3 +88,7 @@ export const addEditFunctionSchema = z.object({
   client_id: z.number({ required_error: 'Party selection is required' }),
   venue: z.string({ required_error: 'Venue is required' }).min(1, 'Please enter a valid venue address'),
 })
+
+export const addEditEmployeeSchema = addEditPartySchema.extend({
+  rate: z.string({ required_error: 'Rate is required' }).trim().regex(/^\d+$/, 'Rate must be a number').or(z.number())
+})

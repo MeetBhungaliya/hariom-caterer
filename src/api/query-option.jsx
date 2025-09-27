@@ -3,6 +3,7 @@ import {
   GET_CATEGORIES,
   GET_CROCKERIES,
   GET_DASHBOARD,
+  GET_EMPLOYEE,
   GET_FUNCTIONS,
   GET_ITEM_DETAILS,
   GET_ITEMS,
@@ -157,5 +158,16 @@ export function deleteItem(item_id) {
     queryKey: [item_id],
     queryFn: async () => fetchApi({ url: `${DELETE_ITEM}?item_id=${item_id}` }),
     enabled: Boolean(item_id),
+  });
+}
+
+export function getEmployeeList({ page, limit, search }) {
+  return queryOptions({
+    queryKey: [GET_EMPLOYEE, page, limit, search],
+    queryFn: async () =>
+      fetchApi({
+        url: `${GET_EMPLOYEE}?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}`,
+      }),
+    placeholderData: { result: { list: [], totalRecords: null } },
   });
 }
