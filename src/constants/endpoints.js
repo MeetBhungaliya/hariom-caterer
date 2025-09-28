@@ -59,3 +59,7 @@ export const PRINT_FUNCTION = 'printFunctionPdf'
 export const GET_EMPLOYEE = 'getEmployee'
 export const ADD_EMPLOYEE = 'addEmployee'
 export const UPDATE_EMPLOYEE = 'updateEmployee'
+
+export const GET_MONTH_WISE_SHIFTS = 'getMonthWiseShifts'
+export const ADD_ATTENDANCE = 'insertMultipleAttendance'
+export const GET_EMPLOYEE_SALARY = 'getEmployeeSalarySummary'

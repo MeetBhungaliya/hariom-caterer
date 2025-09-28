@@ -4,9 +4,11 @@ import {
   GET_CROCKERIES,
   GET_DASHBOARD,
   GET_EMPLOYEE,
+  GET_EMPLOYEE_SALARY,
   GET_FUNCTIONS,
   GET_ITEM_DETAILS,
   GET_ITEMS,
+  GET_MONTH_WISE_SHIFTS,
   GET_ORDER_ITEMS,
   GET_ORDERS,
   GET_PACKAGE_ITEMS,
@@ -169,5 +171,45 @@ export function getEmployeeList({ page, limit, search }) {
         url: `${GET_EMPLOYEE}?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}`,
       }),
     placeholderData: { result: { list: [], totalRecords: null } },
+  });
+}
+
+export function getMonthWiseShiftsList({
+  month,
+  year,
+  paginate = false,
+  search,
+}) {
+  return queryOptions({
+    queryKey: [GET_MONTH_WISE_SHIFTS, month, year, paginate, search],
+    queryFn: async () =>
+      fetchApi({
+        url: `${GET_MONTH_WISE_SHIFTS}?month=${month}&paginate=${paginate}&year=${year}&${search ? `&search=${search}` : ""}`,
+      }),
+    placeholderData: { result: { list: [], totalRecords: null } },
+  });
+}
+
+export function getEmployeeSalary({
+  month,
+  year,
+  paginate = false,
+  search,
+  emp_id
+}) {
+  return queryOptions({
+    queryKey: [GET_EMPLOYEE_SALARY, month, year, emp_id, paginate, search],
+    queryFn: async () =>
+      fetchApi({
+        url: `${GET_EMPLOYEE_SALARY}?month=${month}&paginate=${paginate}&year=${year}&emp_id=${emp_id}&${search ? `&search=${search}` : ""}`,
+      }),
+    placeholderData: {
+      result: {
+        employee: {},
+        attendance: {},
+        salary_calculation: {},
+        transactions: [],
+      },
+    },
   });
 }

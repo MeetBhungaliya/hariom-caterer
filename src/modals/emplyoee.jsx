@@ -40,14 +40,14 @@ function AddEditEmployee({ modalState, data, setData }) {
       result = await asyncResponseToaster(() =>
         updateEmployeeMutation.mutateAsync({
           ...value,
-          status: value?.status ? "active" : "deactive",
+          status: value?.status ? "active" : "inactive",
         })
       );
     } else {
       result = await asyncResponseToaster(() =>
         addEmployeeMutation.mutateAsync({
           ...value,
-          status: value?.status ? "active" : "deactive",
+          status: value?.status ? "active" : "inactive",
         })
       );
     }

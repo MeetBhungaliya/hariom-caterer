@@ -33,6 +33,7 @@ import { Route as ProtectedFoodCategoryIdImport } from './routes/_protected/food
 import { Route as ProtectedCoastingAddImport } from './routes/_protected/coasting/add'
 import { Route as ProtectedCoastingOrderidImport } from './routes/_protected/coasting/$order_id'
 import { Route as ProtectedAttendanceEmployeeIndexImport } from './routes/_protected/attendance/employee/index'
+import { Route as ProtectedAttendanceEmployeeEmpidImport } from './routes/_protected/attendance/employee/$emp_id'
 
 // Create/Update Routes
 
@@ -165,6 +166,13 @@ const ProtectedAttendanceEmployeeIndexRoute =
   ProtectedAttendanceEmployeeIndexImport.update({
     id: '/attendance/employee/',
     path: '/attendance/employee/',
+    getParentRoute: () => ProtectedRoute,
+  } as any)
+
+const ProtectedAttendanceEmployeeEmpidRoute =
+  ProtectedAttendanceEmployeeEmpidImport.update({
+    id: '/attendance/employee/$emp_id',
+    path: '/attendance/employee/$emp_id',
     getParentRoute: () => ProtectedRoute,
   } as any)
 
@@ -319,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedPackageIndexImport
       parentRoute: typeof ProtectedImport
     }
+    '/_protected/attendance/employee/$emp_id': {
+      id: '/_protected/attendance/employee/$emp_id'
+      path: '/attendance/employee/$emp_id'
+      fullPath: '/attendance/employee/$emp_id'
+      preLoaderRoute: typeof ProtectedAttendanceEmployeeEmpidImport
+      parentRoute: typeof ProtectedImport
+    }
     '/_protected/attendance/employee/': {
       id: '/_protected/attendance/employee/'
       path: '/attendance/employee'
@@ -351,6 +366,7 @@ interface ProtectedRouteChildren {
   ProtectedFunctionIndexRoute: typeof ProtectedFunctionIndexRoute
   ProtectedItemIndexRoute: typeof ProtectedItemIndexRoute
   ProtectedPackageIndexRoute: typeof ProtectedPackageIndexRoute
+  ProtectedAttendanceEmployeeEmpidRoute: typeof ProtectedAttendanceEmployeeEmpidRoute
   ProtectedAttendanceEmployeeIndexRoute: typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
@@ -374,6 +390,7 @@ const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedFunctionIndexRoute: ProtectedFunctionIndexRoute,
   ProtectedItemIndexRoute: ProtectedItemIndexRoute,
   ProtectedPackageIndexRoute: ProtectedPackageIndexRoute,
+  ProtectedAttendanceEmployeeEmpidRoute: ProtectedAttendanceEmployeeEmpidRoute,
   ProtectedAttendanceEmployeeIndexRoute: ProtectedAttendanceEmployeeIndexRoute,
 }
 
@@ -403,6 +420,7 @@ export interface FileRoutesByFullPath {
   '/function': typeof ProtectedFunctionIndexRoute
   '/item': typeof ProtectedItemIndexRoute
   '/package': typeof ProtectedPackageIndexRoute
+  '/attendance/employee/$emp_id': typeof ProtectedAttendanceEmployeeEmpidRoute
   '/attendance/employee': typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
@@ -427,6 +445,7 @@ export interface FileRoutesByTo {
   '/function': typeof ProtectedFunctionIndexRoute
   '/item': typeof ProtectedItemIndexRoute
   '/package': typeof ProtectedPackageIndexRoute
+  '/attendance/employee/$emp_id': typeof ProtectedAttendanceEmployeeEmpidRoute
   '/attendance/employee': typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
@@ -453,6 +472,7 @@ export interface FileRoutesById {
   '/_protected/function/': typeof ProtectedFunctionIndexRoute
   '/_protected/item/': typeof ProtectedItemIndexRoute
   '/_protected/package/': typeof ProtectedPackageIndexRoute
+  '/_protected/attendance/employee/$emp_id': typeof ProtectedAttendanceEmployeeEmpidRoute
   '/_protected/attendance/employee/': typeof ProtectedAttendanceEmployeeIndexRoute
 }
 
@@ -480,6 +500,7 @@ export interface FileRouteTypes {
     | '/function'
     | '/item'
     | '/package'
+    | '/attendance/employee/$emp_id'
     | '/attendance/employee'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -503,6 +524,7 @@ export interface FileRouteTypes {
     | '/function'
     | '/item'
     | '/package'
+    | '/attendance/employee/$emp_id'
     | '/attendance/employee'
   id:
     | '__root__'
@@ -527,6 +549,7 @@ export interface FileRouteTypes {
     | '/_protected/function/'
     | '/_protected/item/'
     | '/_protected/package/'
+    | '/_protected/attendance/employee/$emp_id'
     | '/_protected/attendance/employee/'
   fileRoutesById: FileRoutesById
 }
@@ -577,6 +600,7 @@ export const routeTree = rootRoute
         "/_protected/function/",
         "/_protected/item/",
         "/_protected/package/",
+        "/_protected/attendance/employee/$emp_id",
         "/_protected/attendance/employee/"
       ]
     },
@@ -657,6 +681,10 @@ export const routeTree = rootRoute
     },
     "/_protected/package/": {
       "filePath": "_protected/package/index.jsx",
+      "parent": "/_protected"
+    },
+    "/_protected/attendance/employee/$emp_id": {
+      "filePath": "_protected/attendance/employee/$emp_id.jsx",
       "parent": "/_protected"
     },
     "/_protected/attendance/employee/": {
