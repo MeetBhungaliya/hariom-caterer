@@ -1,4 +1,4 @@
-import { getEmployeeList } from "@/api/query-option";
+import { getEmployeeList, getMonthWiseShiftsList } from "@/api/query-option";
 import { IconButton } from "@/components/common/btn-with-icon";
 import { ControlledInput } from "@/components/common/controlled-input";
 import { Table } from "@/components/common/table";
@@ -12,13 +12,24 @@ import { CalendarDays, Edit, NotebookText, Search } from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { MONTHS, SALARY_TYPE, YEARS } from "@/constants/common";
+import AddSalary from "@/modals/add-salary";
+import { SalaryTransaction } from "@/modals/salary-transactions";
 
 export const Route = createFileRoute("/_protected/attendance/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { page, limit } = Route.useSearch();
+  const { page, limit, month, year } = Route.useSearch();
+  const navigate = Route.useNavigate();
 
   const isLoading = useAuthStore((state) => state.isLoading);
 
@@ -28,8 +39,20 @@ function RouteComponent() {
   const employeeModal = useBoolean(false);
   const [addEditEmployee, setAddEditEmployee] = useState();
 
+  const addSalaryModal = useBoolean(false);
+  const [addSalary, setAddSalary] = useState();
+
+  const transactionsModal = useBoolean(false);
+  const [transaction, setTransaction] = useState();
+
   const employeeList = useQuery(
-    getEmployeeList({ page, limit, search: debouncedSearchedValue })
+    getMonthWiseShiftsList({
+      page,
+      limit,
+      month,
+      year,
+      search: debouncedSearchedValue,
+    })
   );
 
   const columns = useMemo(
@@ -37,12 +60,74 @@ function RouteComponent() {
       {
         header: "Name",
         accessorKey: "name",
-        size: 200,
+        size: 160,
       },
       {
         header: "Rate",
         accessorKey: "rate",
-        size: 200,
+        size: 160,
+      },
+      {
+        header: "Total Shift",
+        accessorKey: "total_shifts",
+        size: 160,
+      },
+      {
+        header: "Paid",
+        accessorKey: "paid_amount",
+        cell: (props) => {
+          return (
+            <button
+              type="button"
+              onClick={() => {
+                setTransaction(props.row.original.emp_id);
+                transactionsModal.setTrue();
+              }}
+              className="px-4 text-sm cursor-pointer"
+            >
+              {props.row.original.paid_amount}
+            </button>
+          );
+        },
+        size: 160,
+      },
+      {
+        header: "Salary",
+        accessorKey: "calculated_salary",
+        size: 160,
+      },
+      {
+        header: "O/S Salary",
+        id: "outstaing_salary",
+        cell: (props) =>
+          props.row.original.calculated_salary - props.row.original.paid_amount,
+        size: 160,
+      },
+      {
+        header: "Payout",
+        id: "payout",
+        cell: (props) => {
+          return (
+            <Button
+              type="button"
+              onClick={() => {
+                setAddSalary({
+                  type: SALARY_TYPE.at(0).value,
+                  emp_id: props.row.original.emp_id,
+                  amount:
+                    props.row.original.calculated_salary -
+                    props.row.original.paid_amount,
+                  date: moment().format("YYYY-MM-DD"),
+                });
+                addSalaryModal.setTrue();
+              }}
+              className="px-4 text-sm"
+            >
+              Payout
+            </Button>
+          );
+        },
+        size: 160,
       },
       {
         id: "actions",
@@ -73,20 +158,58 @@ function RouteComponent() {
   return (
     <>
       <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
-        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-end gap-2 md:gap-4">
-          <searchForm.Field
-            name="search"
-            listeners={{ onChange: ({ value }) => setValue(value) }}
-            children={(field) => (
-              <ControlledInput
-                id="search"
-                label="Search"
-                field={field}
-                className="w-full max-w-sm"
-                prefix={<Search className="size-5" />}
-              />
-            )}
-          />
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-between gap-2 md:gap-4">
+          <div className="w-full max-w-lg flex items-end gap-x-3">
+            <searchForm.Field
+              name="search"
+              listeners={{ onChange: ({ value }) => setValue(value) }}
+              children={(field) => (
+                <ControlledInput
+                  id="search"
+                  label="Search"
+                  field={field}
+                  className="w-full max-w-sm"
+                  prefix={<Search className="size-5" />}
+                />
+              )}
+            />
+            <div className="w-full h-full flex gap-x-2">
+              <Select
+                value={month}
+                onValueChange={(value) => {
+                  navigate({ search: { page, limit, month: value, year } });
+                }}
+              >
+                <SelectTrigger icon className="w-full max-w-[240px] !h-full">
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {MONTHS.map((item, key) => (
+                    <SelectItem key={key} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select
+                value={year}
+                onValueChange={(value) => {
+                  navigate({ search: { page, limit, month, year: value } });
+                }}
+              >
+                <SelectTrigger icon className="w-full max-w-[240px] !h-full">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {YEARS().map((item, key) => (
+                    <SelectItem key={key} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           <div className="flex items-center gap-x-2">
             <Link
               to="employee"
@@ -121,6 +244,18 @@ function RouteComponent() {
         modalState={employeeModal}
         data={addEditEmployee}
         setData={setAddEditEmployee}
+      />
+
+      <AddSalary
+        modalState={addSalaryModal}
+        data={addSalary}
+        setData={setAddSalary}
+      />
+
+      <SalaryTransaction
+        modalState={transactionsModal}
+        data={transaction}
+        setData={setTransaction}
       />
     </>
   );

@@ -1,5 +1,6 @@
 import {
   DELETE_ITEM,
+  GET_ATTENDANCE,
   GET_CATEGORIES,
   GET_CROCKERIES,
   GET_DASHBOARD,
@@ -168,7 +169,7 @@ export function getEmployeeList({ page, limit, search }) {
     queryKey: [GET_EMPLOYEE, page, limit, search],
     queryFn: async () =>
       fetchApi({
-        url: `${GET_EMPLOYEE}?page=${page}&limit=${limit}${search ? `&search=${search}` : ""}`,
+        url: `${GET_EMPLOYEE}?page=${page}&limit=${limit}&${search ? `&search=${search}` : ""}`,
       }),
     placeholderData: { result: { list: [], totalRecords: null } },
   });
@@ -195,7 +196,8 @@ export function getEmployeeSalary({
   year,
   paginate = false,
   search,
-  emp_id
+  emp_id,
+  ...rest
 }) {
   return queryOptions({
     queryKey: [GET_EMPLOYEE_SALARY, month, year, emp_id, paginate, search],
@@ -211,5 +213,28 @@ export function getEmployeeSalary({
         transactions: [],
       },
     },
+    ...rest,
+  });
+}
+
+export function getAttendanceList({ start_date, end_date, paginate = false, search }) {
+  return queryOptions({
+    queryKey: [GET_ATTENDANCE, start_date, end_date, paginate, search],
+    queryFn: async () =>
+      fetchApi({
+        url: `${GET_ATTENDANCE}?start_date=${start_date}&paginate=${paginate}&end_date=${end_date}&${search ? `&search=${search}` : ""}`,
+      }),
+    placeholderData: { result: { list: [], totalRecords: null } },
+  });
+}
+
+export function getAllEmployeeList({ paginate = false, search }) {
+  return queryOptions({
+    queryKey: [GET_EMPLOYEE, paginate, search],
+    queryFn: async () =>
+      fetchApi({
+        url: `${GET_EMPLOYEE}?paginate=${paginate}&${search ? `&search=${search}` : ""}`,
+      }),
+    placeholderData: { result: { list: [], totalRecords: null } },
   });
 }

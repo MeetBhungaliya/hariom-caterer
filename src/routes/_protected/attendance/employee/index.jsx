@@ -1,17 +1,22 @@
-import { getMonthWiseShiftsList } from "@/api/query-option";
+import {
+  getAllEmployeeList,
+  getAttendanceList,
+  getEmployeeList,
+  getMonthWiseShiftsList,
+} from "@/api/query-option";
 import { ControlledInput } from "@/components/common/controlled-input";
 import NoData from "@/components/common/NoData";
 import { Table } from "@/components/common/table";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { METHODS } from "@/constants/common";
-import { ADD_ATTENDANCE } from "@/constants/endpoints";
+import { ADD_ATTENDANCE, GET_MONTH_WISE_SHIFTS } from "@/constants/endpoints";
 import { useAuthStore } from "@/hooks/use-auth";
 import { fetchApi } from "@/lib/api";
 import { asyncResponseToaster } from "@/lib/toasts";
 import { cn } from "@/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Eye, Search } from "lucide-react";
 import moment from "moment";
@@ -23,6 +28,7 @@ export const Route = createFileRoute("/_protected/attendance/employee/")({
 });
 
 function RouteComponent() {
+  const queryClient = useQueryClient();
   const { date } = Route.useSearch();
 
   const isLoading = useAuthStore((state) => state.isLoading);
@@ -33,10 +39,13 @@ function RouteComponent() {
   const [attendance, setAttendance] = useState({ date, attendances: [] });
 
   const employeeList = useQuery(
-    getMonthWiseShiftsList({
-      month: date.split("-").at(1),
-      year: date.split("-").at(0),
-      search: debouncedSearchedValue,
+    getAllEmployeeList({ search: debouncedSearchedValue })
+  );
+
+  const attendanceList = useQuery(
+    getAttendanceList({
+      start_date: date,
+      end_date: date,
     })
   );
 
@@ -46,16 +55,32 @@ function RouteComponent() {
   });
 
   useEffect(() => {
-    if (employeeList.isFetching) return;
+    if (employeeList.isFetching || attendanceList.isFetching) return;
+
+    const attendances = attendanceList.data.result.list;
+
+    const employeeWithAttendance = employeeList.data.result.list.map((data) => {
+      const preAttendance = attendances.find((d) => d.emp_id === data.emp_id);
+
+      if (!preAttendance || !preAttendance?.attendance?.length)
+        return {
+          emp_id: data.emp_id,
+          morning: false,
+          evening: false,
+        };
+
+      return {
+        emp_id: data.emp_id,
+        morning: Boolean(preAttendance.attendance.at(0)["morning"]),
+        evening: Boolean(preAttendance.attendance.at(0)["evening"]),
+      };
+    });
+
     setAttendance((prev) => ({
       ...prev,
-      attendances: employeeList.data.result.list.map((data) => ({
-        emp_id: data.emp_id,
-        morning: false,
-        evening: false,
-      })),
+      attendances: employeeWithAttendance,
     }));
-  }, [employeeList.isFetching]);
+  }, [employeeList.isFetching, attendanceList.isFetching]);
 
   const updateAttendance = (emp_id, isPresent, shift) => {
     setAttendance((prev) => ({
@@ -109,28 +134,17 @@ function RouteComponent() {
         ),
         size: 200,
       },
-      {
-        id: "actions",
-        cell: (props) => (
-          <Link
-            className={cn(buttonVariants())}
-            to={props.row.original.emp_id}
-            search={{
-              month: moment().get("month") + 1,
-              year: moment().get("year"),
-            }}
-          >
-            <Eye className="size-3.5 md:size-4" />
-          </Link>
-        ),
-        size: 112,
-      },
     ],
-    [employeeList.isFetching]
+    [
+      employeeList.isFetching,
+      attendanceList.isFetching,
+      attendance.date,
+      JSON.stringify(attendance.attendances),
+    ]
   );
 
   if (employeeList.isError) return null;
-
+  
   return (
     <>
       <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
@@ -187,15 +201,19 @@ function RouteComponent() {
           <Button
             className="px-6"
             onClick={async () => {
-             const result = await asyncResponseToaster(() =>
-               insertAttendanceMutation.mutateAsync(attendance)
-             );
+              const result = await asyncResponseToaster(() =>
+                insertAttendanceMutation.mutateAsync(attendance)
+              );
               if (
                 result.success &&
                 result.value &&
                 result.value.ResponseCode === 1
               ) {
                 employeeList.refetch();
+                attendanceList.refetch();
+                queryClient.invalidateQueries({
+                  queryKey: [GET_MONTH_WISE_SHIFTS],
+                });
               }
             }}
           >
@@ -204,13 +222,16 @@ function RouteComponent() {
         </div>
 
         {employeeList.data.result.list.length ||
+        attendanceList.data.result.list.length ||
         isLoading ||
-        employeeList.fetchStatus === "fetching" ? (
+        employeeList.fetchStatus === "fetching" ||
+        attendanceList.fetchStatus === "fetching" ? (
           <Table
             columns={columns}
             data={employeeList.data.result.list}
             isLoading={isLoading || employeeList.fetchStatus === "fetching"}
             totalRecords={employeeList.data.result.totalRecords}
+            pagination={false}
           />
         ) : (
           <NoData />

@@ -30,7 +30,7 @@ function AddEditEmployee({ modalState, data, setData }) {
   const { Field, handleSubmit, Subscribe, reset } = useForm({
     onSubmit,
     validators: { onSubmit: addEditEmployeeSchema },
-    defaultValues: data,
+    defaultValues: data ? data : { ...data, status: "active" },
   });
 
   async function onSubmit({ value }) {
@@ -82,7 +82,7 @@ function AddEditEmployee({ modalState, data, setData }) {
           </DialogTitle>
           <VisuallyHidden.Root>
             <DialogDescription>
-              add or update party information
+              add or update employee information
             </DialogDescription>
           </VisuallyHidden.Root>
         </DialogHeader>
@@ -150,8 +150,6 @@ function AddEditEmployee({ modalState, data, setData }) {
                   );
                 }}
               />
-             
-            
           </div>
           <div className="w-full h-[1px] shadow bg-bg-1" />
           <DialogFooter className="px-4 md:px-6 py-3 md:py-4 gap-x-4">

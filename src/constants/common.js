@@ -8,6 +8,7 @@ import { Route as PartyRoute } from '@/routes/_protected/party'
 import { Route as FunctionRoute } from '@/routes/_protected/function'
 import { Route as AttendanceRoute } from '@/routes/_protected/attendance'
 import { Apple, Boxes, ClipboardList, HandCoins, LayoutDashboard, NotebookText, Package, UserRound, UtensilsCrossed } from 'lucide-react'
+import moment from 'moment'
 
 export const METHODS = {
   GET: 'GET',
@@ -80,7 +81,7 @@ export function navLinks() {
       title: 'Attendance',
       url: AttendanceRoute.fullPath,
       icon: NotebookText,
-      search: pagination,
+      search: { ...pagination, month: moment().get("month") + 1, year: moment().get("year") },
     },
   ]
 }
@@ -117,3 +118,8 @@ export const YEARS = () => {
     return { value: year, label: year.toString() };
   });
 };
+
+export const SALARY_TYPE = [
+  { value: "advance", label: "Advance" },
+  { value: "payout", label: "Payout" },
+]

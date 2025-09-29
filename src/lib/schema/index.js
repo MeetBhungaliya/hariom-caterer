@@ -92,3 +92,9 @@ export const addEditFunctionSchema = z.object({
 export const addEditEmployeeSchema = addEditPartySchema.extend({
   rate: z.string({ required_error: 'Rate is required' }).trim().regex(/^\d+$/, 'Rate must be a number').or(z.number())
 })
+
+export const addSalarySchema = z.object({
+  type: z.string({ required_error: 'Type is required' }).trim().min(1, "Type is required"),
+  amount: z.string({ required_error: 'Rate is required' }).trim().regex(/^\d+$/, 'Rate must be a number').or(z.number()),
+  date: z.string({ required_error: 'Date is required' }).min(1, 'Date is required'),
+})

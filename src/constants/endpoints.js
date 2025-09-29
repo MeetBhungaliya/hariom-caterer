@@ -61,5 +61,7 @@ export const ADD_EMPLOYEE = 'addEmployee'
 export const UPDATE_EMPLOYEE = 'updateEmployee'
 
 export const GET_MONTH_WISE_SHIFTS = 'getMonthWiseShifts'
+export const GET_ATTENDANCE = 'getAttendance'
 export const ADD_ATTENDANCE = 'insertMultipleAttendance'
 export const GET_EMPLOYEE_SALARY = 'getEmployeeSalarySummary'
+export const ADD_SALARY = 'addSalary'
