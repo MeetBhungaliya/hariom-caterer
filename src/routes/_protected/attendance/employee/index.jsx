@@ -1,14 +1,18 @@
 import {
   getAllEmployeeList,
-  getAttendanceList,
-  getEmployeeList,
-  getMonthWiseShiftsList,
+  getAttendanceList
 } from "@/api/query-option";
 import { ControlledInput } from "@/components/common/controlled-input";
 import NoData from "@/components/common/NoData";
 import { Table } from "@/components/common/table";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { METHODS } from "@/constants/common";
 import { ADD_ATTENDANCE, GET_MONTH_WISE_SHIFTS } from "@/constants/endpoints";
 import { useAuthStore } from "@/hooks/use-auth";
@@ -17,8 +21,8 @@ import { asyncResponseToaster } from "@/lib/toasts";
 import { cn } from "@/lib/utils";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Eye, Search } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { CalendarDaysIcon, Search } from "lucide-react";
 import moment from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useDebounceValue } from "usehooks-ts";
@@ -30,6 +34,7 @@ export const Route = createFileRoute("/_protected/attendance/employee/")({
 function RouteComponent() {
   const queryClient = useQueryClient();
   const { date } = Route.useSearch();
+  const navigate = Route.useNavigate();
 
   const isLoading = useAuthStore((state) => state.isLoading);
 
@@ -80,7 +85,7 @@ function RouteComponent() {
       ...prev,
       attendances: employeeWithAttendance,
     }));
-  }, [employeeList.isFetching, attendanceList.isFetching]);
+  }, [employeeList.isFetching, attendanceList.isFetching, date]);
 
   const updateAttendance = (emp_id, isPresent, shift) => {
     setAttendance((prev) => ({
@@ -102,17 +107,19 @@ function RouteComponent() {
         header: "Morning",
         id: "morning",
         cell: (props) => (
-          <Checkbox
-            checked={
-              attendance.attendances.find(
-                (data) => props.row.original.emp_id === data.emp_id
-              )?.["morning"]
-            }
-            onCheckedChange={(e) =>
-              updateAttendance(props.row.original.emp_id, e, "morning")
-            }
-            className="size-5"
-          />
+          <div className="mx-5 py-2 flex items-center">
+            <Checkbox
+              checked={
+                attendance.attendances.find(
+                  (data) => props.row.original.emp_id === data.emp_id
+                )?.["morning"]
+              }
+              onCheckedChange={(e) =>
+                updateAttendance(props.row.original.emp_id, e, "morning")
+              }
+              className="size-5"
+            />
+          </div>
         ),
         size: 200,
       },
@@ -120,17 +127,19 @@ function RouteComponent() {
         header: "Evening",
         id: "evening",
         cell: (props) => (
-          <Checkbox
-            checked={
-              attendance.attendances.find(
-                (data) => props.row.original.emp_id === data.emp_id
-              )?.["evening"]
-            }
-            onCheckedChange={(e) =>
-              updateAttendance(props.row.original.emp_id, e, "evening")
-            }
-            className="size-5"
-          />
+          <div className="mx-5 py-2 flex items-center">
+            <Checkbox
+              checked={
+                attendance.attendances.find(
+                  (data) => props.row.original.emp_id === data.emp_id
+                )?.["evening"]
+              }
+              onCheckedChange={(e) =>
+                updateAttendance(props.row.original.emp_id, e, "evening")
+              }
+              className="size-5"
+            />
+          </div>
         ),
         size: 200,
       },
@@ -140,6 +149,7 @@ function RouteComponent() {
       attendanceList.isFetching,
       attendance.date,
       JSON.stringify(attendance.attendances),
+      date,
     ]
   );
 
@@ -164,7 +174,37 @@ function RouteComponent() {
               )}
             />
             <div className="flex gap-x-2">
-              <Link
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    className={cn(
+                      "w-[180px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarDaysIcon className="mr-2 size-6" />
+                    {date ? (
+                      moment(date).format("DD-MM-YYYY")
+                    ) : (
+                      <span>Pick a date</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={new Date(date)}
+                    onSelect={(date) =>
+                      navigate({
+                        search: { date: moment(date).format("YYYY-M-D") },
+                      })
+                    }
+                    initialFocus
+                    captionLayout="dropdown"
+                  />
+                </PopoverContent>
+              </Popover>
+              {/* <Link
                 search={{
                   date: moment().subtract(1, "days").format("YYYY-M-D"),
                 }}
@@ -195,7 +235,7 @@ function RouteComponent() {
                 )}
               >
                 {new Date().getDate()} - Today
-              </Link>
+              </Link> */}
             </div>
           </div>
           <Button

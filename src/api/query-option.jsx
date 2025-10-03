@@ -164,28 +164,18 @@ export function deleteItem(item_id) {
   });
 }
 
-export function getEmployeeList({ page, limit, search }) {
-  return queryOptions({
-    queryKey: [GET_EMPLOYEE, page, limit, search],
-    queryFn: async () =>
-      fetchApi({
-        url: `${GET_EMPLOYEE}?page=${page}&limit=${limit}&${search ? `&search=${search}` : ""}`,
-      }),
-    placeholderData: { result: { list: [], totalRecords: null } },
-  });
-}
-
 export function getMonthWiseShiftsList({
   month,
   year,
-  paginate = false,
+  page,
+  limit,
   search,
 }) {
   return queryOptions({
-    queryKey: [GET_MONTH_WISE_SHIFTS, month, year, paginate, search],
+    queryKey: [GET_MONTH_WISE_SHIFTS, month, year, page, limit, search],
     queryFn: async () =>
       fetchApi({
-        url: `${GET_MONTH_WISE_SHIFTS}?month=${month}&paginate=${paginate}&year=${year}&${search ? `&search=${search}` : ""}`,
+        url: `${GET_MONTH_WISE_SHIFTS}?month=${month}&page=${page}&limit=${limit}&year=${year}&${search ? `&search=${search}` : ""}`,
       }),
     placeholderData: { result: { list: [], totalRecords: null } },
   });

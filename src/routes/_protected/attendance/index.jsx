@@ -1,17 +1,8 @@
-import { getEmployeeList, getMonthWiseShiftsList } from "@/api/query-option";
+import { getMonthWiseShiftsList } from "@/api/query-option";
 import { IconButton } from "@/components/common/btn-with-icon";
 import { ControlledInput } from "@/components/common/controlled-input";
 import { Table } from "@/components/common/table";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { useAuthStore } from "@/hooks/use-auth";
-import { AddEditEmployee } from "@/modals/emplyoee";
-import { useForm } from "@tanstack/react-form";
-import { useQuery } from "@tanstack/react-query";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Edit, NotebookText, Search } from "lucide-react";
-import moment from "moment";
-import { useMemo, useState } from "react";
-import { useBoolean, useDebounceValue } from "usehooks-ts";
 import {
   Select,
   SelectContent,
@@ -20,8 +11,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MONTHS, SALARY_TYPE, YEARS } from "@/constants/common";
+import { useAuthStore } from "@/hooks/use-auth";
 import AddSalary from "@/modals/add-salary";
+import { AddEditEmployee } from "@/modals/emplyoee";
 import { SalaryTransaction } from "@/modals/salary-transactions";
+import { useForm } from "@tanstack/react-form";
+import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { CalendarDays, Edit, NotebookText, Search } from "lucide-react";
+import moment from "moment";
+import { useMemo, useState } from "react";
+import { useBoolean, useDebounceValue } from "usehooks-ts";
 
 export const Route = createFileRoute("/_protected/attendance/")({
   component: RouteComponent,
@@ -49,7 +49,7 @@ function RouteComponent() {
     getMonthWiseShiftsList({
       page,
       limit,
-      month,
+      month: month + 1,
       year,
       search: debouncedSearchedValue,
     })
@@ -176,8 +176,8 @@ function RouteComponent() {
             <div className="w-full h-full flex gap-x-2">
               <Select
                 value={month}
-                onValueChange={(value) => {
-                  navigate({ search: { page, limit, month: value, year } });
+                onValueChange={(month) => {
+                  navigate({ search: { page, limit, month, year } });
                 }}
               >
                 <SelectTrigger icon className="w-full max-w-[240px] !h-full">

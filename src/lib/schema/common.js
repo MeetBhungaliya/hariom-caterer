@@ -30,10 +30,12 @@ export const passwordSchema = z
   .min(8, { message: 'Password must be at least 8 characters' })
 
 export const phoneSchema = z
-  .number({ required_error: 'Phone number is required' })
-  .refine(val => val.toString().length === 10, {
+  .string({ required_error: 'Phone number is required' })
+  .length(10, { message: 'Phone number must be exactly 10 digits' })
+  .regex(/^\d+$/, { message: 'Phone number must only contain digits (0-9)' }).or(z.number({ required_error: 'Phone number is required' }).refine(val => val.toString().length === 10, {
     message: 'Phone number must be exactly 10 digits',
-  })
+
+  }));
 
 export const statusSchema = z.object({
   status: z.enum(STATUS_OPTIONS.map(option => option.value)).catch(STATUS_OPTIONS[0].value)

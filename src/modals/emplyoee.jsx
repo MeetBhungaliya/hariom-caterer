@@ -129,7 +129,7 @@ function AddEditEmployee({ modalState, data, setData }) {
                 />
               )}
             />
-           
+            {data?.emp_id && (
               <Field
                 name="status"
                 children={(field) => {
@@ -143,13 +143,16 @@ function AddEditEmployee({ modalState, data, setData }) {
                       </Label>
                       <Switch
                         className="size-auto w-14 md:w-16 h-6 md:h-7 [&>*:first-child]:size-4 md:[&>*:first-child]:size-5 [&>*:first-child]:data-[state=unchecked]:translate-x-1 md:[&>*:first-child]:data-[state=unchecked]:translate-x-1 [&>*:first-child]:data-[state=checked]:translate-x-[35px] md:[&>*:first-child]:data-[state=checked]:translate-x-[38px] data-[state=unchecked]:bg-gray-300 data-[state=checked]:bg-sky-600"
-                        checked={Boolean(field.state.value)}
-                        onCheckedChange={field.handleChange}
+                        checked={field.state.value === "active"}
+                        onCheckedChange={(e) =>
+                          field.handleChange(e ? "active" : "inactive")
+                        }
                       />
                     </div>
                   );
                 }}
               />
+            )}
           </div>
           <div className="w-full h-[1px] shadow bg-bg-1" />
           <DialogFooter className="px-4 md:px-6 py-3 md:py-4 gap-x-4">
