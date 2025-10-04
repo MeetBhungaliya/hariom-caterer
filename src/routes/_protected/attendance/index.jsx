@@ -158,8 +158,8 @@ function RouteComponent() {
   return (
     <>
       <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
-        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-between gap-2 md:gap-4">
-          <div className="w-full max-w-lg flex items-end gap-x-3">
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-between gap-2 md:gap-4 flex-col lg:flex-row">
+          <div className="w-full lg:max-w-lg flex items-end gap-x-3">
             <searchForm.Field
               name="search"
               listeners={{ onChange: ({ value }) => setValue(value) }}
@@ -210,7 +210,7 @@ function RouteComponent() {
               </Select>
             </div>
           </div>
-          <div className="flex items-center gap-x-2">
+          <div className="flex items-center gap-x-2 justify-end">
             <Link
               to="employee"
               search={{ date: moment().format("YYYY-M-D") }}

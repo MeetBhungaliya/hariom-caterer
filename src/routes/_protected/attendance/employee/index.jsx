@@ -159,7 +159,7 @@ function RouteComponent() {
   return (
     <>
       <div className="h-full flex flex-col gap-y-3 md:gap-y-6">
-        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-between gap-2 md:gap-4">
+        <div className="bg-white p-2 md:p-4 rounded-lg md:rounded-xl flex justify-between gap-2 md:gap-4 flex-col sm:flex-row">
           <div className="flex items-end gap-x-3">
             <searchForm.Field
               name="search"
@@ -179,11 +179,11 @@ function RouteComponent() {
                 <PopoverTrigger asChild>
                   <Button
                     className={cn(
-                      "w-[180px] justify-start text-left font-normal",
+                      "w-fit justify-center px-3 sm:py-2.5 text-left font-normal text-base",
                       !date && "text-muted-foreground"
                     )}
                   >
-                    <CalendarDaysIcon className="mr-2 size-6" />
+                    <CalendarDaysIcon className="size-5" />
                     {date ? (
                       moment(date).format("DD-MM-YYYY")
                     ) : (
@@ -206,42 +206,10 @@ function RouteComponent() {
                   />
                 </PopoverContent>
               </Popover>
-              {/* <Link
-                search={{
-                  date: moment().subtract(1, "days").format("YYYY-M-D"),
-                }}
-                className={cn(
-                  buttonVariants({
-                    className: cn(
-                      "text-sm",
-                      date === moment().subtract(1, "days").format("YYYY-M-D")
-                        ? "text-white bg-sky-600 border-sky-600"
-                        : ""
-                    ),
-                  })
-                )}
-              >
-                {new Date().getDate() - 1} - Yesterday
-              </Link>
-              <Link
-                search={{ date: moment().format("YYYY-M-D") }}
-                className={cn(
-                  buttonVariants({
-                    className: cn(
-                      "text-sm",
-                      date === moment().format("YYYY-M-D")
-                        ? "text-white bg-sky-600 border-sky-600"
-                        : ""
-                    ),
-                  })
-                )}
-              >
-                {new Date().getDate()} - Today
-              </Link> */}
             </div>
           </div>
           <Button
-            className="px-6"
+            className="w-full max-w-[100px] ml-auto px-6"
             onClick={async () => {
               const result = await asyncResponseToaster(() =>
                 insertAttendanceMutation.mutateAsync(attendance)
