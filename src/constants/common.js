@@ -110,8 +110,9 @@ export const MONTHS = [
 
 export const YEARS = () => {
   const currentYear = new Date().getFullYear();
-  const startYear = currentYear - 3;
-  const endYear = currentYear + 7;
+  const startYear = currentYear - 20;
+  // const endYear = currentYear + 7;
+  const endYear = currentYear;
 
   return Array.from({ length: endYear - startYear + 1 }, (_, i) => {
     const year = startYear + i;

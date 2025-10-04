@@ -200,7 +200,7 @@ function RouteComponent() {
                 <SelectTrigger icon className="w-full max-w-[240px] !h-full">
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="h-full max-h-[400px]">
                   {YEARS().map((item, key) => (
                     <SelectItem key={key} value={item.value}>
                       {item.label}
