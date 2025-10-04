@@ -42,6 +42,7 @@ function RouteComponent() {
   const [debouncedSearchedValue, setValue] = useDebounceValue(null, 500);
 
   const [attendance, setAttendance] = useState({ date, attendances: [] });
+  const [isDateSelector, setIsDateSelector] = useState(false)
 
   const employeeList = useQuery(
     getAllEmployeeList({ search: debouncedSearchedValue })
@@ -174,7 +175,7 @@ function RouteComponent() {
               )}
             />
             <div className="flex gap-x-2">
-              <Popover>
+              <Popover open={isDateSelector} onOpenChange={setIsDateSelector}>
                 <PopoverTrigger asChild>
                   <Button
                     className={cn(
@@ -194,11 +195,12 @@ function RouteComponent() {
                   <Calendar
                     mode="single"
                     selected={new Date(date)}
-                    onSelect={(date) =>
+                    onSelect={(date) => {
                       navigate({
                         search: { date: moment(date).format("YYYY-M-D") },
-                      })
-                    }
+                      });
+                      setIsDateSelector(false);
+                    }}
                     initialFocus
                     captionLayout="dropdown"
                   />
