@@ -13,12 +13,13 @@ import {
 import { MONTHS, SALARY_TYPE, YEARS } from "@/constants/common";
 import { useAuthStore } from "@/hooks/use-auth";
 import AddSalary from "@/modals/add-salary";
+import DeleteModal from "@/modals/delete";
 import { AddEditEmployee } from "@/modals/emplyoee";
 import { SalaryTransaction } from "@/modals/salary-transactions";
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Edit, NotebookText, Search } from "lucide-react";
+import { CalendarDays, Edit, NotebookText, Search, Trash2 } from "lucide-react";
 import moment from "moment";
 import { useMemo, useState } from "react";
 import { useBoolean, useDebounceValue } from "usehooks-ts";
@@ -41,6 +42,11 @@ function RouteComponent() {
 
   const addSalaryModal = useBoolean(false);
   const [addSalary, setAddSalary] = useState();
+
+  const [deleteEmployee, setDeleteEmployee] = useState({
+    open: false,
+    data: null,
+  });
 
   const transactionsModal = useBoolean(false);
   const [transaction, setTransaction] = useState();
@@ -132,20 +138,35 @@ function RouteComponent() {
       {
         id: "actions",
         cell: (props) => (
-          <Button
-            onClick={() => {
-              setAddEditEmployee({
-                emp_id: props.row.original.emp_id,
-                name: props.row.original.name,
-                phone: props.row.original.phone,
-                rate: props.row.original.rate,
-                status: props.row.original.status,
-              });
-              employeeModal.setTrue();
-            }}
-          >
-            <Edit className="size-3.5 md:size-4" />
-          </Button>
+          <div className="flex gap-x-2 md:gap-x-4 justify-end">
+            <Button
+              onClick={() => {
+                setAddEditEmployee({
+                  emp_id: props.row.original.emp_id,
+                  name: props.row.original.name,
+                  phone: props.row.original.phone,
+                  rate: props.row.original.rate,
+                  status: props.row.original.status,
+                });
+                employeeModal.setTrue();
+              }}
+            >
+              <Edit className="size-3.5 md:size-4" />
+            </Button>
+            <Button
+              onClick={() =>
+                setDeleteEmployee({
+                  open: true,
+                  data: {
+                    name: props.row.original.name,
+                    emp_id: props.row.original.emp_id,
+                  },
+                })
+              }
+            >
+              <Trash2 className="size-3.5 md:size-4" />
+            </Button>
+          </div>
         ),
         size: 62,
       },
@@ -256,6 +277,16 @@ function RouteComponent() {
         modalState={transactionsModal}
         data={transaction}
         setData={setTransaction}
+      />
+
+      <DeleteModal
+        state={deleteEmployee}
+        Icon={NotebookText}
+        name="Staff"
+        title={deleteEmployee?.data?.name}
+        onClose={() => setDeleteEmployee({ open: false, data: null })}
+        onSucess={() => onPackageItem(deleteEmployee.data.pim_id)}
+        isLoading={false}
       />
     </>
   );

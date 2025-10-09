@@ -212,7 +212,7 @@ function RouteComponent() {
             className="w-full max-w-[100px] ml-auto px-6"
             onClick={async () => {
               const result = await asyncResponseToaster(() =>
-                insertAttendanceMutation.mutateAsync(attendance)
+                insertAttendanceMutation.mutateAsync({ ...attendance, date })
               );
               if (
                 result.success &&
