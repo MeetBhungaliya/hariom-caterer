@@ -195,6 +195,7 @@ function RouteComponent() {
                   <Calendar
                     mode="single"
                     selected={new Date(date)}
+                    disabled={(date) => date > new Date()}
                     onSelect={(date) => {
                       navigate({
                         search: { date: moment(date).format("YYYY-M-D") },
