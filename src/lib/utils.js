@@ -40,3 +40,25 @@ export const printPDF = async (url) => {
     console.error("Error fetching or printing PDF", err);
   }
 };
+
+
+export const printHTML = async (html) => {
+  try {
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+    iframe.onload = () => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      document.body.removeChild(iframe);
+    };
+  } catch (err) {
+    console.error("Error fetching or printing HTML", err);
+  }
+};

@@ -27,7 +27,7 @@ import {
   statusSchema,
 } from "@/lib/schema/common";
 import { asyncResponseToaster } from "@/lib/toasts";
-import { printPDF } from "@/lib/utils";
+import { printHTML, printPDF } from "@/lib/utils";
 import DeleteModal from "@/modals/delete";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -185,7 +185,8 @@ function RouteComponent() {
                 const res = await printOrderMutation.mutateAsync(
                   props.row.original.order_id
                 );
-                printPDF(res.result.url);
+                printHTML(res)
+                // printPDF(res.result.url);
               }}
             >
               Print Order
