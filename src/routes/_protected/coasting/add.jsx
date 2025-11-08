@@ -14,7 +14,7 @@ import { useAuthStore } from "@/hooks/use-auth";
 import { fetchApi } from "@/lib/api";
 import { addEditCoastingSchema } from "@/lib/schema";
 import { asyncResponseToaster } from "@/lib/toasts";
-import { cn } from "@/lib/utils";
+import { cn, printHTML } from "@/lib/utils";
 import { useForm, useStore } from "@tanstack/react-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
@@ -136,6 +136,9 @@ function RouteComponent() {
     );
 
     if (result.success && result.value && result.value.ResponseCode === 1) {
+      if (result.value.result.url.original) {
+        printHTML(result.value.result.url.original);
+      }
       queryClient.invalidateQueries({ queryKey: GET_ORDERS });
       queryClient.refetchQueries(getOrdersList);
       onClose();
