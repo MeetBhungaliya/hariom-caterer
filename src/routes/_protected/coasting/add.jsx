@@ -120,9 +120,14 @@ function RouteComponent() {
     const item = value.item
       .map((item) => ({
         pim_id: item.pim_id ?? null,
-        item_id: Number(item.item_id),
+        item_id: item.item_id ? Number(item.item_id) : null,
+        ...(item.item_name
+          ? {
+              item_name: item.item_name,
+            }
+          : {}),
       }))
-      .filter((item) => item.item_id);
+      .filter((item) => (!item.item_id && !item.item_name ? false : true));
 
     const payload = {
       ...value,
