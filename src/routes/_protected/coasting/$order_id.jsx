@@ -66,16 +66,49 @@ function RouteComponent() {
         }
       } else {
         item.order_item.forEach((orderItem) => {
-          packageItems.push({
-            item_id: orderItem.item_id,
-            pim_id: orderItem.pim_id,
-            oim_id: orderItem.oim_id,
-            price: orderItem.price,
-            name: item.name,
-          });
+          if (!orderItem.item_name) {
+            packageItems.push({
+              item_id: orderItem.item_id,
+              pim_id: orderItem.pim_id,
+              oim_id: orderItem.oim_id,
+              price: orderItem.price,
+              name: item.name,
+            });
+          }
         });
       }
     });
+
+    const updatedData = items.map((category) => {
+      const names =
+        category.order_item
+          ?.map((item) => item.item_name || item.name)
+          .filter(Boolean) || [];
+
+      return {
+        ...category,
+        item_name: names,
+      };
+    });
+
+    items.forEach((category) => {
+      if (category.order_item.length) {
+        category.order_item.forEach((itm) => {
+          if (itm.item_name) {
+            packageItems.forEach((i) => {
+              if (i.pim_id === itm.pim_id) {
+                if (i.new_items) {
+                  i.new_items = i.new_items + ", " + itm.item_name;
+                } else {
+                  i.new_items = itm.item_name;
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+
     setFieldValue("item", packageItems);
   }, [orderItemsList.isFetching]);
 
@@ -189,21 +222,26 @@ function RouteComponent() {
 
     const item = value.item
       .map((item) => ({
-        pim_id: Number(item.pim_id),
+        pim_id: item.pim_id ?? null,
         item_id: Number(item.item_id),
-        ...(item.oim_id ? { oim_id: Number(item.oim_id) } : {}),
       }))
-      .filter((item) => item.item_id)
-      .map((item) => {
-        if (item.pim_id === 0.69) {
-          return { ...item, pim_id: null };
-        }
-        return item;
+      .filter((item) => item.item_id);
+
+    const new_items = [];
+    value.item.forEach((item) => {
+      if (!item.new_items) return;
+      const item_name = item.new_items.split(",");
+      item_name.forEach((item_name) => {
+        new_items.push({
+          pim_id: item.pim_id ?? null,
+          item_name: item_name.trim(),
+        });
       });
+    });
 
     const payload = {
       ...value,
-      item,
+      item: [...item, ...new_items],
       date: moment(value.date).format("YYYY-MM-DD"),
       deleted_oim_ids,
       extra_cost: getTotalCost()?.extra,
@@ -354,6 +392,7 @@ function RouteComponent() {
                   name: "Extra Item",
                   deleteAble: true,
                 };
+
                 setFieldValue("item", [
                   ...(packageItem?.package_item ?? [])
                     .map((item) =>
@@ -393,7 +432,9 @@ function RouteComponent() {
             const value = field.state.value ?? [];
 
             const groupWithCount = value.reduce((acc, item, index) => {
-              const existing = acc.find((e) => e.pim_id === item.pim_id);
+              const existing = acc.find(
+                (e) => e.pim_id === item.pim_id && item.item_id !== null
+              );
               if (existing) {
                 existing.count += 1;
               } else {

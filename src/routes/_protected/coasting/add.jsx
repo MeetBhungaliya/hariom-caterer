@@ -120,18 +120,25 @@ function RouteComponent() {
     const item = value.item
       .map((item) => ({
         pim_id: item.pim_id ?? null,
-        item_id: item.item_id ? Number(item.item_id) : null,
-        ...(item.item_name
-          ? {
-              item_name: item.item_name,
-            }
-          : {}),
+        item_id: Number(item.item_id),
       }))
-      .filter((item) => (!item.item_id && !item.item_name ? false : true));
+      .filter((item) => item.item_id);
+
+      const new_items = [];
+      value.item.forEach((item) => {
+        if (!item.new_items) return;
+        const item_name = item.new_items.split(",");
+        item_name.forEach((item_name) => {
+          new_items.push({
+            pim_id: item.pim_id ?? null,
+            item_name: item_name.trim(),
+          });
+        });
+      });
 
     const payload = {
       ...value,
-      item,
+      item: [...item, ...new_items],
       date: moment(value.date).format("YYYY-MM-DD"),
       extra_cost: getTotalCost()?.extra,
     };
@@ -376,7 +383,9 @@ function RouteComponent() {
             const value = field.state.value ?? [];
 
             const groupWithCount = value.reduce((acc, item, index) => {
-              const existing = acc.find((e) => e.pim_id === item.pim_id);
+              const existing = acc.find(
+                (e) => e.pim_id === item.pim_id && item.item_id !== null
+              );
               if (existing) {
                 existing.count += 1;
               } else {

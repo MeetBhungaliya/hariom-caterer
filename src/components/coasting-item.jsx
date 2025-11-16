@@ -11,6 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { Badge } from './ui/badge'
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
 import { Input } from './ui/input'
+import { ControlledTagInput } from './common/controlled-taginput'
 
 const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, showPrice, store }) => {
   const queryClient = useQueryClient();
@@ -72,7 +73,9 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
 
   const getGroupedItems = useMemo(() => {
     const allItems = getFieldValue("item");
-    return allItems.filter((i) => i.pim_id === item.pim_id);
+    return allItems
+      .filter((i) => i.pim_id === item.pim_id)
+      // .filter((i) => i.item_id);
   }, [isLoading, item]);
 
   const selectedItems = useMemo(() => {
@@ -138,16 +141,21 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
           </div>
           <PopoverTrigger className="w-full font-medium text-start text-sm md:text-base ml-0 text-gray-500 cursor-pointer flex justify-between overflow-hidden">
             <div className="overflow-hidden">
-              {selectedItems.items.length ? (
+              {selectedItems.items.length || item.new_items ? (
                 <ScrollArea className="w-full px-2 py-2.5">
                   <div className="flex gap-x-2">
-                    {selectedItems.items.map((l, i) => {
-                      return (
-                        <Badge key={i} variant="outline">
-                          {l}
-                        </Badge>
-                      );
-                    })}
+                    {[
+                      ...selectedItems.items,
+                      ...(item.new_items?.split(",") ?? []),
+                    ]
+                      .filter((e) => Boolean(e))
+                      .map((l, i) => {
+                        return (
+                          <Badge key={i} variant="outline">
+                            {l.trim()}
+                          </Badge>
+                        );
+                      })}
                   </div>
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
@@ -241,7 +249,15 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                                 <Button
                                   type="button"
                                   className="size-11 border-0 border-l border-border-1 rounded-l-none hover:bg-red-500 hover:border-red-500"
-                                  onClick={() => field.removeValue(item.index)}
+                                  // onClick={() => field.removeValue(item.index)}
+                                  onClick={() => {
+                                    const prevItm = getFieldValue("item");
+                                    const deletedItems = prevItm.map((itm) => ({
+                                      ...itm,
+                                      item_id: null,
+                                    }));
+                                    setFieldValue("item", deletedItems);
+                                  }}
                                   // disabled={!deleteAble}
                                 >
                                   <Trash2 className="size-5" />
@@ -255,6 +271,31 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                   }}
                 />
                 <Field
+                  name={"item_name" + item.ppm_id}
+                  listeners={{
+                    onChange: (e) => {
+                      const previousItem = getFieldValue("item");
+                      const newItems = previousItem.map((itm) => {
+                        if (itm.ppm_id === item.ppm_id) {
+                          return { ...item, new_items: e.value };
+                        }
+                        return itm;
+                      });
+                      setFieldValue("item", newItems);
+                    },
+                  }}
+                  children={(field) => (
+                    <div className="min-h-10">
+                      <ControlledTagInput
+                        className="sm:min-h-11 p-0 px-3 py-1.5 rounded-t-none border-0"
+                        inputClassName="rounded-none"
+                        label={`Add new ${item.name.toLowerCase()}`}
+                        field={field}
+                      />
+                    </div>
+                  )}
+                />
+                {/* <Field
                   key={index}
                   name={`item[${item.index}].item_name`}
                   listeners={{
@@ -281,18 +322,18 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                             value={field.state.value || ""}
                             onChange={(e) => {
                               field.handleChange(e.target.value);
-                              // const previousItem = getFieldValue("item");
-                              // const newItem = previousItem.map((itm) => {
-                              //   if (itm.ppm_id === item.ppm_id) {
-                              //     return {
-                              //       ...itm,
-                              //       price: null,
-                              //       item_name: e.target.value,
-                              //     };
-                              //   }
-                              //   return itm;
-                              // });
-                              // setFieldValue("item", newItem);
+                              const previousItem = getFieldValue("item");
+                              const newItem = previousItem.map((itm) => {
+                                if (itm.ppm_id === item.ppm_id) {
+                                  return {
+                                    ...itm,
+                                    price: null,
+                                    item_name: e.target.value,
+                                  };
+                                }
+                                return itm;
+                              });
+                              setFieldValue("item", newItem);
                             }}
                             placeholder={`Add new ${item.name.toLowerCase()}`}
                             className="p-0 border-none shadow-none text-gray placeholder:text-base text-lg font-medium rounded-none"
@@ -307,7 +348,7 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
                       </div>
                     );
                   }}
-                />
+                /> */}
               </>
             );
           })}
