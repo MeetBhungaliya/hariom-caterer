@@ -62,6 +62,7 @@ function RouteComponent() {
       pro: { count: 0, rate: 0, total: 0 },
       bom_boys: { count: 0, rate: 0, total: 0 },
       packed_bottle: { count: 0, rate: 0, total: 0 },
+      new_items: [],
     },
     validators: { onSubmit: addEditCoastingSchema },
   });
@@ -113,49 +114,52 @@ function RouteComponent() {
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
 
   async function onSubmit({ value }) {
-    if (value.package_id === 0.69) {
-      value.package_id = null;
-    }
-
-    const item = value.item
-      .map((item) => ({
-        pim_id: item.pim_id ?? null,
-        item_id: Number(item.item_id),
-      }))
-      .filter((item) => item.item_id);
-
-      const new_items = [];
-      value.item.forEach((item) => {
-        if (!item.new_items) return;
-        const item_name = item.new_items.split(",");
-        item_name.forEach((item_name) => {
-          new_items.push({
-            pim_id: item.pim_id ?? null,
-            item_name: item_name.trim(),
-          });
-        });
-      });
-
-    const payload = {
-      ...value,
-      item: [...item, ...new_items],
-      date: moment(value.date).format("YYYY-MM-DD"),
-      extra_cost: getTotalCost()?.extra,
-    };
-
-    const result = await asyncResponseToaster(() =>
-      addCoastingMutation.mutateAsync(payload)
-    );
-
-    if (result.success && result.value && result.value.ResponseCode === 1) {
-      if (result.value.result.url.original) {
-        printHTML(result.value.result.url.original);
-      }
-      queryClient.invalidateQueries({ queryKey: GET_ORDERS });
-      queryClient.refetchQueries(getOrdersList);
-      onClose();
-    }
+  if (value.package_id === 0.69) {
+    value.package_id = null;
   }
+
+  const selectedItems = (value.item ?? [])
+    .map((item) =>
+      item.item_id
+        ? {
+            pim_id: item.pim_id ?? null,
+            item_id: Number(item.item_id),
+          }
+        : null
+    )
+    .filter(Boolean);
+
+  const manualItems = (value.new_items ?? [])
+    .map((n) => ({
+      pim_id: n.pim_id ?? null,
+      item_name: (n.item_name ?? "").trim(),
+    }))
+    .filter((n) => n.item_name.length > 0);
+
+  const item = [...selectedItems, ...manualItems];
+
+  const payload = {
+    ...value,
+    item,
+    date: moment(value.date).format("YYYY-MM-DD"),
+    extra_cost: getTotalCost()?.extra,
+  };
+
+  delete payload.new_items;
+
+  const result = await asyncResponseToaster(() =>
+    addCoastingMutation.mutateAsync(payload)
+  );
+
+  if (result.success && result.value && result.value.ResponseCode === 1) {
+    if (result.value.result.url.original) {
+      printHTML(result.value.result.url.original);
+    }
+    queryClient.invalidateQueries({ queryKey: GET_ORDERS });
+    queryClient.refetchQueries(getOrdersList);
+    onClose();
+  }
+}
 
   function onClose() {
     setTimeout(() => {
@@ -237,61 +241,6 @@ function RouteComponent() {
               />
             )}
           />
-          {/* <Field
-            name="time"
-            children={(field) => {
-              const errorMsg = field.state.meta.errors?.[0]?.message;
-              return (
-                <Select
-                  defaultValue={field.state.value}
-                  onValueChange={field.handleChange}
-                >
-                  <SelectTrigger
-                    icon
-                    className={cn(
-                      "py-2.5 px-3 rounded-lg relative cursor-pointer",
-                      "w-full !h-full gap-3 text-sm md:text-base justify-start font-medium",
-                      errorMsg
-                        ? "border-red-500 data-[placeholder]:text-red-500"
-                        : "data-[placeholder]:text-gray-500 border-gray-300"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "h-full absolute top-0 left-0 hidden lg:flex",
-                        "aspect-square items-center justify-center",
-                        "rounded-l-[10px] bg-sky-600 backdrop-blur-sm",
-                        "text-white dark:text-white"
-                      )}
-                    >
-                      <Timer />
-                    </div>
-
-                    <span
-                      className={cn(
-                        "truncate text-xs sm:text-sm md:text-base",
-                        "lg:ml-[3rem]",
-                        errorMsg
-                          ? "text-red-500"
-                          : field.state.value
-                            ? "text-text-1"
-                            : "text-gray-500"
-                      )}
-                    >
-                      {field.state.value ?? "Select time"}
-                    </span>
-                  </SelectTrigger>
-                  <SelectContent align="middle" className="min-w-20">
-                    {TIME_OPTIONS.map((item, key) => (
-                      <SelectItem key={key} value={item.value}>
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          /> */}
           <Field
             name="person"
             children={(field) => (
@@ -354,7 +303,6 @@ function RouteComponent() {
                     .flat(),
                   extraItem,
                 ]);
-                // setFieldValue("selling_price", packageItem?.price);
               },
             }}
             children={(field) => (

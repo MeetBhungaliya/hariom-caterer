@@ -49,68 +49,56 @@ function RouteComponent() {
   const orderItemsList = useQuery(getOrderItemList({ order_id }));
 
   useEffect(() => {
-    const items = orderItemsList.data.result.items || [];
+  if (!orderItemsList.data) return;
 
-    const packageItems = [];
+  const items = orderItemsList.data.result.items || [];
 
-    items.forEach((item) => {
-      if (!item.order_item || !item.order_item.length) {
-        for (let i = 0; i < item.quantity; i++) {
-          packageItems.push({
-            pim_id:
-              item.pim_id === null && item.name === "Extra item"
-                ? 0.69
-                : item.pim_id,
-            name: item.name,
-          });
-        }
-      } else {
-        item.order_item.forEach((orderItem) => {
-          if (!orderItem.item_name) {
-            packageItems.push({
-              item_id: orderItem.item_id,
-              pim_id: orderItem.pim_id,
-              oim_id: orderItem.oim_id,
-              price: orderItem.price,
-              name: item.name,
-            });
-          }
+  const packageItems = [];
+  const newItems = [];
+
+  items.forEach((pkg) => {
+    const pim_id =
+      pkg.pim_id === null && pkg.name === "Extra item" ? 0.69 : pkg.pim_id;
+
+    const orderItemList = pkg.order_item || [];
+
+    if (!orderItemList.length) {
+      // no selected items yet → create empty slots based on quantity
+      const qty = pkg.quantity ?? 0;
+      for (let i = 0; i < qty; i++) {
+        packageItems.push({
+          pim_id,
+          name: pkg.name,
+        });
+      }
+      return;
+    }
+
+    orderItemList.forEach((oi) => {
+      if (oi.item_id) {
+        // normal selected item
+        packageItems.push({
+          item_id: oi.item_id,
+          pim_id: oi.pim_id ?? pim_id,
+          oim_id: oi.oim_id,
+          price: oi.price,
+          name: pkg.name,
+        });
+      } else if (oi.item_name) {
+        // 🔥 manual item from previous costing
+        //   → only in new_items, not in item, so it does NOT affect count
+        newItems.push({
+          pim_id: oi.pim_id ?? pim_id,
+          item_name: oi.item_name,
+          oim_id: oi.oim_id,
         });
       }
     });
+  });
 
-    const updatedData = items.map((category) => {
-      const names =
-        category.order_item
-          ?.map((item) => item.item_name || item.name)
-          .filter(Boolean) || [];
-
-      return {
-        ...category,
-        item_name: names,
-      };
-    });
-
-    items.forEach((category) => {
-      if (category.order_item.length) {
-        category.order_item.forEach((itm) => {
-          if (itm.item_name) {
-            packageItems.forEach((i) => {
-              if (i.pim_id === itm.pim_id) {
-                if (i.new_items) {
-                  i.new_items = i.new_items + ", " + itm.item_name;
-                } else {
-                  i.new_items = itm.item_name;
-                }
-              }
-            });
-          }
-        });
-      }
-    });
-
-    setFieldValue("item", packageItems);
-  }, [orderItemsList.isFetching]);
+  setFieldValue("item", packageItems);
+  setFieldValue("new_items", newItems);
+}, [orderItemsList.isFetching]);
 
   const updateCoastingMutation = useMutation({
     mutationFn: async (data) =>
@@ -118,38 +106,38 @@ function RouteComponent() {
   });
 
   const {
-    Field,
-    handleSubmit,
-    Subscribe,
-    setFieldValue,
-    getFieldValue,
-    reset,
-    store,
-  } = useForm({
-    onSubmit,
-    validators: { onSubmit: addEditCoastingSchema },
-    defaultValues: {
-      order_id: location.state.order_id,
-      client_id: location.state.client_id,
-      package_id:
-        location.state.package_id === 0 ? 0.69 : location.state.package_id,
-      date: location.state.date,
-      time: location.state.time,
-      person: location.state.person,
-      venue: location.state.venue,
-      // status: location.state.status,
-      jain_counter: location.state.jain_counter,
-      per_plate_cost: location.state.per_plate_cost,
-      selling_price: location.state.selling_price,
-      pro: location.state.pro || { count: 0, rate: 0, total: 0 },
-      bom_boys: location.state.bom_boys || { count: 0, rate: 0, total: 0 },
-      packed_bottle: location.state.packed_bottle || {
-        count: 0,
-        rate: 0,
-        total: 0,
-      },
+  Field,
+  handleSubmit,
+  Subscribe,
+  setFieldValue,
+  getFieldValue,
+  reset,
+  store,
+} = useForm({
+  onSubmit,
+  validators: { onSubmit: addEditCoastingSchema },
+  defaultValues: {
+    order_id: location.state.order_id,
+    client_id: location.state.client_id,
+    package_id:
+      location.state.package_id === 0 ? 0.69 : location.state.package_id,
+    date: location.state.date,
+    time: location.state.time,
+    person: location.state.person,
+    venue: location.state.venue,
+    jain_counter: location.state.jain_counter,
+    per_plate_cost: location.state.per_plate_cost,
+    selling_price: location.state.selling_price,
+    pro: location.state.pro || { count: 0, rate: 0, total: 0 },
+    bom_boys: location.state.bom_boys || { count: 0, rate: 0, total: 0 },
+    packed_bottle: location.state.packed_bottle || {
+      count: 0,
+      rate: 0,
+      total: 0,
     },
-  });
+    new_items: [],
+  },
+});
 
   const isLoading = useAuthStore((state) => state.isLoading);
   const items = useStore(store, (state) => state.values.item);
@@ -181,82 +169,108 @@ function RouteComponent() {
 
   useEffect(() => {
     setFieldValue("per_plate_cost", getTotalCost().total);
-
-    // const extraItemTotal = items
-    //   ?.filter((value) => value.name === "Extra Item")
-    //   ?.reduce((acc, curr) => (acc += curr.price ?? 0), 0);
-
-    // packagesOption.then((res) => {
-    //   const packageItem = (res.result.list ?? []).find(
-    //     (item) => item.package_id === getFieldValue("package_id")
-    //   );
-    //   if (packageItem) {
-    //     setFieldValue(
-    //       "selling_price",
-    //       (packageItem?.price ?? 0) + extraItemTotal
-    //     );
-    //   }
-    // });
   }, [JSON.stringify(items)]);
 
   const partiesOption = queryClient.ensureQueryData(getAllPartyOption());
   const packagesOption = queryClient.ensureQueryData(getAllPackageOption());
 
-  async function onSubmit({ value }) {
-    const previousItems = [];
-    const deleted_oim_ids = [];
-    const currentItems = new Set(
-      items.map((item) => item.oim_id).filter(Boolean)
-    );
+ async function onSubmit({ value }) {
+  if (!orderItemsList.data) return;
 
-    orderItemsList.data.result.items.forEach((o) => {
-      o?.order_item?.forEach((i) => previousItems.push(i.oim_id));
-    });
+  const formItems = value.item ?? [];
+  const newItems = value.new_items ?? [];
 
-    previousItems.forEach((oim_id) => {
-      if (!oim_id) {
-      }
-      const isInValue = currentItems.has(oim_id);
-      if (!isInValue) deleted_oim_ids.push(oim_id);
-    });
-
-    const item = value.item
-      .map((item) => ({
-        pim_id: item.pim_id ?? null,
-        item_id: Number(item.item_id),
-      }))
-      .filter((item) => item.item_id);
-
-    const new_items = [];
-    value.item.forEach((item) => {
-      if (!item.new_items) return;
-      const item_name = item.new_items.split(",");
-      item_name.forEach((item_name) => {
-        new_items.push({
-          pim_id: item.pim_id ?? null,
-          item_name: item_name.trim(),
-        });
-      });
-    });
-
-    const payload = {
-      ...value,
-      item: [...item, ...new_items],
-      date: moment(value.date).format("YYYY-MM-DD"),
-      deleted_oim_ids,
-      extra_cost: getTotalCost()?.extra,
-    };
-
-    const result = await asyncResponseToaster(() =>
-      updateCoastingMutation.mutateAsync(payload)
-    );
-
-    if (result.success && result.value && result.value.ResponseCode === 1) {
-      queryClient.invalidateQueries({ queryKey: GET_ORDERS });
-      queryClient.refetchQueries(getOrdersList);
-      onClose();
-    }
+  // Custom Package → null for API
+  if (value.package_id === 0.69) {
+    value.package_id = null;
   }
+
+  // 1) All previous oim_ids from API (normal + manual)
+  const previousOimIds = [];
+  orderItemsList.data.result.items.forEach((pkg) => {
+    (pkg.order_item || []).forEach((oi) => {
+      if (oi.oim_id != null) previousOimIds.push(Number(oi.oim_id));
+    });
+  });
+
+  // 2) All current oim_ids from form (items + new_items)
+  const currentOimIds = new Set();
+
+  formItems.forEach((i) => {
+    if (i.oim_id != null) currentOimIds.add(Number(i.oim_id));
+  });
+
+  newItems.forEach((i) => {
+    if (i.oim_id != null) currentOimIds.add(Number(i.oim_id));
+  });
+
+  // 3) Deleted ones = existed before, not in current
+  const deleted_oim_ids = previousOimIds.filter(
+    (id) => !currentOimIds.has(id)
+  );
+
+  // 4) Normal selected items (with item_id)
+  const itemFromSelect = formItems
+    .filter((i) => i.item_id) // only real selections
+    .map((i) => {
+      const rawPim = i.pim_id === 0.69 ? null : i.pim_id;
+      const base = {
+        pim_id: rawPim != null ? Number(rawPim) : null,
+        item_id: Number(i.item_id),
+      };
+
+      if (i.oim_id != null) {
+        base.oim_id = Number(i.oim_id);
+      }
+
+      return base;
+    });
+
+  // 5) Manual items from tags (new_items)
+  const itemFromTags = newItems
+    .map((i) => {
+      const name = (i.item_name ?? "").trim();
+      if (!name) return null;
+
+      const rawPim = i.pim_id === 0.69 ? null : i.pim_id;
+      const base = {
+        pim_id: rawPim != null ? Number(rawPim) : null,
+        item_name: name,
+      };
+
+      if (i.oim_id != null) {
+        base.oim_id = Number(i.oim_id);
+      }
+
+      return base;
+    })
+    .filter(Boolean);
+
+  const item = [...itemFromSelect, ...itemFromTags];
+
+  // 6) Final payload
+  const payload = {
+    ...value,
+    item,
+    date: moment(value.date).format("YYYY-MM-DD"),
+    deleted_oim_ids,
+    extra_cost: getTotalCost().extra,
+  };
+
+  // We don't want to send new_items to API
+  delete payload.new_items;
+
+  const result = await asyncResponseToaster(() =>
+    updateCoastingMutation.mutateAsync(payload)
+  );
+
+  if (result.success && result.value && result.value.ResponseCode === 1) {
+    queryClient.invalidateQueries({ queryKey: GET_ORDERS });
+    queryClient.refetchQueries(getOrdersList);
+    onClose();
+  }
+}
+  
 
   function onClose() {
     setTimeout(() => {
@@ -378,7 +392,11 @@ function RouteComponent() {
             name="package_id"
             listeners={{
               onChange: async (e) => {
-                if (!e.value) return setFieldValue("item", null);
+                if (!e.value) {
+                  setFieldValue("item", null);
+                  setFieldValue("new_items", []); // 🔥 also clear manual tags
+                  return;
+                }
 
                 const packageOptionList =
                   (await packagesOption).result.list ?? [];
@@ -403,7 +421,8 @@ function RouteComponent() {
                     .flat(),
                   extraItem,
                 ]);
-                // setFieldValue("selling_price", packageItem?.price);
+
+                setFieldValue("new_items", []); // 🔥 reset manual items
               },
             }}
             children={(field) => (

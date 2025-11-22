@@ -5,109 +5,150 @@ import { useStore } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import { Plus, Trash2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { UncontrolledTagInput } from './common/uncontrolled-taginput'
+import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Label } from './ui/label'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { Badge } from './ui/badge'
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { ScrollArea, ScrollBar } from './ui/scroll-area'
-import { Input } from './ui/input'
-import { ControlledTagInput } from './common/controlled-taginput'
 
 const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, showPrice, store }) => {
-  const queryClient = useQueryClient();
+  const queryClient = useQueryClient()
 
-  const [options, setOptions] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  // 🔹 read full item array from form store so changes (like package change) re-render correctly
+  const items = useStore(store, (state) => state.values.item ?? [])
 
-  const submissionAttempts = useStore(
-    store,
-    (state) => state.submissionAttempts
-  );
+  // 🔹 manual items (tags) from form
+  const allNewItems = useStore(store, (state) => state.values.new_items ?? [])
+
+  const groupNewItems = useMemo(
+    () => allNewItems.filter((n) => n.pim_id === item.pim_id),
+    [allNewItems, item.pim_id]
+  )
+
+  const tagsForThisGroup = useMemo(
+    () => groupNewItems.map((n) => n.item_name),
+    [groupNewItems]
+  )
+
+  const [options, setOptions] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  const submissionAttempts = useStore(store, (state) => state.submissionAttempts)
 
   useEffect(() => {
-    setIsLoading(true);
-    queryClient
-      .ensureQueryData(getListOfItemOfPackage({ pim_id: item.pim_id }))
-      .then((data) => {
+    setIsLoading(true)
+    queryClient.ensureQueryData(getListOfItemOfPackage({ pim_id: item.pim_id }))
+      .then(data => {
         if (item.pim_id) {
           setOptions(
-            (data.result.list[0]?.item ?? []).map((data) => ({
+            (data.result.list[0]?.item ?? []).map(data => ({
               value: data.item_id,
               label: data.name,
               name: item.name,
               pim_id: item.pim_id,
-              price: data.price,
+              price: data.price
             }))
-          );
+          )
         } else {
           const options = [];
-          const groupedOptions = new Map();
-          data.result.list.forEach((items) => {
-            items.item.forEach((data) => {
-              groupedOptions.set(items.name, [
-                ...(groupedOptions.get(items.name) ?? []),
-                {
-                  value: data.item_id,
-                  label: data.name,
-                  name: item.name,
-                  pim_id: item.pim_id,
-                  price: data.price,
-                },
-              ]);
+          const groupedOptions = new Map()
+          data.result.list.forEach(items => {
+            items.item.forEach(data => {
+              groupedOptions.set(
+                items.name,
+                [
+                  ...(groupedOptions.get(items.name) ?? []),
+                  {
+                    value: data.item_id,
+                    label: data.name,
+                    name: item.name,
+                    pim_id: item.pim_id,
+                    price: data.price
+                  }
+                ]
+              )
               options.push({
                 value: data.item_id,
                 label: data.name,
                 name: item.name,
                 pim_id: item.pim_id,
-                price: data.price,
-              });
-            });
-          });
-          setOptions(options);
+                price: data.price
+              })
+            })
+          })
+          setOptions(options)
         }
       })
       .finally(() => {
-        setIsLoading(false);
-      });
-  }, [item.pim_id]);
+        setIsLoading(false)
+      })
+  }, [item.pim_id, queryClient])
 
+  // ✅ use items from store for grouping → updates when package changes
   const getGroupedItems = useMemo(() => {
-    const allItems = getFieldValue("item");
-    return allItems
-      .filter((i) => i.pim_id === item.pim_id)
-      // .filter((i) => i.item_id);
-  }, [isLoading, item]);
+    return (items ?? []).filter((i) => i.pim_id === item.pim_id)
+  }, [items, item.pim_id])
 
   const selectedItems = useMemo(() => {
-    const items = getGroupedItems
+    const list = getGroupedItems
       .map((e) => options.find((a) => a.value === e.item_id))
-      .filter((b) => b);
+      .filter((b) => b)
     return {
-      items: items.map((a) => a?.label),
-      price: items.reduce((acc, curr) => (acc += curr.price), 0),
-    };
-  }, [isLoading, item]);
+      items: list.map((a) => a?.label),
+      price: list.reduce((acc, curr) => (acc += curr.price), 0),
+    }
+  }, [options, getGroupedItems])
+
+  const displayItems = useMemo(() => {
+    const merged = [
+      ...(selectedItems.items ?? []),
+      ...(tagsForThisGroup ?? []),
+    ]
+    return Array.from(new Set(merged)) // remove duplicates
+  }, [selectedItems.items, tagsForThisGroup])
+
+  const handleTagsChange = (tags) => {
+    const trimmed = tags.map((t) => t.trim()).filter(Boolean)
+
+    // keep other categories' manual items
+    const others = allNewItems.filter((n) => n.pim_id !== item.pim_id)
+
+    const updatedForThisGroup = trimmed.map((name) => {
+      const existing = groupNewItems.find((n) => n.item_name === name)
+      // keep oim_id if it existed
+      return (
+        existing ?? {
+          pim_id: item.pim_id ?? null,
+          item_name: name,
+        }
+      )
+    })
+
+    setFieldValue("new_items", [...others, ...updatedForThisGroup])
+  }
 
   const handleAddItem = () => {
-    const cloneItem = { ...item, deleteAble: true };
+    const cloneItem = { ...item, deleteAble: true }
 
     if (cloneItem.item_id) {
-      delete cloneItem.item_id;
-      delete cloneItem.oim_id;
-      delete cloneItem.price;
+      delete cloneItem.item_id
+      delete cloneItem.oim_id
+      delete cloneItem.price
     }
 
-    const previousItem = getFieldValue("item");
-    const addItemIndex = item.index + 1;
-    previousItem.splice(addItemIndex, 0, cloneItem);
-    setFieldValue("item", previousItem);
-  };
+    const previousItem = getFieldValue("item")
+    const addItemIndex = item.index + 1
+    previousItem.splice(addItemIndex, 0, cloneItem)
+    setFieldValue("item", previousItem)
+  }
 
   return (
     <div className="flex flex-col gap-y-2">
       <div className="px-2 flex items-center justify-between">
         <Label className="text-sm md:text-base font-medium">{item.name}</Label>
         <div className="flex gap-x-3 md:gap-x-4 items-center">
+          {/* ✅ count uses only "item" slots, not manual tags */}
           <span className="text-sm md:text-base">
             {getGroupedItems.filter((e) => e.item_id).length}
             &nbsp; of &nbsp;
@@ -141,28 +182,19 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
           </div>
           <PopoverTrigger className="w-full font-medium text-start text-sm md:text-base ml-0 text-gray-500 cursor-pointer flex justify-between overflow-hidden">
             <div className="overflow-hidden">
-              {selectedItems.items.length || item.new_items ? (
+              {displayItems.length ? (
                 <ScrollArea className="w-full px-2 py-2.5">
                   <div className="flex gap-x-2">
-                    {[
-                      ...selectedItems.items,
-                      ...(item.new_items?.split(",") ?? []),
-                    ]
-                      .filter((e) => Boolean(e))
-                      .map((l, i) => {
-                        return (
-                          <Badge key={i} variant="outline">
-                            {l.trim()}
-                          </Badge>
-                        );
-                      })}
+                    {displayItems.map((l, i) => (
+                      <Badge key={i} variant="outline">
+                        {l}
+                      </Badge>
+                    ))}
                   </div>
                   <ScrollBar orientation="horizontal" />
                 </ScrollArea>
               ) : (
-                <p className="py-2 md:py-2.5 pl-2">
-                  {item.item_name ? item.item_name : `Select ${item.name}`}
-                </p>
+                <p className="py-2 md:py-2.5 pl-2">Select {item.name}</p>
               )}
             </div>
             {selectedItems?.price ? (
@@ -182,181 +214,97 @@ const CoastingItem = ({ item, Field, setFieldValue, getFieldValue, Subscribe, sh
         <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
           {getGroupedItems.map((item, index) => {
             return (
-              <>
-                <Field
-                  key={index}
-                  name={`item[${item.index}].item_id`}
-                  listeners={{
-                    onChange: (e) => {
-                      const selectedItem = options.find(
-                        (item) => item.value === e.value
-                      );
-                      const previousItem = getFieldValue("item");
-                      const itemWithPrice = previousItem.map((item) =>
-                        item.item_id === e.value
-                          ? { ...item, price: selectedItem?.price }
-                          : item
-                      );
-                      setFieldValue("item", itemWithPrice);
-                    },
-                  }}
-                  children={(field) => {
-                    return (
-                      <div className="flex justify-between border-b last:border-b-0">
-                        <ControlledSearchableSelect
-                          id={`item[${item.index}].item_id`}
-                          label={`Select ${item.name.toLowerCase()}`}
-                          field={field}
-                          prefix={false}
-                          icon={false}
-                          options={options}
-                          isLoading={isLoading}
-                          searchPlaceholder="Search item"
-                          updateTriggerer={isLoading}
-                          containerClassName="flex-1 border-none shadow-none"
-                        />
-                        <div className="flex">
-                          <Subscribe
-                            selector={(state) => state.values.item}
-                            children={() => {
-                              const item = (options || []).find(
-                                (item) => item.value === field.state.value
-                              );
-                              return item?.price ? (
-                                <div
-                                  className={cn(
-                                    "px-3 border-l border-border-1 flex items-center transition-opacity",
-                                    showPrice.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                >
-                                  <span className="text-sm md:text-base font-medium">
-                                    {item?.price}
-                                  </span>
-                                </div>
-                              ) : null;
-                            }}
-                          />
-                          <Field
-                            name="item"
-                            mode="array"
-                            children={(field) => {
-                              const deleteAble = field.state.value.find(
-                                (_, i) => i === item.index
-                              )?.deleteAble;
-                              return (
-                                <Button
-                                  type="button"
-                                  className="size-11 border-0 border-l border-border-1 rounded-l-none hover:bg-red-500 hover:border-red-500"
-                                  // onClick={() => field.removeValue(item.index)}
-                                  onClick={() => {
-                                    const prevItm = getFieldValue("item");
-                                    const deletedItems = prevItm.map((itm) => ({
-                                      ...itm,
-                                      item_id: null,
-                                    }));
-                                    setFieldValue("item", deletedItems);
-                                  }}
-                                  // disabled={!deleteAble}
-                                >
-                                  <Trash2 className="size-5" />
-                                </Button>
-                              );
-                            }}
-                          />
-                        </div>
-                      </div>
-                    );
-                  }}
-                />
-                <Field
-                  name={"item_name" + item.ppm_id}
-                  listeners={{
-                    onChange: (e) => {
-                      const previousItem = getFieldValue("item");
-                      const newItems = previousItem.map((itm) => {
-                        if (itm.ppm_id === item.ppm_id) {
-                          return { ...item, new_items: e.value };
-                        }
-                        return itm;
-                      });
-                      setFieldValue("item", newItems);
-                    },
-                  }}
-                  children={(field) => (
-                    <div className="min-h-10">
-                      <ControlledTagInput
-                        className="sm:min-h-11 p-0 px-3 py-1.5 rounded-t-none border-0"
-                        inputClassName="rounded-none"
-                        label={`Add new ${item.name.toLowerCase()}`}
+              <Field
+                key={index}
+                name={`item[${item.index}].item_id`}
+                listeners={{
+                  onChange: (e) => {
+                    const selectedItem = options.find(
+                      (opt) => opt.value === e.value
+                    )
+                    const previousItem = getFieldValue("item")
+                    const itemWithPrice = previousItem.map((it, idx) =>
+                      idx === item.index
+                        ? { ...it, price: selectedItem?.price }
+                        : it
+                    )
+                    setFieldValue("item", itemWithPrice)
+                  },
+                }}
+                children={(field) => {
+                  return (
+                    <div className="flex justify-between border-b last:border-b-0">
+                      <ControlledSearchableSelect
+                        id={`item[${item.index}].item_id`}
+                        label={`Select ${item.name.toLowerCase()}`}
                         field={field}
+                        prefix={false}
+                        icon={false}
+                        options={options}
+                        isLoading={isLoading}
+                        searchPlaceholder="Search item"
+                        updateTriggerer={isLoading}
+                        containerClassName="flex-1 border-none shadow-none"
                       />
-                    </div>
-                  )}
-                />
-                {/* <Field
-                  key={index}
-                  name={`item[${item.index}].item_name`}
-                  listeners={{
-                    onChange: (e) => {
-                      const previousItem = getFieldValue("item");
-                      const newItems = previousItem.map((itm) => {
-                        if (itm.ppm_id === item.ppm_id) {
-                          return {
-                            ...itm,
-                            price: null,
-                            item_name: e.value,
-                          };
-                        }
-                        return itm;
-                      });
-                      setFieldValue("item", newItems);
-                    },
-                  }}
-                  children={(field) => {
-                    return (
-                      <div className="flex justify-between items-center">
-                        <div className="w-full ml-3">
-                          <Input
-                            value={field.state.value || ""}
-                            onChange={(e) => {
-                              field.handleChange(e.target.value);
-                              const previousItem = getFieldValue("item");
-                              const newItem = previousItem.map((itm) => {
-                                if (itm.ppm_id === item.ppm_id) {
-                                  return {
-                                    ...itm,
-                                    price: null,
-                                    item_name: e.target.value,
-                                  };
-                                }
-                                return itm;
-                              });
-                              setFieldValue("item", newItem);
-                            }}
-                            placeholder={`Add new ${item.name.toLowerCase()}`}
-                            className="p-0 border-none shadow-none text-gray placeholder:text-base text-lg font-medium rounded-none"
-                          />
-                        </div>
-                        <Button
-                          type="button"
-                          className="size-11 border-0 border-l border-border-1 rounded-l-none hover:bg-red-500 hover:border-red-500"
-                        >
-                          <Trash2 className="size-5" />
-                        </Button>
+                      <div className="flex">
+                        <Subscribe
+                          selector={(state) => state.values.item}
+                          children={() => {
+                            const opt = (options || []).find(
+                              (opt) => opt.value === field.state.value
+                            )
+                            return opt?.price ? (
+                              <div
+                                className={cn(
+                                  "px-3 border-l border-border-1 flex items-center transition-opacity",
+                                  showPrice.value ? "opacity-100" : "opacity-0"
+                                )}
+                              >
+                                <span className="text-sm md:text-base font-medium">
+                                  {opt?.price}
+                                </span>
+                              </div>
+                            ) : null
+                          }}
+                        />
+                        <Field
+                          name="item"
+                          mode="array"
+                          children={(field) => {
+                            const deleteAble = field.state.value.find(
+                              (_, i) => i === item.index
+                            )?.deleteAble
+                            return (
+                              <Button
+                                type="button"
+                                className="px-3 border-0 border-l border-border-1 rounded-l-none hover:bg-red-500 hover:border-red-500"
+                                onClick={() => field.removeValue(item.index)}
+                                // disabled={!deleteAble}
+                              >
+                                <Trash2 className="size-5" />
+                              </Button>
+                            )
+                          }}
+                        />
                       </div>
-                    );
-                  }}
-                /> */}
-              </>
-            );
+                    </div>
+                  )
+                }}
+              />
+            )
           })}
+          <UncontrolledTagInput
+            id={`new_items_${item.pim_id ?? "custom"}`}
+            label="Add ingredient"
+            value={tagsForThisGroup}
+            onChange={handleTagsChange}
+            className="sm:min-h-11 px-3 border-none rounded-none shadow-none"
+            inputClassName="rounded-none"
+          />
         </PopoverContent>
       </Popover>
     </div>
-  );
+  )
 }
 
 export { CoastingItem }
-
