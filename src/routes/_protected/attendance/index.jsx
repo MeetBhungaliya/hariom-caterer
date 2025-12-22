@@ -55,7 +55,7 @@ function RouteComponent() {
     getMonthWiseShiftsList({
       page,
       limit,
-      month: month + 1,
+      month,
       year,
       search: debouncedSearchedValue,
     })
